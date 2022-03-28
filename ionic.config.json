@@ -1,0 +1,7 @@
+{
+  "name": "bangs-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
