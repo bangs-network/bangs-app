@@ -1,0 +1,21 @@
+
+.icon-circle {
+    border-radius: 200px;
+}
+
+.p-50 {
+    width: 50px;
+}
+
+.p-120 {
+    width: 120px;
+}
+
+.secondary-color {
+    font-weight: bold;
+    color: #b6bc00;
+}
+
+.header-title {
+    font-weight: bold;
+}
