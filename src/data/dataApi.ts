@@ -10,10 +10,10 @@ const HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
 const USERNAME = 'username';
 
 export const getConfData = async () => {
-  const response = await Promise.all([
-    fetch(dataUrl),
-    fetch(locationsUrl)]);
-  const responseData = await response[0].json();
+  // const response = await Promise.all([
+  //   fetch(dataUrl),
+  //   fetch(locationsUrl)]);
+  // const responseData = await response[0].json();
 
   const data = {
   }
@@ -21,14 +21,14 @@ export const getConfData = async () => {
 }
 
 export const getUserData = async () => {
-  const response = await Promise.all([
-    Storage.get({ key: HAS_LOGGED_IN }),
-    Storage.get({ key: USERNAME })]);
-  const isLoggedin = await response[0].value === 'true';
-  const username = await response[1].value || undefined;
+  // const response = await Promise.all([
+  //   Storage.get({ key: HAS_LOGGED_IN }),
+  //   Storage.get({ key: USERNAME })]);
+  // const isLoggedin = await response[0].value === 'true';
+  // const username = await response[1].value || undefined;
   const data = {
-    isLoggedin,
-    username
+    // isLoggedin,
+    // username
   }
   return data;
 }

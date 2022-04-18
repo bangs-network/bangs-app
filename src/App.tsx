@@ -80,13 +80,14 @@ const IonicApp: React.FC<IonicAppProps> = ({ darkMode, setIsLoggedIn, setUsernam
                 <IonSplitPane contentId="main">
                     <Menu/>
                     <IonRouterOutlet id="main">
-                        <Route path="/tabs" render={() => <MainTabs />} />
+
                         <Route path="/account" component={Account} />
                         <Route path="/verseDetail" component={VerseDetail} />
                         <Route path="/createTalks" component={CreateTalks} />
                         <Route path="/createExp" component={CreateExp} />
                         <Route path="/roles" component={Roles} />
-
+                        <Route path="/tabs" render={() => <MainTabs />} />
+                        <Redirect path="/" to="/tabs/home" exact/>
                     </IonRouterOutlet>
                 </IonSplitPane>
             </IonReactRouter>

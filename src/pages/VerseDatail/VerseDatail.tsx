@@ -2,12 +2,12 @@ import {
     IonAvatar,
     IonBackButton,
     IonButton,
-    IonButtons, IonCard, IonCardHeader,
-    IonContent,
+    IonButtons, IonCard, IonCardHeader, IonCol,
+    IonContent, IonGrid,
     IonHeader,
     IonIcon, IonItem, IonItemDivider, IonItemGroup, IonLabel,
     IonMenuButton,
-    IonPage, IonPopover,
+    IonPage, IonPopover, IonRow,
     IonTitle,
     IonToolbar
 } from '@ionic/react';
@@ -42,7 +42,7 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="/tabs/home" />
                     </IonButtons>
-                    <IonTitle style={{color: '#2910fb', fontSize:24,fontWeight: 700,textAlign:'center'}}>BANGS.</IonTitle>
+                    <IonTitle style={{color: '#fff', fontSize:24,fontWeight: 700,textAlign:'center'}}>BANGS.</IonTitle>
                     <IonButtons slot="end">
                         <IonButton  onClick={presentPopover}>
                             <IonIcon slot="icon-only" icon={addCircleOutline}/>
@@ -52,24 +52,55 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
             </IonHeader>
             <IonContent fullscreen>
                 <IonItemGroup>
-                    <IonCard style={{borderRadius: 10}}>
-                        <img src={Icon1} style={{width: '100%', height: 120, objectFit: 'cover'}}/>
-
+                    <IonItemDivider sticky style={{padding:0,border:0}}>
+                        <img  src={Icon1} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                    </IonItemDivider>
+                    <IonCard style={{background:'#22bc87'}}>
 
                         <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#2910fb', fontWeight: 'bold'}}>Universe Name</div>
-                            <p>
+                            <div style={{fontSize: 32, color: '#fff', fontWeight: 'bold'}}>Universe Name</div>
+                            <p style={{ color: '#fff'}}>
                                 The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
                                 be
                                 created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
                                 Mutant Ape in the public sale.
                             </p>
+                            <div style={{border:'1px solid #f2f2f2',padding:15,color:'#fff'}}>
+                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                be
+                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                Mutant Ape in the public sale.
+                            </div>
+                            <IonRow style={{marginTop:20}}>
+                                <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                    <img className='icon-circle full-width' src={Icon2}/>
+
+                                </IonCol>
+                                <IonCol size="10">
+
+                                    <div style={{fontWeight:700,color:'#fff',fontSize:16}}>Trump</div>
+                                    <div style={{marginTop:5,color:'#f2f2f2'}}>By Peter</div>
+                                    <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                        be
+                                        created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                        Mutant Ape in the public sale.</div>
+                                </IonCol>
+                            </IonRow>
+                            <img src={Icon1} style={{width: '100%',objectFit: 'cover',margin:'15px 0'}}/>
+                            <div style={{border:'1px solid #f2f2f2',padding:15,color:'#fff'}}>
+                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                be
+                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                Mutant Ape in the public sale.
+                            </div>
                         </IonCardHeader>
 
                     </IonCard>
 
-                    <IonCard>
-                        <img src={Icon2} style={{width: '100%', height: 120, objectFit: 'cover'}}/>
+                    <IonItemDivider sticky style={{padding:0,border:0}}>
+                        <img  src={Icon2} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                    </IonItemDivider>
+                    <IonCard  style={{background:'#fff'}}>
 
                         <IonCardHeader>
                             <div style={{fontSize: 32, color: '#b6bc00', fontWeight: 'bold'}}>Mutant Ape Yacht Club
@@ -81,37 +112,113 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
                                 Mutant Ape in the public sale.
                             </p>
 
+                            <img src={Icon2} style={{width: '100%',objectFit: 'cover',margin:'15px 0'}}/>
+
+                            <IonRow style={{marginTop:20}}>
+                                <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                    <img className='icon-circle full-width' src={Icon2}/>
+
+                                </IonCol>
+                                <IonCol size="10">
+
+                                    <div style={{fontWeight:700,color:'#000',fontSize:16}}>ElonMask</div>
+                                    <div style={{marginTop:5,color:'#999'}}>By Peter</div>
+                                    <div style={{marginTop:10,color:'#000'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                        be
+                                        created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                        Mutant Ape in the public sale.</div>
+                                </IonCol>
+                            </IonRow>
+
+                            <IonRow style={{marginTop:20}}>
+                                <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                    <img className='icon-circle full-width' src={Icon2}/>
+
+                                </IonCol>
+                                <IonCol size="10">
+
+                                    <div style={{fontWeight:700,color:'#000',fontSize:16}}>Trump</div>
+                                    <div style={{marginTop:5,color:'#999'}}>By Peter</div>
+                                    <div style={{marginTop:10,color:'#000'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                        be
+                                        created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                        Mutant Ape in the public sale.</div>
+                                </IonCol>
+                            </IonRow>
+
+                            <IonRow style={{marginTop:20}}>
+                                <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                    <img className='icon-circle full-width' src={Icon2}/>
+
+                                </IonCol>
+                                <IonCol size="10">
+
+                                    <div style={{fontWeight:700,color:'#000',fontSize:16}}>Trump</div>
+                                    <div style={{marginTop:5,color:'#999'}}>By Mike</div>
+                                    <div style={{marginTop:10,color:'#000'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                        be
+                                        created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                        Mutant Ape in the public sale.</div>
+                                </IonCol>
+                            </IonRow>
+
 
                         </IonCardHeader>
                     </IonCard>
 
-                    <IonCard>
-                        <img src={Icon3} style={{width: '100%', height: 120, objectFit: 'cover'}}/>
+                    <IonItemDivider sticky style={{padding:0,border:0}}>
+                        <img  src={Icon3} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                    </IonItemDivider>
+                    <IonCard  style={{background:'#343434'}}>
 
                         <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#000', fontWeight: 'bold'}}>Mutant Ape Yacht Club
+                            <div style={{fontSize: 32, color: '#ff1f29', fontWeight: 'bold'}}>Mutant Ape Yacht Club
                             </div>
-                            <p>
+                            <p style={{color:'#fff'}}>
                                 The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
                                 be
                                 created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
                                 Mutant Ape in the public sale.
                             </p>
 
-                        </IonCardHeader>
-                    </IonCard>
 
-                    <IonCard>
-                        <img src={Icon4} style={{width: '100%', height: 120, objectFit: 'cover'}}/>
+                            <IonGrid style={{margin:0,padding:0}}>
 
-                        <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#2910fb', fontWeight: 'bold'}}>Universe Name</div>
-                            <p>
-                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                be
-                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                Mutant Ape in the public sale.
-                            </p>
+                                <IonRow>
+                                    <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                        <img className='icon-circle full-width' src={Icon1}/>
+
+                                    </IonCol>
+                                    <IonCol size="10">
+
+                                            <div style={{fontWeight:700,color:'#fff',fontSize:16}}>ElonMask</div>
+                                            <div style={{marginTop:5}}>By Gordon</div>
+                                            <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                                be
+                                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                                Mutant Ape in the public sale.</div>
+                                    </IonCol>
+                                </IonRow>
+
+                                <IonRow>
+                                    <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                        <img className='icon-circle full-width' src={Icon2}/>
+
+                                    </IonCol>
+                                    <IonCol size="10">
+
+                                        <div style={{fontWeight:700,color:'#fff',fontSize:16}}>JOJO</div>
+                                        <div style={{marginTop:5}}>By Peter</div>
+                                        <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
+                                            be
+                                            created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
+                                            Mutant Ape in the public sale.</div>
+                                    </IonCol>
+                                </IonRow>
+
+                            </IonGrid>
+
+
                         </IonCardHeader>
                     </IonCard>
 

@@ -32,10 +32,10 @@ const MainTabs: React.FC<MainTabsProps> = () => {
                     <IonIcon icon={search}/>
                     <IonLabel>Search</IonLabel>
                 </IonTabButton>
-                <IonTabButton tab="dao" href="/tabs/dao">
-                    <IonIcon icon={peopleCircle}/>
-                    <IonLabel>DAO</IonLabel>
-                </IonTabButton>
+                {/*<IonTabButton tab="dao" href="/tabs/dao">*/}
+                    {/*<IonIcon icon={peopleCircle}/>*/}
+                    {/*<IonLabel>DAO</IonLabel>*/}
+                {/*</IonTabButton>*/}
             </IonTabBar>
         </IonTabs>
     );
