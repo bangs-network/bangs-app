@@ -20,6 +20,7 @@ import Icon4 from "../../img/4.png";
 import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
 import {RouteComponentProps} from "react-router";
+import './detail.css';
 
 interface MenuProps extends RouteComponentProps {}
 
@@ -36,13 +37,12 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
 
 
     return (
-        <IonPage  ref={pageRef} id='home-page'>
-            <IonHeader>
-                <IonToolbar  className="ion-no-border">
+        <IonPage  ref={pageRef} id='about-page'>
+            <IonHeader    className="ion-no-border">
+                <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="/tabs/home" />
                     </IonButtons>
-                    <IonTitle style={{color: '#fff', fontSize:24,fontWeight: 700,textAlign:'center'}}>BANGS.</IonTitle>
                     <IonButtons slot="end">
                         <IonButton  onClick={presentPopover}>
                             <IonIcon slot="icon-only" icon={addCircleOutline}/>
@@ -50,10 +50,10 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
-            <IonContent fullscreen>
-                <IonItemGroup>
-                    <IonItemDivider sticky style={{padding:0,border:0}}>
-                        <img  src={Icon1} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+            <IonContent fullscreen  style={{  position: 'relative'}}>
+                <IonItemGroup  style={{padding:0,border:0,margin:0}}>
+                    <IonItemDivider sticky style={{padding:0,border:0,margin:0,background:'red'}}>
+                        <img  src={Icon1} style={{padding:0,border:0,margin:0,width: '100vw', height: 240, objectFit: 'cover'}}/>
                     </IonItemDivider>
                     <IonCard style={{background:'#22bc87'}}>
 
@@ -98,7 +98,7 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
                     </IonCard>
 
                     <IonItemDivider sticky style={{padding:0,border:0}}>
-                        <img  src={Icon2} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                        <img  src={Icon4} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
                     </IonItemDivider>
                     <IonCard  style={{background:'#fff'}}>
 
@@ -116,7 +116,7 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
 
                             <IonRow style={{marginTop:20}}>
                                 <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                    <img className='icon-circle full-width' src={Icon2}/>
+                                    <img className='icon-circle full-width' src={Icon4}/>
 
                                 </IonCol>
                                 <IonCol size="10">
@@ -132,7 +132,7 @@ const VerseDetail: React.FC<MenuProps> = ({history}) => {
 
                             <IonRow style={{marginTop:20}}>
                                 <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                    <img className='icon-circle full-width' src={Icon2}/>
+                                    <img className='icon-circle full-width' src={Icon4}/>
 
                                 </IonCol>
                                 <IonCol size="10">

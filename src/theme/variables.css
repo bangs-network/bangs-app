@@ -3,6 +3,7 @@ http://ionicframework.com/docs/theming/ */
 
 body {
     font-family: 'Roboto', sans-serif;
+  --inner-padding-end: 0px;
 }
 
 
