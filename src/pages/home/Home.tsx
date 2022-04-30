@@ -16,7 +16,7 @@ import {
 import './Home.css';
 import {addCircle, addCircleOutline} from "ionicons/icons";
 import * as React from "react";
-import Icon1 from "../../img/1.png";
+import Icon1 from "../../img/2.png";
 import Icon2 from "../../img/2.png";
 import Icon3 from "../../img/3.png";
 import Icon4 from "../../img/4.png";

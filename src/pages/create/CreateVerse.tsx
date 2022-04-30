@@ -13,11 +13,10 @@ import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
 
-const CreateExp: React.FC = () => {
+const CreateVerse: React.FC = () => {
 
     const [title, setTitle] = useState<string>();
     const [detail, setDetail] = useState<string>();
-    const [expression, setExpression] = useState<string>();
 
     return (
         <IonPage>
@@ -48,14 +47,13 @@ const CreateExp: React.FC = () => {
                     </IonItem>
 
                     <IonItem  className='secondary-color'>
-                        <div >Expression</div>
-                    </IonItem>
-                    <IonItem  color='medium'>
-                        <IonTextarea rows={4} value={expression} placeholder="Input Expression" onIonChange={e => setExpression(e.detail.value!)} />
+                        <div >Verse Banner</div>
                     </IonItem>
 
-                    <IonItem  className='secondary-color'>
-                        Staking: 1000 Bang
+                    <IonItem >
+                        <IonButtons slot="start">
+                            Upload picture
+                        </IonButtons>
                     </IonItem>
 
                 </IonList>
@@ -63,11 +61,11 @@ const CreateExp: React.FC = () => {
             </IonContent>
 
             <IonFooter className='ion-padding' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
-                Create Expressions
+                Create Verse
             </IonFooter>
 
         </IonPage>
     );
 };
 
-export default CreateExp;
+export default CreateVerse;

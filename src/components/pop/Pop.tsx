@@ -20,7 +20,17 @@ const AddPopover: React.FC<AddPopoverProps> = ({dismiss, history, type}) => {
 
             {
                 type == 1 ? <>
-                    <IonItem button onClick={() => close('https://ionicframework.com/getting-started')}>
+
+                    <IonItem button lines="none" onClick={() => {
+                        history.push('/createVerse')
+                        dismiss();
+                    }}>
+                        <IonLabel>Create Verse</IonLabel>
+                    </IonItem></> : <>
+                    <IonItem button onClick={() => {
+
+                    }
+                    }>
                         <IonLabel>Theme</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
@@ -35,26 +45,18 @@ const AddPopover: React.FC<AddPopoverProps> = ({dismiss, history, type}) => {
                     }}>
                         <IonLabel>Talks</IonLabel>
                     </IonItem>
-                    <IonItem button onClick={() => close('https://github.com/ionic-team/ionic')}>
-                        <IonLabel>Dices</IonLabel>
-                    </IonItem>
-                    <IonItem button onClick={dismiss} lines="none">
-                        <IonLabel>Session</IonLabel>
-                    </IonItem></> : <>
                     <IonItem button onClick={() => {
-                        history.push('/createTalks')
+                        history.push('/createDice')
                         dismiss();
-                    }}>
-                        <IonLabel>ReBang</IonLabel>
+                    }
+                    }>
+                        <IonLabel>Dices</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
                         history.push('/roles')
                         dismiss();
                     }}>
                         <IonLabel>Roles</IonLabel>
-                    </IonItem>
-                    <IonItem button onClick={dismiss} lines="none">
-                        <IonLabel>DAOs</IonLabel>
                     </IonItem>
                 </>
             }

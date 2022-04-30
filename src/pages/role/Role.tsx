@@ -11,8 +11,17 @@ import {
 } from '@ionic/react';
 import headerIcon from "../../img/0.png";
 import * as React from "react";
+import {RouteComponentProps} from "react-router";
 
-const Roles: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
+
+const Roles: React.FC<MenuProps> = ({history}) => {
+
+
+    const toRoleDetail = () => {
+        history.push('/roleDetail');
+    };
+
     return (
         <IonPage>
             <IonHeader>
@@ -23,10 +32,10 @@ const Roles: React.FC = () => {
                     <IonTitle>Roles</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent className='ion-padding'>
+            <IonContent>
 
                 <IonList lines="none">
-                    <IonItem>
+                    <IonItem onClick={toRoleDetail}>
 
                         <IonAvatar slot="start">
                             <img src={headerIcon}/>
@@ -34,7 +43,6 @@ const Roles: React.FC = () => {
                         <IonLabel>
                             CP001
                         </IonLabel>
-                        <IonButton color="primary">Quantum</IonButton>
 
                     </IonItem>
                     <IonItem>
@@ -43,9 +51,8 @@ const Roles: React.FC = () => {
                             <img src={headerIcon}/>
                         </IonAvatar>
                         <IonLabel>
-                            CP001
+                            CP002
                         </IonLabel>
-                        <IonButton color="primary">Quantum</IonButton>
 
                     </IonItem>
                 </IonList>
@@ -53,15 +60,6 @@ const Roles: React.FC = () => {
 
 
             </IonContent>
-            <IonFooter>
-                <IonItem>
-                <div>You can collapse roles from</div>
-                </IonItem>
-                <IonItem>
-                    <IonButton color="primary">Main World</IonButton>
-                    <IonButton color="primary">NFT</IonButton>
-                </IonItem>
-            </IonFooter>
         </IonPage>
     );
 };
