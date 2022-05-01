@@ -1,7 +1,7 @@
 import {RouteComponentProps, withRouter} from "react-router";
 import {setDarkMode} from "../../data/user/user.actions";
 import {
-    IonAvatar,
+    IonAvatar, IonButton,
     IonContent,
     IonIcon,
     IonItem,
@@ -25,6 +25,7 @@ import {
 } from "ionicons/icons";
 import {connect} from "../../data/connect";
 import headerIcon from "../../img/0.png";
+import {ethWeb3} from "../emitWeb3/Connectors";
 
 const routes = {
     loggedInPages: [
@@ -77,6 +78,15 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
             ));
     }
 
+    const login = () => {
+        console.log("login:");
+        ethWeb3.eth.getAccounts().then(data=>{
+            console.log("data:",data);
+        }).catch(e=>{
+            console.error("error",e)
+        })
+    };
+
     return (
         <IonMenu  type="overlay" disabled={!menuEnabled} contentId="main">
             <IonContent forceOverscroll={false}>
@@ -89,6 +99,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
                             <IonLabel >
                                 <h2>Gordon</h2>
                                 <p>0xDsI883K...HO8R</p>
+                                <IonButton color="primary" onClick={login}>Login</IonButton>
                             </IonLabel>
                         </IonItem>
 
