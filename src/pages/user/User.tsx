@@ -13,6 +13,12 @@ import headerIcon from "../../img/0.png";
 import * as React from "react";
 
 const User: React.FC = () => {
+
+    const login = () => {
+
+    };
+
+
     return (
         <IonPage>
             <IonHeader>
@@ -27,6 +33,7 @@ const User: React.FC = () => {
                 <div className="ion-padding-top ion-text-center">
 
                     <img className='icon-circle p-120' src={headerIcon}/>
+                    <IonButton color="primary" onClick={login}>Login</IonButton>
                     <h2>Gordon</h2>
                     <p>0xDsI883K...HO8R</p>
                 </div>

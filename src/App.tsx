@@ -63,14 +63,15 @@ interface DispatchProps {
 
 const App: React.FC = () => (
     <AppContextProvider>
-        <IonicAppConnected />
+            <IonicAppConnected/>
     </AppContextProvider>
 
 );
 
-interface IonicAppProps extends StateProps, DispatchProps { }
+interface IonicAppProps extends StateProps, DispatchProps {
+}
 
-const IonicApp: React.FC<IonicAppProps> = ({ darkMode, setIsLoggedIn, setUsername, loadConfData, loadUserData }) => {
+const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername, loadConfData, loadUserData}) => {
 
     useEffect(() => {
         loadUserData();
@@ -85,22 +86,22 @@ const IonicApp: React.FC<IonicAppProps> = ({ darkMode, setIsLoggedIn, setUsernam
                     <Menu/>
                     <IonRouterOutlet id="main">
 
-                        <Route path="/account" component={Account} />
-                        <Route path="/createVerse" component={CreateVerse} />
-                        <Route path="/verseDetail" component={VerseDetail} />
-                        <Route path="/createTalks" component={CreateTalks} />
-                        <Route path="/createExp" component={CreateExp} />
-                        <Route path="/createDice" component={CreateDice} />
-                        <Route path="/searchNft" component={SearchNft} />
-                        <Route path="/roles" component={Roles} />
-                        <Route path="/roleDetail" component={RoleDetail} />
-                        <Route path="/tabs" render={() => <MainTabs />} />
+                        <Route path="/account" component={Account}/>
+                        <Route path="/createVerse" component={CreateVerse}/>
+                        <Route path="/verseDetail" component={VerseDetail}/>
+                        <Route path="/createTalks" component={CreateTalks}/>
+                        <Route path="/createExp" component={CreateExp}/>
+                        <Route path="/createDice" component={CreateDice}/>
+                        <Route path="/searchNft" component={SearchNft}/>
+                        <Route path="/roles" component={Roles}/>
+                        <Route path="/roleDetail" component={RoleDetail}/>
+                        <Route path="/tabs" render={() => <MainTabs/>}/>
                         <Redirect path="/" to="/tabs/home" exact/>
                     </IonRouterOutlet>
                 </IonSplitPane>
             </IonReactRouter>
         </IonApp>
-        )
+    )
 }
 
 export default App;
@@ -110,7 +111,7 @@ const IonicAppConnected = connect<{}, StateProps, DispatchProps>({
         darkMode: state.data.darkMode,
         schedule: state.data.schedule
     }),
-    mapDispatchToProps: { loadConfData, loadUserData, setIsLoggedIn, setUsername },
+    mapDispatchToProps: {loadConfData, loadUserData, setIsLoggedIn, setUsername},
     component: IonicApp
 });
 
