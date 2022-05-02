@@ -44,7 +44,9 @@
     "workbox-range-requests": "^5.1.4",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4"
+    "workbox-streams": "^5.1.4",
+    "@capacitor/camera": "latest",
+    "axios": "latest"
   },
   "scripts": {
     "start": "export PORT=3000;react-app-rewired start .env",
@@ -70,6 +72,7 @@
       "last 1 safari version"
     ]
   },
+  "proxy":"https://api.bangs.network",
   "devDependencies": {
     "@capacitor/cli": "3.4.3",
     "assert": "^2.0.0",

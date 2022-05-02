@@ -3,7 +3,7 @@ import Web3 from 'web3';
 
 enum ChainType { _, SERO, ETH, TRON, BSC, EMIT }
 
-const emitBox  = new EmitBox({
+export const emitBox  = new EmitBox({
     name: "TESTDEMO",
     url: "http://localhost:3000",
     category: "web3",

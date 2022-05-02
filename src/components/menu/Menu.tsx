@@ -25,7 +25,12 @@ import {
 } from "ionicons/icons";
 import {connect} from "../../data/connect";
 import headerIcon from "../../img/0.png";
-import {ethWeb3} from "../emitWeb3/Connectors";
+import {emitBox, ethWeb3} from "../emitWeb3/Connectors";
+import {useEffect, useState} from "react";
+import {HandlerCallback} from "workbox-routing/_types";
+import axios from "axios";
+import {encodePacked, keccak256} from "web3-utils";
+const abi = require('web3-eth-abi');
 
 const routes = {
     loggedInPages: [
@@ -63,7 +68,7 @@ interface MenuProps extends RouteComponentProps, StateProps, DispatchProps { }
 
 const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDarkMode, menuEnabled }) => {
 
-
+    const [account, setAccount] = useState<string>('');
 
     function renderListItems(list: Pages[]) {
         return list
@@ -78,13 +83,53 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
             ));
     }
 
-    const login = () => {
+    useEffect(() => {
+        emitBox.onActiveWalletChanged(walletAddress => {
+            console.log("walletAddress:",walletAddress);
+            setAccount(walletAddress)
+        })
+    });
+
+    const getNonce = (account:any) => {
+        console.log("getNonce:");
+        const data = {
+            account:account
+        }
+        axios.get('https://api.bangs.network/account/nonce', {params:data}).then(function (response: any) {
+            console.info(response)
+            login(account,response.data.nonce)
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    };
+
+    const login = (account:any,nonce:number) => {
+        console.log("getNonce:"+nonce);
+        const sign  = keccak256(abi.encodeParameters(["bytes32","uint64"],[keccak256(account),nonce]));
+        const data = {
+            account:account,
+            sig:sign
+        };
+        axios.post('/account/login', {params:data}).then(function (response: any) {
+            console.info(response)
+
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    };
+
+    const getAccount = () => {
         console.log("login:");
         ethWeb3.eth.getAccounts().then(data=>{
             console.log("data:",data);
+            getNonce(data[0])
         }).catch(e=>{
             console.error("error",e)
         })
+    };
+
+    const showAccountWidget = () => {
+        emitBox.showWidget()
     };
 
     return (
@@ -99,7 +144,8 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
                             <IonLabel >
                                 <h2>Gordon</h2>
                                 <p>0xDsI883K...HO8R</p>
-                                <IonButton color="primary" onClick={login}>Login</IonButton>
+                                <IonButton color="primary" onClick={getAccount}>Login</IonButton>
+                                <IonButton color="primary" onClick={showAccountWidget}>Accounts</IonButton>
                             </IonLabel>
                         </IonItem>
 
