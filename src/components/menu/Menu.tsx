@@ -30,7 +30,10 @@ import {useEffect, useState} from "react";
 import {HandlerCallback} from "workbox-routing/_types";
 import axios from "axios";
 import {encodePacked, keccak256} from "web3-utils";
+import qs from 'qs';
+
 const abi = require('web3-eth-abi');
+
 
 const routes = {
     loggedInPages: [
@@ -110,12 +113,26 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
             account:account,
             sig:sign
         };
-        axios.post('https://api.bangs.network/account/login', {params:data}).then(function (response: any) {
-            console.info(response)
-
+        axios({
+            method: 'POST',
+            headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            data: qs.stringify(data),   // 用 qs 将js对象转换为字符串 'name=edward&age=25'
+            url: 'https://api.bangs.network/account/login'
+        }).then(res => {
+            console.log(res)
         }).catch(function (error: any) {
             console.info(error)
         })
+
+
+        // axios.post('https://api.bangs.network/account/login', data, {
+        //     headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+        // }).then(function (response: any) {
+        //     console.info(response)
+        //
+        // }).catch(function (error: any) {
+        //     console.info(error)
+        // })
     };
 
     const getAccount = () => {
