@@ -110,7 +110,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
             account:account,
             sig:sign
         };
-        axios.post('/account/login', {params:data}).then(function (response: any) {
+        axios.post('https://api.bangs.network/account/login', {params:data}).then(function (response: any) {
             console.info(response)
 
         }).catch(function (error: any) {

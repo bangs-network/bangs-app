@@ -33,7 +33,7 @@ const User: React.FC = () => {
             // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
             console.info(image);
            //let file =  base64toFile(image.base64String,'head');
-            const file = new File([image.webPath], 'pic.png', {type: image.format});
+            const file = new File([image.webPath], 'pic.png', {type: 'text/plain;charset=utf-8'});
             console.info(file);
             const formData = new FormData();
             formData.append('file', file);

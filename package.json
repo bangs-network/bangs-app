@@ -72,7 +72,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy":"https://api.bangs.network",
   "devDependencies": {
     "@capacitor/cli": "3.4.3",
     "assert": "^2.0.0",
