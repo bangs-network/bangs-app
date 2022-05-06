@@ -28,7 +28,8 @@ const AddPopover: React.FC<AddPopoverProps> = ({dismiss, history, type}) => {
                         <IonLabel>Create Verse</IonLabel>
                     </IonItem></> : <>
                     <IonItem button onClick={() => {
-
+                        history.push('/createTheme')
+                        dismiss();
                     }
                     }>
                         <IonLabel>Theme</IonLabel>

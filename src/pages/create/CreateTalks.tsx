@@ -33,21 +33,21 @@ const CreateTalks: React.FC = () => {
                 <IonList  lines="none">
                     <IonRadioGroup>
 
-                        <IonItem  className='secondary-color'>
-                            <div>DAO</div>
-                        </IonItem>
+                        {/*<IonItem  className='secondary-color'>*/}
+                            {/*<div>DAO</div>*/}
+                        {/*</IonItem>*/}
 
-                        <IonItem>
-                            <IonRadio value="1" />
-                            <IonLabel className='ion-padding-start'>Free</IonLabel>
-                        </IonItem>
+                        {/*<IonItem>*/}
+                            {/*<IonRadio value="1" />*/}
+                            {/*<IonLabel className='ion-padding-start'>Free</IonLabel>*/}
+                        {/*</IonItem>*/}
 
-                        <IonItem>
+                        {/*<IonItem>*/}
 
-                            <IonRadio value="2" />
-                            <IonLabel className='ion-padding-start'>Roles DAO<br/></IonLabel>
+                            {/*<IonRadio value="2" />*/}
+                            {/*<IonLabel className='ion-padding-start'>Roles DAO<br/></IonLabel>*/}
 
-                        </IonItem>
+                        {/*</IonItem>*/}
 
 
                         <IonItem>
@@ -83,29 +83,12 @@ const CreateTalks: React.FC = () => {
 
                     </IonRadioGroup>
 
-                    <IonItem   className='secondary-color'>
-                        <div>Verse Name</div>
-                    </IonItem>
-                    <IonItem color='medium'>
-                        <IonInput value={title} placeholder="Input Verse Name" onIonChange={e => setTitle(e.detail.value!)} />
-                    </IonItem>
-                    <IonItem  className='secondary-color'>
-                        <div >Verse Detail</div>
-                    </IonItem>
-
-                    <IonItem  color='medium'>
-                        <IonTextarea rows={4} value={detail} placeholder="Input Verse Detail" onIonChange={e => setDetail(e.detail.value!)} />
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        Staking: 1000 Bang
-                    </IonItem>
 
                 </IonList>
 
             </IonContent>
 
-            <IonFooter className='ion-padding' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
+            <IonFooter className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
                Create Talks
             </IonFooter>
 

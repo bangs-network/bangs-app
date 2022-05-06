@@ -89,7 +89,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
     useEffect(() => {
         emitBox.onActiveWalletChanged(walletAddress => {
             console.log("walletAddress:",walletAddress);
-            setAccount(walletAddress)
+            //setAccount(walletAddress)
         })
     });
 
@@ -100,7 +100,7 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
         }
         axios.get('https://api.bangs.network/account/nonce', {params:data}).then(function (response: any) {
             console.info(response)
-            login(account,response.data.nonce)
+            login(account,response.data.body.nonce)
         }).catch(function (error: any) {
             console.info(error)
         })
@@ -108,31 +108,40 @@ const Menu: React.FC<MenuProps> = ({ darkMode, history, isAuthenticated, setDark
 
     const login = (account:any,nonce:number) => {
         console.log("getNonce:"+nonce);
-        const sign  = keccak256(abi.encodeParameters(["bytes32","uint64"],[keccak256(account),nonce]));
-        const data = {
-            account:account,
-            sig:sign
-        };
-        axios({
-            method: 'POST',
-            headers: { 'content-type': 'application/x-www-form-urlencoded' },
-            data: qs.stringify(data),   // 用 qs 将js对象转换为字符串 'name=edward&age=25'
-            url: 'https://api.bangs.network/account/login'
-        }).then(res => {
-            console.log(res)
+
+        let packValue = encodePacked({t:"bytes32", v:keccak256(account)}, {t:"uint64", v:nonce})
+        console.log('packValue=='+packValue);
+        if (!packValue) {
+            return
+        }
+        const sign  =  keccak256(packValue);
+
+        ethWeb3.eth.personal.sign(sign,account,"").then(value => {
+            console.log('sign==');
+            console.log(value);
+            const data = {
+                account:account,
+                sig:value
+            };
+            axios({
+                method: 'POST',
+                headers: { 'content-type': 'application/x-www-form-urlencoded'},
+                data: qs.stringify(data),
+                url: 'https://api.bangs.network/account/login'
+            }).then(res => {
+
+                console.log("login：")
+                console.log(res)
+            }).catch(function (error: any) {
+                console.info(error)
+            })
         }).catch(function (error: any) {
+            console.log("signError：")
             console.info(error)
         })
 
 
-        // axios.post('https://api.bangs.network/account/login', data, {
-        //     headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
-        // }).then(function (response: any) {
-        //     console.info(response)
-        //
-        // }).catch(function (error: any) {
-        //     console.info(error)
-        // })
+
     };
 
     const getAccount = () => {

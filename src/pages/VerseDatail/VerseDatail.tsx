@@ -21,19 +21,27 @@ import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
 import {RouteComponentProps} from "react-router";
 import './detail.css';
+import {useEffect} from "react";
+import axios from "axios";
 
 interface MenuProps extends RouteComponentProps {}
 
-const VerseDetail: React.FC<MenuProps> = ({history}) => {
+const VerseDetail: React.FC<MenuProps> = ({history,match}) => {
 
     const [showPopover, setShowPopover] = useState(false);
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent>();
+    const [verseId, setVerseId] = useState<number>();
     const pageRef = useRef<HTMLElement>(null);
 
     const presentPopover = (e: React.MouseEvent) => {
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };
+
+    useEffect(() => {
+        let params:any = match.params
+        console.info(params.id);
+    },[]);
 
 
     return (

@@ -49,7 +49,7 @@ const CreateDice: React.FC<MenuProps> = ({history}) => {
                 </IonItem>
             </IonContent>
 
-            <IonFooter className='ion-padding' style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
+            <IonFooter className='ion-padding cursor' style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
                 Create Dice
             </IonFooter>
 

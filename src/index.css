@@ -27,3 +27,32 @@
 .cursor{
     cursor: pointer;
 }
+
+.popover{
+    color: white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 20;
+}
+
+.cover{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+
+.rc-editable-input-30{
+    background: red;
+    color: #5d58e0;
+}
+
+.blur {
+    padding: 20px;
+    background:rgba(0,0,0,0.4);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}

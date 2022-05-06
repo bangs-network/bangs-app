@@ -9,25 +9,29 @@ import {
     IonTitle,
     IonToolbar
 } from '@ionic/react';
-import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
-import {ethWeb3} from "../../components/emitWeb3/Connectors";
 import axios from "axios";
+import UploadImage from "../../components/widget/UploadImage";
+import {RouteComponentProps} from "react-router";
 
-const CreateVerse: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
+
+const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
     const [title, setTitle] = useState<string>();
     const [detail, setDetail] = useState<string>();
+    const [imgUrl,setImgUrl] = useState<string>('');
 
     const createVerse = () => {
         const data = {
             VerseName:title,
             VerseDesc:detail,
-            VerseBanner:'images/preview/1a/71398a29-3946-41b6-8edf-6ff6e95c7b88.png'
+            VerseBanner:imgUrl
         };
-        axios.get('https://api.bangs.network/verse/create', {params:data}).then(function (response: any) {
+        axios.post('https://api.bangs.network/verse/create', data).then(function (response: any) {
             console.info(response)
+            history.push(`/verseDetail/${response.data.body.id}`);
         }).catch(function (error: any) {
             console.info(error)
         })
@@ -40,7 +44,7 @@ const CreateVerse: React.FC = () => {
                     <IonButtons slot="start">
                         <IonBackButton defaultHref="/tabs/home" />
                     </IonButtons>
-                    <IonTitle>Create Expressions</IonTitle>
+                    <IonTitle>Create Verse</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
@@ -66,9 +70,7 @@ const CreateVerse: React.FC = () => {
                     </IonItem>
 
                     <IonItem >
-                        <IonButtons slot="start">
-                            Upload picture
-                        </IonButtons>
+                           <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl}/>
                     </IonItem>
 
                 </IonList>

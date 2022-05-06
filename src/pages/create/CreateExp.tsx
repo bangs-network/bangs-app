@@ -12,12 +12,31 @@ import {
 import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
+import axios from "axios";
 
 const CreateExp: React.FC = () => {
 
-    const [title, setTitle] = useState<string>();
-    const [detail, setDetail] = useState<string>();
     const [expression, setExpression] = useState<string>();
+
+    //1=theme， 2=expression，3=talk，4=dice
+    //  Dice:[{"RoleID":1,"MaxValue":100}]
+    const createExp = () => {
+        const data = {
+            VerseID:17,
+            TimelineType:2,
+            MainPic:'',
+            MainColor:'',
+            BackgroundColor:'',
+            Music:'',
+            ExpressionContent:expression
+        };
+        axios.post('https://api.bangs.network/timeline/create', data).then(function (response: any) {
+            console.info(response)
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    };
+
 
     return (
         <IonPage>
@@ -33,20 +52,6 @@ const CreateExp: React.FC = () => {
 
                 <IonList  lines="none">
 
-                    <IonItem className='secondary-color'>
-                        <div>Verse Name</div>
-                    </IonItem>
-                    <IonItem color='medium'>
-                        <IonInput value={title} placeholder="Input Verse Name" onIonChange={e => setTitle(e.detail.value!)} />
-                    </IonItem>
-                    <IonItem  className='secondary-color'>
-                        <div >Verse Detail</div>
-                    </IonItem>
-
-                    <IonItem  color='medium'>
-                        <IonTextarea rows={4} value={detail} placeholder="Input Verse Detail" onIonChange={e => setDetail(e.detail.value!)} />
-                    </IonItem>
-
                     <IonItem  className='secondary-color'>
                         <div >Expression</div>
                     </IonItem>
@@ -54,15 +59,12 @@ const CreateExp: React.FC = () => {
                         <IonTextarea rows={4} value={expression} placeholder="Input Expression" onIonChange={e => setExpression(e.detail.value!)} />
                     </IonItem>
 
-                    <IonItem  className='secondary-color'>
-                        Staking: 1000 Bang
-                    </IonItem>
 
                 </IonList>
 
             </IonContent>
 
-            <IonFooter className='ion-padding' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
+            <IonFooter  onClick={createExp} className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
                 Create Expressions
             </IonFooter>
 

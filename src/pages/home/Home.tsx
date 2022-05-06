@@ -24,6 +24,10 @@ import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
 import {connect} from "../../data/connect";
 import {RouteComponentProps, withRouter} from "react-router";
+import {useEffect} from "react";
+import {emitBox} from "../../components/emitWeb3/Connectors";
+import axios from "axios";
+import {LoginApi} from "../../service/Api";
 
 interface StateProps {
     darkMode: boolean;
@@ -36,6 +40,7 @@ interface MenuProps extends RouteComponentProps {}
 const Home: React.FC<MenuProps> = ({history}) => {
 
     const [showPopover, setShowPopover] = useState(false);
+    const [start, setStart] = useState(1);
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent>();
     const pageRef = useRef<HTMLElement>(null);
 
@@ -43,6 +48,20 @@ const Home: React.FC<MenuProps> = ({history}) => {
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };
+
+    useEffect(() => {
+        const data = {
+            Start:start,
+            Offset:10
+        };
+        axios.get('https://api.bangs.network/verse/home', {
+            params:data
+        }).then(function (response: any) {
+            console.info(response)
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    },[start]);
 
 
     return (
@@ -71,7 +90,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                     <IonItemGroup>
                         <IonCard style={{background:'#22bc87'}} onClick={() => {
-                            history.push('/verseDetail');
+                            history.push('/verseDetail/16');
                         }}>
                             <img src={Icon1} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
 
@@ -110,7 +129,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                         </IonCard>
 
                         <IonCard  style={{background:'#fff'}} onClick={() => {
-                            history.push('/verseDetail');
+                            history.push('/verseDetail/16');
                         }}>
                             <img src={Icon2} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
 

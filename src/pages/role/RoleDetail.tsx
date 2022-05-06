@@ -25,7 +25,7 @@ const RoleDetail: React.FC = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                        <IonBackButton/>
                     </IonButtons>
                     <IonTitle>CP001</IonTitle>
                 </IonToolbar>

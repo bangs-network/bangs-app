@@ -47,6 +47,10 @@ import RoleDetail from "./pages/role/RoleDetail";
 import CreateDice from "./pages/create/CreateDice";
 import SearchNft from "./pages/search/SerachNft";
 import CreateVerse from "./pages/create/CreateVerse";
+import CreateTheme from "./pages/create/CreateTheme";
+import EditRole from "./pages/role/EditRole";
+import {Provider} from "react-redux";
+import store from "./pages/state/app/store";
 
 setupIonicReact();
 
@@ -63,7 +67,7 @@ interface DispatchProps {
 
 const App: React.FC = () => (
     <AppContextProvider>
-            <IonicAppConnected/>
+        <IonicAppConnected/>
     </AppContextProvider>
 
 );
@@ -81,25 +85,29 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
 
     return (
         <IonApp>
-            <IonReactRouter>
-                <IonSplitPane contentId="main">
-                    <Menu/>
-                    <IonRouterOutlet id="main">
+            <Provider store={store}>
+                <IonReactRouter>
+                    <IonSplitPane contentId="main">
+                        <Menu/>
+                        <IonRouterOutlet id="main">
 
-                        <Route path="/account" component={Account}/>
-                        <Route path="/createVerse" component={CreateVerse}/>
-                        <Route path="/verseDetail" component={VerseDetail}/>
-                        <Route path="/createTalks" component={CreateTalks}/>
-                        <Route path="/createExp" component={CreateExp}/>
-                        <Route path="/createDice" component={CreateDice}/>
-                        <Route path="/searchNft" component={SearchNft}/>
-                        <Route path="/roles" component={Roles}/>
-                        <Route path="/roleDetail" component={RoleDetail}/>
-                        <Route path="/tabs" render={() => <MainTabs/>}/>
-                        <Redirect path="/" to="/tabs/home" exact/>
-                    </IonRouterOutlet>
-                </IonSplitPane>
-            </IonReactRouter>
+                            <Route path="/account" component={Account}/>
+                            <Route path="/createTheme" component={CreateTheme}/>
+                            <Route path="/createVerse" component={CreateVerse}/>
+                            <Route path="/editRole/:id" component={EditRole}/>
+                            <Route path="/verseDetail/:id" component={VerseDetail}/>
+                            <Route path="/createTalks" component={CreateTalks}/>
+                            <Route path="/createExp" component={CreateExp}/>
+                            <Route path="/createDice" component={CreateDice}/>
+                            <Route path="/searchNft" component={SearchNft}/>
+                            <Route path="/roles" component={Roles}/>
+                            <Route path="/roleDetail" component={RoleDetail}/>
+                            <Route path="/tabs" render={() => <MainTabs/>}/>
+                            <Redirect path="/" to="/tabs/home" exact/>
+                        </IonRouterOutlet>
+                    </IonSplitPane>
+                </IonReactRouter>
+            </Provider>
         </IonApp>
     )
 }

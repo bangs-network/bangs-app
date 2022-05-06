@@ -5,6 +5,7 @@
   "dependencies": {
     "@capacitor/android": "3.4.3",
     "@capacitor/app": "1.1.1",
+    "@capacitor/camera": "latest",
     "@capacitor/core": "3.4.3",
     "@capacitor/haptics": "1.1.4",
     "@capacitor/ios": "3.4.3",
@@ -22,8 +23,10 @@
     "@types/react-dom": "^16.9.10",
     "@types/react-router": "^5.1.11",
     "@types/react-router-dom": "^5.1.7",
+    "axios": "latest",
     "ionicons": "^5.4.0",
     "react": "^17.0.1",
+    "react-color": "^2.19.3",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
@@ -42,11 +45,11 @@
     "workbox-navigation-preload": "^5.1.4",
     "workbox-precaching": "^5.1.4",
     "workbox-range-requests": "^5.1.4",
+    "@reduxjs/toolkit": "^1.6.2",
+    "react-redux": "^7.2.6",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4",
-    "@capacitor/camera": "latest",
-    "axios": "latest"
+    "workbox-streams": "^5.1.4"
   },
   "scripts": {
     "start": "export PORT=3000;react-app-rewired start .env",
@@ -74,6 +77,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "3.4.3",
+    "@types/react-color": "^3.0.6",
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
