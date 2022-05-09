@@ -53,7 +53,7 @@
   },
   "scripts": {
     "start": "export PORT=3000;react-app-rewired start .env",
-    "build": "react-app-rewired build",
+    "build": "react-app-rewired build && rm -rf docs && cp -r build docs",
     "test": "react-app-rewired test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-app-rewired eject"
   },
