@@ -2,12 +2,12 @@ import {
     IonCard,
     IonCardHeader, IonCol,
     IonContent, IonGrid,
-    IonHeader,
-    IonItemGroup,
+    IonHeader, IonItemDivider,
+    IonItemGroup, IonList,
     IonPage, IonRow,
     IonSearchbar,
     IonTitle,
-    IonToolbar
+    IonToolbar, useIonViewWillEnter
 } from '@ionic/react';
 import './Search.css';
 import {useState} from "react";
@@ -16,6 +16,8 @@ import Icon2 from "../../img/2.png";
 import Icon3 from "../../img/3.png";
 import * as React from "react";
 import {RouteComponentProps} from "react-router";
+import parseUrl from "../../util/common";
+import {HomeVerseApi} from "../../service/Api";
 
 
 interface MenuProps extends RouteComponentProps {}
@@ -23,7 +25,33 @@ interface MenuProps extends RouteComponentProps {}
 const Search: React.FC<MenuProps> = ({history}) => {
 
     const [searchText, setSearchText] = useState('');
+    const [start, setStart] = useState(0);
+    const [list, setList] = useState<any>([]);
 
+    useIonViewWillEnter(() => {
+        getData();
+    });
+
+    const getData = () => {
+        const data = {
+            Start: start,
+            Offset: 10
+        };
+
+        HomeVerseApi(data).then((res: any) => {
+            console.info("res.MVserse")
+            console.info(res.MVerse)
+
+            console.info("res.MVserse1")
+            let list = res.MVerse;
+            let newList = [...list];
+            console.info("newList")
+            console.info(newList)
+            setList(newList)
+
+        })
+
+    };
 
     return (
         <IonPage>
@@ -33,132 +61,78 @@ const Search: React.FC<MenuProps> = ({history}) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Search</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonSearchbar showCancelButton="never" placeholder="Search"
+                <IonItemDivider sticky>
+                <IonSearchbar  showCancelButton="never" placeholder="Search"
                               onIonChange={e => setSearchText(e.detail.value!)}/>
+                </IonItemDivider>
 
-                <IonItemGroup>
-                    <IonCard style={{background:'#22bc87'}} onClick={() => {
-                        history.push('/verseDetail');
-                    }}>
-                        <img src={Icon1} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                <IonList lines="none">
 
 
-                        <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#fff', fontWeight: 'bold'}}>Universe Name</div>
-                            <p style={{ color: '#fff'}}>
-                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                be
-                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                Mutant Ape in the public sale.
-                            </p>
-                            <div style={{border:'1px solid #f2f2f2',padding:15,color:'#fff'}}>
-                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                be
-                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                Mutant Ape in the public sale.
-                            </div>
-                            <IonRow style={{marginTop:20}}>
-                                <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                    <img className='icon-circle full-width' src={Icon2}/>
+                    {list.map((item: any, index: number) => {
 
-                                </IonCol>
-                                <IonCol size="10">
-
-                                    <div style={{fontWeight:700,color:'#fff',fontSize:16}}>Trump</div>
-                                    <div style={{marginTop:5,color:'#f2f2f2'}}>By Peter</div>
-                                    <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                        be
-                                        created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                        Mutant Ape in the public sale.</div>
-                                </IonCol>
-                            </IonRow>
-                        </IonCardHeader>
-
-                    </IonCard>
-
-                    <IonCard  style={{background:'#fff'}} onClick={() => {
-                        history.push('/verseDetail');
-                    }}>
-                        <img src={Icon2} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
-
-                        <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#b6bc00', fontWeight: 'bold'}}>Mutant Ape Yacht Club
-                            </div>
-                            <p>
-                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                be
-                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                Mutant Ape in the public sale.
-                            </p>
-
-                            <img src={Icon2} style={{width: '100%',objectFit: 'cover'}}/>
+                        return <IonCard className='cursor' style={{background: '#22bc87'}} onClick={() => {
+                            history.push(`/verseDetail/${item.verseId}`);
+                        }}>
+                            <img src={parseUrl(item.verseBanner)}
+                                 style={{width: '100%', height: 240, objectFit: 'cover'}}/>
 
 
-                        </IonCardHeader>
-                    </IonCard>
+                            <IonCardHeader>
+                                <div style={{fontSize: 32, color: '#fff', fontWeight: 'bold'}}>{item.verseName}</div>
+                                <p style={{color: '#fff'}}>
+                                    {item.verseDesc}
+                                </p>
+                            </IonCardHeader>
 
-                    <IonCard onClick={() => {
-                        history.push('/verseDetail');
-                    }}>
-                        <img src={Icon3} style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                            {item.TimelineList && item.TimelineList.map((item: any, index: number) => {
 
-                        <IonCardHeader>
-                            <div style={{fontSize: 32, color: '#ff1f29', fontWeight: 'bold'}}>Mutant Ape Yacht Club
-                            </div>
-                            <p style={{color:'#fff'}}>
-                                The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                be
-                                created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                Mutant Ape in the public sale.
-                            </p>
+                                return <IonCard key={index} className='cursor'
+                                                style={{background: '#5d58e0', color: '#fff'}}>
 
-
-                            <IonGrid style={{margin:0,padding:0}}>
-
-                                <IonRow>
-                                    <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                        <img className='icon-circle full-width' src={Icon1}/>
-
-                                    </IonCol>
-                                    <IonCol size="10">
-
-                                        <div style={{fontWeight:700,color:'#fff',fontSize:16}}>ElonMask</div>
-                                        <div style={{marginTop:5}}>By Gordon</div>
-                                        <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                            be
-                                            created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                            Mutant Ape in the public sale.</div>
-                                    </IonCol>
-                                </IonRow>
-
-                                <IonRow>
-                                    <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                        <img className='icon-circle full-width' src={Icon2}/>
-
-                                    </IonCol>
-                                    <IonCol size="10">
-
-                                        <div style={{fontWeight:700,color:'#fff',fontSize:16}}>JOJO</div>
-                                        <div style={{marginTop:5}}>By Peter</div>
-                                        <div style={{marginTop:10,color:'#fff'}}>The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can only
-                                            be
-                                            created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a
-                                            Mutant Ape in the public sale.</div>
-                                    </IonCol>
-                                </IonRow>
-
-                            </IonGrid>
+                                    {
+                                        item.TimelineType == 2 ? <p   style={{padding:'5px 15px'}}>
+                                            {item.Expression}
+                                        </p> : item.TimelineType == 4 ? <div  style={{padding:'5px 15px'}}>
+                                            {item.Dices.map((item: any, index: number) => {
+                                                return <div key={index} className='row' style={{margin: '10px 0'}}>
 
 
-                        </IonCardHeader>
-                    </IonCard>
+                                                    <img style={{width: 40, height: 40,borderRadius:40}} src={parseUrl(item.Role.Avator)}/>
 
-                </IonItemGroup>
+                                                    <div style={{marginLeft: 20}}>
+                                                        {item.Role.RoleName}
+                                                    </div>
+                                                    <div style={{flex: 1}}/>
+                                                    <div>
+                                                        {item.DiceValue}
+                                                    </div>
+
+                                                </div>
+                                            })
+                                            }
+                                        </div> : item.TimelineType == 3 ? <>
+                                            <IonGrid style={{padding:'5px 15px'}}>
+                                                <IonRow  style={{padding:0,margin:0}}>
+                                                    <div>
+                                                        Say anything:
+                                                    </div>
+                                                </IonRow>
+                                            </IonGrid>
+                                        </> : <></>
+                                    }
+
+                                </IonCard>
+
+
+                            })}
+
+                        </IonCard>
+
+
+                    })}
+
+                </IonList>
             </IonContent>
         </IonPage>
     );

@@ -7,7 +7,7 @@ import {
     IonLabel, IonList, IonLoading,
     IonPage, IonRow, IonTextarea, IonThumbnail,
     IonTitle,
-    IonToolbar
+    IonToolbar, useIonToast
 } from '@ionic/react';
 import * as React from "react";
 import {useState} from "react";
@@ -17,6 +17,7 @@ import {RouteComponentProps} from "react-router";
 import UploadImage from "../../components/widget/UploadImage";
 import {useAppDispatch} from "../state/app/hooks";
 import {saveLoadState} from '../state/slice/loadStateSlice';
+import {RoleCreateApi} from "../../service/Api";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -30,34 +31,45 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
     const [imgUrl, setImgUrl] = useState<string>('');
     const [note, setNote] = useState<string>('');
     const dispatch = useAppDispatch();
+    const [present, dismiss] = useIonToast();
     const [showLoading, setShowLoading] = useState(false);
 
     const createRole = () => {
+        if (!imgUrl) {
+            present('Please upload image', 3000);
+            return
+        }
+        if (!roleName) {
+            present('Please input roleName', 3000);
+            return
+        }
+        let params:any = match.params
+        console.info(params.id);
         const data = {
-            VerseID: 17,
+            VerseID: Number(params.id),
             RoleName: roleName,
             Note: note,
             RoleAvator: imgUrl,
         };
         setShowLoading(true);
-        axios.post('https://api.bangs.network/role/create', data).then(function (response: any) {
-            console.info(response);
 
-            if (response?.data?.code == 1000) {
-                dispatch(saveLoadState({tag: 'Roles', state: 1}))
-                history.goBack()
-            }
-            setShowLoading(false);
+        RoleCreateApi(data).then(function (response: any) {
+            dispatch(saveLoadState({tag: 'Roles', state: 1}));
+            history.goBack()
+            //history.replace(`/Roles/${params.id}`);
+            setShowLoading(false)
         }).catch(function (error: any) {
-            setShowLoading(false);
             console.info(error)
-        })
+            setShowLoading(false)
+        });
+
     };
 
 
     useEffect(() => {
+        dispatch(saveLoadState({tag: 'Roles', state: 0}));
         let params: any = match.params;
-        if (params.id == 0) {
+        if (params.id >= 0) {
             setTitle("Add Role");
         } else {
             setTitle("Edit Role");
@@ -114,7 +126,7 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
 
                 </IonContent>
 
-                <IonFooter onClick={createRole} className='ion-padding'
+                <IonFooter onClick={createRole} className='ion-padding cursor'
                            style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
                     Add Role
                 </IonFooter>

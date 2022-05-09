@@ -1,7 +1,7 @@
 import React  from 'react';
 import { IonTabs, IonRouterOutlet, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/react';
 import { Route, Redirect } from 'react-router';
-import {calendar, location, informationCircle, people, peopleCircle, person, search} from 'ionicons/icons';
+import {calendar, location, informationCircle, people, peopleCircle, person, search, home} from 'ionicons/icons';
 import Search from "../search/Search";
 import Dao from "../dao/Dao";
 import Home from "../home/Home";
@@ -25,7 +25,7 @@ const MainTabs: React.FC<MainTabsProps> = () => {
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
                 <IonTabButton tab="home" href="/tabs/home">
-                    <IonIcon icon={person}/>
+                    <IonIcon icon={home}/>
                     <IonLabel>Home</IonLabel>
                 </IonTabButton>
                 <IonTabButton tab="search" href="/tabs/search">

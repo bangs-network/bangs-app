@@ -4,22 +4,59 @@ import {
     IonGrid,
     IonHeader, IonInput,
     IonItem, IonItemDivider,
-    IonLabel, IonList, IonListHeader,
+    IonLabel, IonList, IonListHeader, IonLoading,
     IonPage, IonRadio, IonRadioGroup, IonRow, IonTabBar, IonTextarea,
     IonTitle,
     IonToolbar
 } from '@ionic/react';
-import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
+import {saveLoadState} from "../state/slice/loadStateSlice";
+import {VersePointApi} from "../../service/Api";
+import {RouteComponentProps} from "react-router";
+import {useAppDispatch} from "../state/app/hooks";
 
-const CreateTalks: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
+const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
 
-    const [title, setTitle] = useState<string>();
-    const [detail, setDetail] = useState<string>();
+
+    const [showLoading, setShowLoading] = useState(false);
+    const dispatch = useAppDispatch();
+
+    const create = () => {
+        let params:any = match.params
+        console.info(params.id);
+        const data = {
+            VerseID:Number(params.id),
+            TimelineType:3,
+            MainPic:'',
+            MainColor:'',
+            BackgroundColor:'',
+            Music:'',
+            ExpressionContent:''
+        };
+        setShowLoading(true);
+        VersePointApi(data).then(function (response: any) {
+            dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
+            history.goBack()
+            //history.replace(`/verseDetail/${params.id}`);
+            setShowLoading(false)
+        }).catch(function (error: any) {
+            console.info(error)
+            setShowLoading(false)
+        });
+
+    };
 
     return (
         <IonPage>
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={5000}
+            />
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -30,65 +67,9 @@ const CreateTalks: React.FC = () => {
             </IonHeader>
             <IonContent>
 
-                <IonList  lines="none">
-                    <IonRadioGroup>
-
-                        {/*<IonItem  className='secondary-color'>*/}
-                            {/*<div>DAO</div>*/}
-                        {/*</IonItem>*/}
-
-                        {/*<IonItem>*/}
-                            {/*<IonRadio value="1" />*/}
-                            {/*<IonLabel className='ion-padding-start'>Free</IonLabel>*/}
-                        {/*</IonItem>*/}
-
-                        {/*<IonItem>*/}
-
-                            {/*<IonRadio value="2" />*/}
-                            {/*<IonLabel className='ion-padding-start'>Roles DAO<br/></IonLabel>*/}
-
-                        {/*</IonItem>*/}
-
-
-                        <IonItem>
-
-                            <IonAvatar slot="start">
-                                <img  src={headerIcon}/>
-                            </IonAvatar>
-                            <IonLabel >
-                               CP002
-                            </IonLabel>
-                            <IonButton color="primary">Roles</IonButton>
-
-                        </IonItem>
-
-
-                        <IonItem>
-
-                            <IonRadio value="3" />
-                            <IonLabel className='ion-padding-start'>Verse DAO</IonLabel>
-                        </IonItem>
-
-                        <IonItem>
-
-                            <IonAvatar slot="start">
-                                <img  src={headerIcon}/>
-                            </IonAvatar>
-                            <IonLabel >
-                                VIP Users
-                            </IonLabel>
-                            <IonButton color="secondary">Verse</IonButton>
-
-                        </IonItem>
-
-                    </IonRadioGroup>
-
-
-                </IonList>
-
             </IonContent>
 
-            <IonFooter className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
+            <IonFooter onClick={create} className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
                Create Talks
             </IonFooter>
 

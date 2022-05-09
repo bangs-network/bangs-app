@@ -18,6 +18,9 @@ import UploadImage from "../../components/widget/UploadImage";
 import SketchPicker from "react-color/lib/components/sketch/Sketch";
 import {url} from "inspector";
 import parseUrl from "../../util/common";
+import {RouteComponentProps} from "react-router";
+import {saveLoadState} from "../state/slice/loadStateSlice";
+import {useAppDispatch} from "../state/app/hooks";
 
 const popover = {
     position: 'absolute',
@@ -31,23 +34,27 @@ const cover = {
     left: '0px',
 }
 
-const CreateTheme: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
+const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
     const [colorType, setColorType] = useState<number>(0);
     const [mainColor, setMainColor] = useState<string>('#ffffff');
     const [backColor, setBackColor] = useState<string>('#000000');
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
-    const [backImage, setBackImage] = useState<string>('https://api.bangs.network/images/preview/b9/e8022a1b-861f-4190-a1b4-bcd78680484e.png');
+    const [backImage, setBackImage] = useState<string>('https://api.bangs.network/images/preview/53/26641d23-a23a-4baf-adf2-ca02107dda5d.png');
     const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
     const [present, dismiss] = useIonLoading();
     const [showLoading, setShowLoading] = useState(false);
+    const dispatch = useAppDispatch();
 
     //1=theme， 2=expression，3=talk，4=dice
     //  Dice:[{"RoleID":1,"MaxValue":100}]
     const createExp = () => {
         setShowLoading(true)
+        let params:any = match.params
+        console.info(params.id);
         const data = {
-            VerseID: 17,
+            VerseID: Number(params.id),
             TimelineType: 1,
             MainPic: backImage,
             MainColor: mainColor,
@@ -58,6 +65,9 @@ const CreateTheme: React.FC = () => {
         axios.post('https://api.bangs.network/timeline/create', data).then(function (response: any) {
             console.info(response)
             setShowLoading(false)
+            //history.replace(`/verseDetail/${params.id}`);
+            dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
+            history.goBack()
         }).catch(function (error: any) {
             setShowLoading(false)
             console.info(error)

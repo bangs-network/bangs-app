@@ -24,6 +24,24 @@
     width: 100%;
 }
 
+.common-button{
+    background: #ff8922;
+    color: #fff;
+    font-size: 16px;
+   font-weight: bold;
+    text-align: center;
+    height: 40px;
+}
+
+.common-black-button{
+    background: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    height: 40px;
+}
+
 .cursor{
     cursor: pointer;
 }
@@ -48,6 +66,13 @@
 .rc-editable-input-30{
     background: red;
     color: #5d58e0;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
 .blur {

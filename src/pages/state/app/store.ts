@@ -1,8 +1,10 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {loadStateReducer} from '../slice/loadStateSlice';
+import {roleReducer} from "../slice/roleSlice";
 const store = configureStore({
     reducer: {
-        loadStateSlice:loadStateReducer
+        loadStateSlice:loadStateReducer,
+        roleSlice:roleReducer,
     }
 });
 

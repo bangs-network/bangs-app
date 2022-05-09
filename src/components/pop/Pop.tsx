@@ -5,10 +5,11 @@ import {RouteComponentProps} from "react-router";
 interface AddPopoverProps {
     dismiss: () => void;
     history: any,
+    id?: any,
     type: number,
 }
 
-const AddPopover: React.FC<AddPopoverProps> = ({dismiss, history, type}) => {
+const AddPopover: React.FC<AddPopoverProps> = ({dismiss, id, history, type}) => {
 
     const close = (url: string) => {
         window.open(url, '_blank');
@@ -28,33 +29,33 @@ const AddPopover: React.FC<AddPopoverProps> = ({dismiss, history, type}) => {
                         <IonLabel>Create Verse</IonLabel>
                     </IonItem></> : <>
                     <IonItem button onClick={() => {
-                        history.push('/createTheme')
+                        history.push(`/createTheme/${id}`)
                         dismiss();
                     }
                     }>
                         <IonLabel>Theme</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
-                        history.push('/createExp')
+                        history.push(`/createExp/${id}`)
                         dismiss();
                     }}>
                         <IonLabel>Expressions</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
-                        history.push('/createTalks')
+                        history.push(`/createTalks/${id}`)
                         dismiss();
                     }}>
                         <IonLabel>Talks</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
-                        history.push('/createDice')
+                        history.push(`/createDice/${id}`)
                         dismiss();
                     }
                     }>
                         <IonLabel>Dices</IonLabel>
                     </IonItem>
                     <IonItem button onClick={() => {
-                        history.push('/roles')
+                        history.push(`/roles/${id}`)
                         dismiss();
                     }}>
                         <IonLabel>Roles</IonLabel>

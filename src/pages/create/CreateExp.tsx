@@ -4,25 +4,40 @@ import {
     IonGrid,
     IonHeader, IonInput,
     IonItem, IonItemDivider,
-    IonLabel, IonList, IonListHeader,
+    IonLabel, IonList, IonListHeader, IonLoading,
     IonPage, IonRadio, IonRadioGroup, IonRow, IonTabBar, IonTextarea,
     IonTitle,
-    IonToolbar
+    IonToolbar, useIonToast
 } from '@ionic/react';
 import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
 import axios from "axios";
+import {useAppDispatch} from "../state/app/hooks";
+import {saveLoadState} from "../state/slice/loadStateSlice";
+import {RouteComponentProps} from "react-router";
+import {VersePointApi} from "../../service/Api";
 
-const CreateExp: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
+const CreateExp: React.FC<MenuProps> = ({history,match}) => {
 
     const [expression, setExpression] = useState<string>();
-
+    const [present, dismiss] = useIonToast();
+    const [showLoading, setShowLoading] = useState(false);
+    const dispatch = useAppDispatch();
     //1=theme， 2=expression，3=talk，4=dice
     //  Dice:[{"RoleID":1,"MaxValue":100}]
+
+
     const createExp = () => {
+        if (!expression) {
+            present('Please Input content', 3000);
+            return
+        }
+        let params:any = match.params
+        console.info(params.id);
         const data = {
-            VerseID:17,
+            VerseID:Number(params.id),
             TimelineType:2,
             MainPic:'',
             MainColor:'',
@@ -30,16 +45,29 @@ const CreateExp: React.FC = () => {
             Music:'',
             ExpressionContent:expression
         };
-        axios.post('https://api.bangs.network/timeline/create', data).then(function (response: any) {
-            console.info(response)
+        setShowLoading(true);
+        VersePointApi(data).then(function (response: any) {
+            dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
+            history.goBack()
+            //history.replace(`/verseDetail/${params.id}`);
+            setShowLoading(false)
         }).catch(function (error: any) {
             console.info(error)
-        })
+            setShowLoading(false)
+        });
+
     };
 
 
     return (
         <IonPage>
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={5000}
+            />
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">

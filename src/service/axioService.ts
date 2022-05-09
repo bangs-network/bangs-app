@@ -9,19 +9,18 @@ let baseURL = 'https://api.bangs.network';
 const timeout = 30000;
 
 //创建axios实例
-const service = axios.create({
+const axioService = axios.create({
     timeout,
-    baseURL,
-    //如需要携带cookie 该值需设为true
-    withCredentials: true
+    baseURL
 });
 
 //统一请求拦截 可配置自定义headers 例如 language、token等
-service.interceptors.request.use(
+axioService.interceptors.request.use(
     (config: AxiosRequestConfig) => {
+        console.info("interceptors=====")
         //配置自定义请求头
         let customHeaders: AxiosRequestHeaders = {
-            language: 'en'
+            SessionID: localStorage.getItem('SessionID') ||  ""
         };
         config.headers = customHeaders;
         return config
@@ -42,35 +41,36 @@ interface axiosTypes<T>{
 interface responseTypes<T>{
     code: number,
     msg: string,
-    result: T
+    body: T
 }
 
 
 const requestHandler = <T>(method: 'get' | 'post' | 'put' | 'delete', url: string, params: object = {}, config: AxiosRequestConfig = {}): Promise<T> => {
     let response: Promise<axiosTypes<responseTypes<T>>>;
-
+    console.info("requestHandler=====")
     //ShowLoading();
+
     switch(method){
         case 'get':
-            response = request.get(url, {params: { ...params }, ...config});
+            response = axioService.get(url, {params: { ...params }, ...config});
             break;
         case 'post':
-            response = request.post(url, {...params}, {...config});
+            response = axioService.post(url, {...params}, {...config});
             break;
         case 'put':
-            response = request.put(url, {...params}, {...config});
+            response = axioService.put(url, {...params}, {...config});
             break;
         case 'delete':
-            response = request.delete(url, {params: { ...params }, ...config});
+            response = axioService.delete(url, {params: { ...params }, ...config});
             break;
     }
 
-    return new Promise<T>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         response.then(res => {
             //业务代码 可根据需求自行处理
 
             const data = res.data;
-            if(data.code !== 200){
+            if(data.code !== 1000){
 
                 //特定状态码 处理特定的需求
                 if(data.code == 401){
@@ -83,7 +83,7 @@ const requestHandler = <T>(method: 'get' | 'post' | 'put' | 'delete', url: strin
                 reject(data);
             }else{
                 //数据请求正确 使用resolve将结果返回
-                resolve(data.result);
+                resolve(data.body);
             }
 
         }).catch(error => {
@@ -94,11 +94,11 @@ const requestHandler = <T>(method: 'get' | 'post' | 'put' | 'delete', url: strin
     })
 }
 
-const request = {
+const axiosUtils = {
     get: <T>(url: string, params?: object, config?: AxiosRequestConfig) => requestHandler<T>('get', url, params, config),
     post: <T>(url: string, params?: object, config?: AxiosRequestConfig) => requestHandler<T>('post', url, params, config),
     put: <T>(url: string, params?: object, config?: AxiosRequestConfig) => requestHandler<T>('put', url, params, config),
     delete: <T>(url: string, params?: object, config?: AxiosRequestConfig) => requestHandler<T>('delete', url, params, config)
 };
 
-export { request };
+export { axiosUtils };

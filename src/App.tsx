@@ -45,7 +45,7 @@ import CreateExp from "./pages/create/CreateExp";
 import Roles from "./pages/role/Role";
 import RoleDetail from "./pages/role/RoleDetail";
 import CreateDice from "./pages/create/CreateDice";
-import SearchNft from "./pages/search/SerachNft";
+import SearchRole from "./pages/search/SerachRole";
 import CreateVerse from "./pages/create/CreateVerse";
 import CreateTheme from "./pages/create/CreateTheme";
 import EditRole from "./pages/role/EditRole";
@@ -86,27 +86,27 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
     return (
         <IonApp>
             <Provider store={store}>
-                <IonReactRouter>
+                <IonReactHashRouter>
                     <IonSplitPane contentId="main">
                         <Menu/>
                         <IonRouterOutlet id="main">
 
                             <Route path="/account" component={Account}/>
-                            <Route path="/createTheme" component={CreateTheme}/>
+                            <Route path="/createTheme/:id" component={CreateTheme}/>
                             <Route path="/createVerse" component={CreateVerse}/>
                             <Route path="/editRole/:id" component={EditRole}/>
                             <Route path="/verseDetail/:id" component={VerseDetail}/>
-                            <Route path="/createTalks" component={CreateTalks}/>
-                            <Route path="/createExp" component={CreateExp}/>
-                            <Route path="/createDice" component={CreateDice}/>
-                            <Route path="/searchNft" component={SearchNft}/>
-                            <Route path="/roles" component={Roles}/>
-                            <Route path="/roleDetail" component={RoleDetail}/>
+                            <Route path="/createTalks/:id" component={CreateTalks}/>
+                            <Route path="/createExp/:id" component={CreateExp}/>
+                            <Route path="/createDice/:id" component={CreateDice}/>
+                            <Route path="/searchRole/:id" component={SearchRole}/>
+                            <Route path="/roles/:id" component={Roles}/>
+                            <Route path="/roleDetail/:id" component={RoleDetail}/>
                             <Route path="/tabs" render={() => <MainTabs/>}/>
                             <Redirect path="/" to="/tabs/home" exact/>
                         </IonRouterOutlet>
                     </IonSplitPane>
-                </IonReactRouter>
+                </IonReactHashRouter>
             </Provider>
         </IonApp>
     )

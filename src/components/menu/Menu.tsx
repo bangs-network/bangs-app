@@ -7,7 +7,7 @@ import {
     IonItem,
     IonLabel,
     IonList,
-    IonListHeader,
+    IonListHeader, IonLoading,
     IonMenu,
     IonMenuToggle,
     IonToggle
@@ -24,40 +24,14 @@ import {
     settingsOutline, moonOutline
 } from "ionicons/icons";
 import {connect} from "../../data/connect";
-import headerIcon from "../../img/0.png";
+import headerIcon from "../../img/head.png";
 import {emitBox, ethWeb3} from "../emitWeb3/Connectors";
-import {useEffect, useState} from "react";
-import {HandlerCallback} from "workbox-routing/_types";
+import {default as React, useEffect, useState} from "react";
 import axios from "axios";
 import {encodePacked, keccak256} from "web3-utils";
 import qs from 'qs';
 import {ChainType} from "@emit-technology/emit-account-node-sdk/lib/types";
 
-const abi = require('web3-eth-abi');
-
-
-const routes = {
-    loggedInPages: [
-        {title: 'Account', path: '/account', icon: personCircleOutline},
-        {title: 'Particles', path: '/particles', icon: peopleCircleOutline},
-        {title: 'Settings and Privacy', path: '/account', icon: settingsOutline},
-        {title: 'Support', path: '/support', icon: helpCircleOutline},
-        {title: 'About', path: '/about', icon: alertCircleOutline},
-        {title: 'Logout', path: '/logout', icon: logOutOutline}
-    ],
-    loggedOutPages: [
-        {title: 'Login', path: '/login', icon: logIn},
-        {title: 'Support', path: '/support', icon: help},
-        {title: 'Signup', path: '/signup', icon: personAdd}
-    ]
-};
-
-interface Pages {
-    title: string,
-    path: string,
-    icon: string,
-    routerDirection?: string
-}
 
 interface StateProps {
     darkMode: boolean;
@@ -75,30 +49,39 @@ interface MenuProps extends RouteComponentProps, StateProps, DispatchProps {
 const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkMode, menuEnabled}) => {
 
     const [account, setAccount] = useState<string>('');
+    const [alreadyLogin, setAlreadyLogin] = useState<boolean>(false);
+    const [name, setName] = useState<string>('');
+    const [showLoading, setShowLoading] = useState(false);
 
-    function renderListItems(list: Pages[]) {
-        return list
-            .filter(route => !!route.path)
-            .map(p => (
-                <IonMenuToggle key={p.title} auto-hide="false">
-                    <IonItem detail={false} routerLink={p.path}>
-                        <IonIcon slot="start" icon={p.icon}/>
-                        <IonLabel>{p.title}</IonLabel>
-                    </IonItem>
-                </IonMenuToggle>
-            ));
-    }
 
     useEffect(() => {
-        console.log("getAccount:");
-        emitBox.onActiveWalletChanged(walletAddress => {
-            console.log("walletAddress:", walletAddress);
-            //setAccount(walletAddress)
-        });
-        emitBox.onActiveAccountChanged(account1 => {
-            console.log("account1:", account1);
+
+        // console.log("getAccount:");
+        // emitBox.onActiveWalletChanged(walletAddress => {
+        //     console.log("walletAddress:", walletAddress);
+        //     //setAccount(walletAddress)
+        // });
+        if (localStorage.getItem("SessionID")) {
+            setAlreadyLogin(true)
+        } else {
+            setAlreadyLogin(false)
+        }
+
+        let account = localStorage.getItem("account")
+        if (account) {
+            setAccount(account)
+        }
+
+        let name = localStorage.getItem("name")
+        if (name) {
+            setName(name)
+        }
+
+        emitBox.onActiveAccountChanged((accounts:any) => {
+            setName(accounts.name);
+            localStorage.setItem("name",accounts.name);
         })
-    });
+    },[]);
 
     const getNonce = (account: any) => {
         console.log("getNonce:");
@@ -110,6 +93,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             login(account, response.data.body.nonce)
         }).catch(function (error: any) {
             console.info(error)
+            setShowLoading(false)
         })
     };
 
@@ -117,7 +101,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         console.log("getNonce:" + nonce);
 
         let packValue = encodePacked({t: "bytes32", v: keccak256(account)}, {t: "uint64", v: nonce})
-        console.log('packValue==' + packValue);
+
         if (!packValue) {
             return
         }
@@ -126,10 +110,6 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         emitBox.batchSignMsg([
             {msg: sign, chain: ChainType.ETH}
         ]).then((rest: any) => {
-            console.log("sign return:: ", rest)
-            console.log("sig", rest[0].result)
-            console.log("msg", sign);
-            console.log("account", account);
             const data = {
                 account: account,
                 sig: rest[0].result
@@ -139,49 +119,26 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 headers: {'content-type': 'application/x-www-form-urlencoded'},
                 data: qs.stringify(data),
                 url: 'https://api.bangs.network/account/login'
-            }).then(res => {
-
+            }).then((res:any) => {
+                setShowLoading(false)
+                localStorage.setItem("SessionID",res.data.body.sessionID);
+                localStorage.setItem("account",account);
+                setAlreadyLogin(true);
+                setAccount(account);
                 console.log("login：")
                 console.log(res)
             }).catch(function (error: any) {
+                setShowLoading(false)
                 console.info(error)
             })
         })
 
-        return
-        //
-        // ethWeb3.eth.personal.sign(sign,account,"").then(value => {
-        //     console.log('sign==');
-        //     console.log(value);
-        //     const data = {
-        //         account:account,
-        //         sig:value
-        //     };
-        //     axios({
-        //         method: 'POST',
-        //         headers: { 'content-type': 'application/x-www-form-urlencoded'},
-        //         data: qs.stringify(data),
-        //         url: 'https://api.bangs.network/account/login'
-        //     }).then(res => {
-        //
-        //         console.log("login：")
-        //         console.log(res)
-        //     }).catch(function (error: any) {
-        //         console.info(error)
-        //     })
-        // }).catch(function (error: any) {
-        //     console.log("signError：")
-        //     console.info(error)
-        // })
-
-
     };
 
     const getAccount = () => {
-        console.log("login:");
+        setShowLoading(true);
         emitBox.requestAccount().then((data: any) => {
             console.log("data:", data);
-            console.log("account:", data.result.addresses);
             if (data && data.result && data.result.addresses[ChainType.ETH]) {
                 getNonce(data.result.addresses[ChainType.ETH])
             }
@@ -191,18 +148,6 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         })
     };
 
-    const recover = () => {
-        let signContent = "0xd29807b9fe349da0d2ee20a07ea45792397c62a1c80d350595d603152c45427a";
-        let sign = "0xa0a0fea226c6eb58942a952962380b95daadaf71bf72b167043f6c834e3eb348583d12b5d258e19d292c7a214bc51a4d7a613c17939e81e656b95aaa290358db1b"
-        ethWeb3.eth.personal.ecRecover(signContent, sign).then(value => {
-            console.log("ecRecover："  + value)
-        }).catch(function (error: any) {
-            console.log("signError：")
-            console.info(error)
-        })
-
-    };
-
     const showAccountWidget = () => {
         emitBox.showWidget().catch(e => {
             console.error(e)
@@ -210,30 +155,77 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
 
     };
 
+    const logout = () => {
+        localStorage.setItem("SessionID",'');
+        localStorage.setItem("account",'');
+        localStorage.setItem("name",'');
+        setAlreadyLogin(false);
+    };
+
     return (
         <IonMenu type="overlay" disabled={!menuEnabled} contentId="main">
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={30000}
+            />
             <IonContent forceOverscroll={false}>
                 <IonList lines="none">
 
                     <IonItem>
                         <IonAvatar slot="start">
-                            <img src={headerIcon}/>
+                            <img onClick={()=>{
+                                history.push('/account')
+                            }} src={headerIcon}/>
                         </IonAvatar>
                         <IonLabel>
-                            <h2>Gordon</h2>
-                            <p>0xDsI883K...HO8R</p>
-                            <IonButton color="primary" onClick={getAccount}>Login</IonButton>
-                            <IonButton color="primary" onClick={recover}>recover</IonButton>
-                            <IonButton color="primary" onClick={showAccountWidget}>Accounts</IonButton>
+                            {
+                                alreadyLogin?<div>
+                                    <h2>{name}</h2>
+                                    <p>{!account?'':account?.slice(0, 8) + "..." + account?.slice(account.length - 8)}</p>
+                                    <IonButton color="primary" onClick={showAccountWidget}>Accounts</IonButton>
+                                </div>:<div>
+                                    <IonButton color="primary" onClick={getAccount}>Login</IonButton>
+                                </div>
+                            }
+
+
                         </IonLabel>
                     </IonItem>
 
-                    {!isAuthenticated ? renderListItems(routes.loggedInPages) : renderListItems(routes.loggedOutPages)}
-                    {/*<IonItem>*/}
-                    {/*<IonIcon slot="start" icon={moonOutline}/>*/}
-                    {/*<IonLabel>Dark Mode</IonLabel>*/}
-                    {/*<IonToggle checked={darkMode} onClick={() => setDarkMode(!darkMode)} />*/}
-                    {/*</IonItem>*/}
+                    <IonMenuToggle   className='cursor'>
+                        <IonItem detail={false}>
+                            <IonIcon slot="start" icon={settingsOutline}/>
+                            <IonLabel>Settings and Privacy</IonLabel>
+                        </IonItem>
+                    </IonMenuToggle>
+
+                    <IonMenuToggle   className='cursor'>
+                        <IonItem detail={false}>
+                            <IonIcon slot="start" icon={helpCircleOutline}/>
+                            <IonLabel>Support</IonLabel>
+                        </IonItem>
+                    </IonMenuToggle>
+
+                    <IonMenuToggle  className='cursor'>
+                        <IonItem detail={false}>
+                            <IonIcon slot="start" icon={alertCircleOutline}/>
+                            <IonLabel>About</IonLabel>
+                        </IonItem>
+                    </IonMenuToggle>
+
+                    {
+                        alreadyLogin  && <IonMenuToggle>
+                        <IonItem detail={false} className='cursor' onClick={logout}>
+                            <IonIcon slot="start" icon={logOutOutline}/>
+                            <IonLabel>Logout</IonLabel>
+                        </IonItem>
+                    </IonMenuToggle> }
+
+
+
                 </IonList>
             </IonContent>
         </IonMenu>

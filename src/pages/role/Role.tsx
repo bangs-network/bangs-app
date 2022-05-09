@@ -24,7 +24,6 @@ interface MenuProps extends RouteComponentProps {}
 const Roles: React.FC<MenuProps> = ({history,match}) => {
     
     const [list,setList] = useState<any>([]);
-    const dispatch = useAppDispatch();
     const loadState = useAppSelector(state => state.loadStateSlice);
 
     useEffect(() => {
@@ -33,15 +32,16 @@ const Roles: React.FC<MenuProps> = ({history,match}) => {
 
     useEffect(() => {
         console.info(loadState)
-        if (loadState && loadState.tag  == 'Roles' ) {
+        if (loadState && loadState.tag  == 'Roles'  && loadState.state ==  1) {
             getData()
         }
-    },[loadState.tag]);
+    },[loadState.state]);
 
     const getData = () => {
+        let params:any = match.params
+        console.info(params.id);
         const data = {
-            VerseID:17,
-            VerseName:'Man'
+            VerseID:Number(params.id)
         };
         axios.get('https://api.bangs.network/role/search', {
             params:data
@@ -67,7 +67,8 @@ const Roles: React.FC<MenuProps> = ({history,match}) => {
     };
 
     const skipCreteRole = () => {
-        history.push(`/editRole/0`);
+        let params:any = match.params
+        history.push(`/editRole/${params.id}`);
     };
 
     return (
@@ -100,7 +101,7 @@ const Roles: React.FC<MenuProps> = ({history,match}) => {
                             <IonLabel>
                                 {item.roleName}
                             </IonLabel>
-                            <IonButton onClick={(e:any)=>skipEditRole(e,item.roleId)} fill="outline" slot="end">Edit</IonButton>
+                            {/*<IonButton onClick={(e:any)=>skipEditRole(e,item.roleId)} fill="outline" slot="end">Edit</IonButton>*/}
 
                         </IonItem>
 
