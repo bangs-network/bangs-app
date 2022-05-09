@@ -33,7 +33,7 @@ import {
     IonSelectOption,
     IonSelect,
     IonFab,
-    IonFabButton
+    IonFabButton, useIonToast
 } from '@ionic/react';
 import {addCircle, addCircleOutline, arrowForwardCircle, calendar, send} from "ionicons/icons";
 import * as React from "react";
@@ -65,8 +65,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [roleList, setRoleList] = useState<any>([]);
     const [talkContent, setTalkContent] = useState<any>('');
     const [role, setRole] = useState<any>();
+    const [present, dismiss] = useIonToast();
 
     const presentPopover = (e: React.MouseEvent) => {
+        if (!localStorage.getItem("SessionID")){
+            present('Please Login', 3000);
+            return
+        }
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };

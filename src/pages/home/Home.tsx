@@ -11,7 +11,7 @@ import {
     IonPage, IonPopover,
     IonRow,
     IonTitle,
-    IonToolbar, useIonViewWillEnter
+    IonToolbar, useIonToast, useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
 import {addCircle, addCircleOutline} from "ionicons/icons";
@@ -46,8 +46,13 @@ const Home: React.FC<MenuProps> = ({history}) => {
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent>();
     const pageRef = useRef<HTMLElement>(null);
     const [list, setList] = useState<any>([]);
+    const [present, dismiss] = useIonToast();
 
     const presentPopover = (e: React.MouseEvent) => {
+        if (!localStorage.getItem("SessionID")){
+            present('Please Login', 3000);
+            return
+        }
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };
