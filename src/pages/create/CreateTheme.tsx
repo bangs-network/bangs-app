@@ -21,6 +21,7 @@ import parseUrl from "../../util/common";
 import {RouteComponentProps} from "react-router";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {useAppDispatch} from "../state/app/hooks";
+import {VersePointApi} from "../../service/Api";
 
 const popover = {
     position: 'absolute',
@@ -62,16 +63,17 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
             Music: '',
             ExpressionContent: ''
         };
-        axios.post('https://api.bangs.network/timeline/create', data).then(function (response: any) {
-            console.info(response)
+        VersePointApi(data).then(function (response: any) {
             setShowLoading(false)
-            //history.replace(`/verseDetail/${params.id}`);
             dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
             history.goBack()
+            //history.replace(`/verseDetail/${params.id}`);
         }).catch(function (error: any) {
-            setShowLoading(false)
             console.info(error)
-        })
+            present(error, 5000);
+            setShowLoading(false)
+        });
+
     };
 
     const handleChangeComplete = (color: any) => {
@@ -135,7 +137,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                        <IonBackButton color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
                     <IonTitle>Create Theme</IonTitle>
                 </IonToolbar>
@@ -154,7 +156,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                         <div style={{
                             textAlign: 'center',
                             minWidth: 100,
-                            border: '1px solid #fff',
+                            border: '1px solid #000',
                             marginLeft: 20,
                             height: 32,
                             lineHeight: '32px',

@@ -90,7 +90,7 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
                 <IonHeader>
                     <IonToolbar>
                         <IonButtons slot="start">
-                            <IonBackButton defaultHref="/tabs/home"/>
+                            <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
                         </IonButtons>
                         <IonTitle>{title}</IonTitle>
                     </IonToolbar>

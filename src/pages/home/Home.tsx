@@ -112,11 +112,21 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                     {list.map((item: any, index: number) => {
 
-                        return <IonCard className='cursor' style={{background: '#22bc87'}} onClick={() => {
+                        return <IonCard key={index} className='cursor' style={{background: '#22bc87'}} onClick={() => {
                             history.push(`/verseDetail/${item.verseId}`);
                         }}>
+                            <div key={index} style={{
+                                background: "url(" + parseUrl(item.MainPic) + ")",
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center',
+                                color: item.MainColor,
+                                paddingBottom:20,
+                                backgroundSize: 'cover'
+                            }}>
+                                <div className='blur'>
                             <img src={parseUrl(item.verseBanner)}
                                  style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+
 
 
                             <IonCardHeader>
@@ -167,6 +177,9 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
 
                             })}
+
+                                </div>
+                            </div>
 
                         </IonCard>
 

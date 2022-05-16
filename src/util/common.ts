@@ -1,4 +1,4 @@
-import Icon11 from "../img/11.png";
+import Icon11 from "../img/5.jpg";
 
 export default function parseUrl(url: string) {
     if (!url){

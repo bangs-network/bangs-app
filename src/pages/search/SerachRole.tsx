@@ -29,20 +29,26 @@ import {Role, saveRoleState} from "../state/slice/roleSlice";
 
 interface MenuProps extends RouteComponentProps {}
 
-const SearchRole: React.FC<MenuProps> = ({history}) => {
+const SearchRole: React.FC<MenuProps> = ({history,match}) => {
 
     const [searchText, setSearchText] = useState('');
     const [list,setList] = useState<any>([]);
     const dispatch = useAppDispatch();
+    const [select,setSelect] = useState<any>(0);
 
     useEffect(() => {
+        let location:any = history.location
+        if (location.state && location.state.state) {
+            setSelect(location.state.state.select)
+        }
         getData()
     },[searchText]);
 
 
     const getData = () => {
+        let params:any = match.params
         const data = {
-            VerseID:17,
+            VerseID:Number(params.id),
             VerseName:'',
             RoleName:searchText
         };

@@ -17,8 +17,8 @@ import {RouteComponentProps} from "react-router";
 import {useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import parseUrl from "../../util/common";
-import {Role, saveRoleState} from "../state/slice/roleSlice";
 import {VersePointApi} from "../../service/Api";
+import {saveRoleState} from '../state/slice/roleSlice';
 
 interface MenuProps extends RouteComponentProps {}
 
@@ -26,10 +26,11 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
 
     const [list,setList] = useState<any>([]);
     const [dices,setDices] = useState<any>([]);
-    const roleData = useAppSelector(state => state.roleSlice);
+    const roleData:any = useAppSelector(state => state.roleSlice);
     const [showLoading, setShowLoading] = useState(false);
     const [present, dismiss] = useIonToast();
     const dispatch = useAppDispatch();
+
 
 
     useEffect(() => {
@@ -115,11 +116,16 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
         };
         setShowLoading(true);
         VersePointApi(data).then(function (response: any) {
+
+            console.info(response)
+            setShowLoading(false)
             //dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
             history.replace(`/verseDetail/${params.id}`);
-            setShowLoading(false)
+
         }).catch(function (error: any) {
             console.info(error)
+            console.info("CreateDice===")
+            present(error, 5000);
             setShowLoading(false)
         });
 
@@ -137,7 +143,7 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                        <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
                     <IonTitle>Create Dice</IonTitle>
                 </IonToolbar>
@@ -162,11 +168,12 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
                 })}
 
 
-                <IonItem  style={{cursor:'pointer'}} onClick={() => {
+                <IonItem lines='none'  style={{cursor:'pointer'}} onClick={() => {
                     let params:any = match.params
                     history.push(`/searchRole/${params.id}`);
                 }}>
                     <IonIcon  size={'large'} slot="start" icon={addCircleOutline}/>
+                    <IonLabel style={{color:'#999'}}>Add Dice</IonLabel>
                 </IonItem>
             </IonContent>
 

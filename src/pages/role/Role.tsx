@@ -24,6 +24,7 @@ interface MenuProps extends RouteComponentProps {}
 const Roles: React.FC<MenuProps> = ({history,match}) => {
     
     const [list,setList] = useState<any>([]);
+    const [select,setSelect] = useState<any>(0);
     const loadState = useAppSelector(state => state.loadStateSlice);
 
     useEffect(() => {
@@ -32,6 +33,16 @@ const Roles: React.FC<MenuProps> = ({history,match}) => {
 
     useEffect(() => {
         console.info(loadState)
+        console.info("history==" )
+        console.info(history)
+
+        let location:any = history.location
+        if (location.state && location.state.state) {
+            setSelect(location.state.state.select)
+        } else {
+            setSelect(0)
+        }
+
         if (loadState && loadState.tag  == 'Roles'  && loadState.state ==  1) {
             getData()
         }
@@ -76,14 +87,14 @@ const Roles: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                        <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
                     <IonTitle>Roles</IonTitle>
-                    <IonButtons slot="end">
-                    <IonButton  onClick={skipCreteRole}>
+                    {select != 1 && <IonButtons slot="end">
+                        <IonButton  onClick={skipCreteRole}>
                         <IonIcon slot="icon-only" icon={addCircleOutline}/>
                     </IonButton>
-                    </IonButtons>
+                    </IonButtons>}
                 </IonToolbar>
             </IonHeader>
             <IonContent>

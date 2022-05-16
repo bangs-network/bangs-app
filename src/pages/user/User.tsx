@@ -77,7 +77,7 @@ const User: React.FC = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                        <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
                     <IonTitle>User</IonTitle>
                 </IonToolbar>

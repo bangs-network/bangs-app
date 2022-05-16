@@ -55,6 +55,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
         CreateVerseApi(data).then((res:any) => {
            console.info(res)
             setShowLoading(false)
+
             history.replace(`/verseDetail/${res.id}`);
         })
 
@@ -72,7 +73,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home" />
+                        <IonBackButton  color='secondary' defaultHref="/tabs/home" />
                     </IonButtons>
                     <IonTitle>Create Verse</IonTitle>
                 </IonToolbar>

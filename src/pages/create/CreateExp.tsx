@@ -47,12 +47,12 @@ const CreateExp: React.FC<MenuProps> = ({history,match}) => {
         };
         setShowLoading(true);
         VersePointApi(data).then(function (response: any) {
+            setShowLoading(false)
             dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
             history.goBack()
-            //history.replace(`/verseDetail/${params.id}`);
-            setShowLoading(false)
         }).catch(function (error: any) {
             console.info(error)
+            present(error, 5000);
             setShowLoading(false)
         });
 
@@ -71,7 +71,7 @@ const CreateExp: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home" />
+                        <IonBackButton  color='secondary' defaultHref="/tabs/home" />
                     </IonButtons>
                     <IonTitle>Create Expressions</IonTitle>
                 </IonToolbar>

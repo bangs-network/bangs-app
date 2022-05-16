@@ -33,7 +33,7 @@ import {
     IonSelectOption,
     IonSelect,
     IonFab,
-    IonFabButton, useIonToast
+    IonFabButton, useIonToast, IonLoading
 } from '@ionic/react';
 import {addCircle, addCircleOutline, arrowForwardCircle, calendar, send} from "ionicons/icons";
 import * as React from "react";
@@ -48,6 +48,8 @@ import axios from "axios";
 import parseUrl from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
+import {saveRoleState} from "../state/slice/roleSlice";
+import {TalkCreateApi, VersePointApi} from "../../service/Api";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -57,6 +59,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [showPopover, setShowPopover] = useState(false);
     const [showSend, setShowSend] = useState(false);
     const [body, setBody] = useState<any>();
+    const [list, setList] = useState<any>();
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent>();
     const [verseId, setVerseId] = useState<number>();
     const pageRef = useRef<HTMLElement>(null);
@@ -66,9 +69,26 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [talkContent, setTalkContent] = useState<any>('');
     const [role, setRole] = useState<any>();
     const [present, dismiss] = useIonToast();
+    const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
+    const roleData:any = useAppSelector(state => state.roleSlice);
+    const [showLoading, setShowLoading] = useState(false);
+
+    useEffect(() => {
+        console.info("roleData===")
+        console.info(roleData)
+        if (roleData && roleData.roleId  > 0 ) {
+            let role = {
+                roleId:roleData.roleId,
+                roleAvator:roleData.roleAvator,
+                roleName:roleData.roleName,
+            };
+            setRole(role);
+            dispatch(saveRoleState({ roleId: 0, roleAvator: '', roleName:'' , amount: ''}))
+        }
+    },[roleData.roleId]);
 
     const presentPopover = (e: React.MouseEvent) => {
-        if (!localStorage.getItem("SessionID")){
+        if (!localStorage.getItem("SessionID")) {
             present('Please Login', 3000);
             return
         }
@@ -102,7 +122,28 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             params: data
         }).then(function (response: any) {
             if (response?.data?.body) {
+
+                let list: any = [];
+
+                let timelineList = response?.data?.body.MVerse.TimelineList
+                let item;
+                for (let i = 0; i < timelineList.length; i++) {
+                    item = timelineList[i]
+                    if (item.TimelineType == 1) {
+                        list.push(item)
+                    } else {
+                        let points:any = list[list.length - 1].points
+                        if (!points) {
+                            list[list.length - 1].points =  []
+                        }
+                        list[list.length - 1].points.push(item)
+                    }
+                }
+                let newList = [...list];
+
+                setList(newList)
                 setBody(response?.data?.body.MVerse)
+
             }
             console.info(response)
         }).catch(function (error: any) {
@@ -121,9 +162,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         }).then(function (response: any) {
             if (response?.data?.body?.roleList) {
                 setRoleList(response?.data?.body?.roleList)
-                setRole(response?.data?.body?.roleList[0])
+                //setRole(response?.data?.body?.roleList[0])
             }
-            console.info(response)
         }).catch(function (error: any) {
             console.info(error)
         })
@@ -133,9 +173,56 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         setShowSend(!showSend);
     };
 
+    const sendMsg = () => {
+        const roleId = role.roleId
+        const talkId = body.TimelineList[body.TimelineList.length - 1].TalkID;
+        const data = {
+            RoleId:roleId,
+            TalkId:talkId,
+            TalkContent:talkContent
+        };
+        setShowLoading(true);
+        TalkCreateApi(data).then(function (response: any) {
+            setShowSend(false);
+            setTalkContent("");
+            getData();
+            setShowLoading(false)
+        }).catch(function (error: any) {
+            console.info(error);
+            setShowLoading(false)
+        });
+    };
+
+    const hexToRgba = (bgColor:string) => {
+        let color = bgColor.slice(1);
+
+        let rgba = [
+
+            parseInt('0x'+color.slice(0, 2)),
+
+            parseInt('0x'+color.slice(2, 4)),
+
+            parseInt('0x'+color.slice(4, 6)),
+
+            0.4
+
+        ];
+
+
+        return 'rgba(' + rgba.toString() + ')';
+
+    };
+
 
     return (
         <IonPage id='about-page'>
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={5000}
+            />
             <IonHeader className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
@@ -156,107 +243,152 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
             </IonHeader>
             <IonContent style={{position: 'relative'}}>
-                <IonItemDivider style={{padding: 0, border: 0, margin: 0}}>
-                    <div>
-                        <img src={parseUrl(body ? body.verseBanner : '')} style={{
-                            padding: 0,
-                            border: 0,
-                            margin: 0,
-                            width: '100vw',
-                            height: 200,
-                            objectFit: 'cover'
-                        }}/>
 
-                    </div>
-                </IonItemDivider>
-
-                <IonList lines="none">
-
-                   <div style={{lineHeight: '20px',fontWeight:'bold',color:'#fff',padding:"10px 15px"}}>{body ? body.verseDesc : ''}</div>
+                <IonList lines="none" style={{padding: 0, border: 0, margin: 0}}>
 
 
-                    {body && body.TimelineList && body.TimelineList.map((item: any, index: number) => {
+                    {list &&  list.length > 0 && list.map((item: any, index: number) => {
 
-                        return <IonCard key={index} className='cursor'
-                                        style={{background: '#5d58e0', color: '#fff'}}>
+                        return <div key={index} style={{
+                            background: "url(" + parseUrl(item.MainPic) + ")",
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center',
+                            color: item.MainColor,
+                            paddingBottom:20,
+                            backgroundSize: 'cover'
+                        }}>
+                            <div className='blur'>
 
-                            {
-                                item.TimelineType == 2 ? <p style={{padding:'5px 15px'}}>
-                                    {item.Expression}
-                                </p> : item.TimelineType == 4 ? <div  style={{padding:'5px 15px'}}>
-                                    {item.Dices.map((item: any, index: number) => {
-                                        return <div key={index} className='row' style={{margin: '10px 0'}}>
+                                <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
+                                    <img src={parseUrl(item.MainPic)} style={{
+                                        padding: 0,
+                                        border: 0,
+
+                                        margin: 0,
+                                        width: '100vw',
+                                        height: 240,
+                                        objectFit: 'cover'
+                                    }}/>
+                                </IonItemDivider>
+
+                                {item.points &&  item.points.length > 0 &&  item.points.map((item1: any, index: number) => {
+
+                                    return <IonCard key={index} className='cursor'
+                                             style={{background:hexToRgba(item.BackgroundColor), color: item.MainColor, marginBottom:0}}>
+
+                                        {
+                                            item1.TimelineType == 2 ? <p style={{padding: '5px 15px'}}>
+                                                {item1.Expression}
+                                            </p> : item1.TimelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                                {item1.Dices.map((item2: any, index: number) => {
+                                                    return <div key={index} className='row' style={{margin: '10px 0'}}>
 
 
-                                            <img style={{width: 40, height: 40,borderRadius:40}} src={parseUrl(item.Role.Avator)}/>
+                                                        <img style={{width: 40, height: 40, borderRadius: 40}}
+                                                             src={parseUrl(item2.Role.Avator)}/>
 
-                                            <div style={{marginLeft: 20}}>
-                                                {item.Role.RoleName}
-                                            </div>
-                                            <div style={{flex: 1}}/>
-                                            <div>
-                                                {item.DiceValue}
-                                            </div>
+                                                        <div style={{marginLeft: 20}}>
+                                                            {item2.Role.RoleName}
+                                                        </div>
+                                                        <div style={{flex: 1}}/>
+                                                        <div>
+                                                            {item2.DiceValue}
+                                                        </div>
 
-                                        </div>
-                                    })
-                                    }
-                                </div> : item.TimelineType == 3 ? <>
-                                    <IonGrid style={{padding:'5px 15px',margin:'10px 0 0'}}>
-                                        <IonRow  style={{padding:0,margin:0}}>
-                                            {roleList && roleList.map((item: any, index: number) => {
-                                                return index < 5 && <IonCol key={index}  style={{padding:0,margin:0}} size='2'><IonAvatar key={index}>
-                                                    <img style={{width:50,height:50}} src={parseUrl(item.roleAvator)}/>
-                                                </IonAvatar></IonCol>
-                                            })}
-                                            <IonCol  style={{padding:0,margin:0}} size='2'>
-                                                <IonAvatar>
-                                                <img  style={{width:50,height:50}} src={moreIcon}/>
-                                            </IonAvatar>
-                                            </IonCol>
-                                        </IonRow>
-                                    </IonGrid>
-                                </> : <></>
-                            }
+                                                    </div>
+                                                })
+                                                }
+                                            </div> : item1.TimelineType == 3 ? <>
+                                                <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
+                                                    <IonRow style={{padding: 0, margin: 0}}>
+                                                        {roleList && roleList.map((item3: any, index: number) => {
+                                                            return index < 5 &&
+                                                                <IonCol key={index} style={{padding: 0, margin: 0}}
+                                                                        size='2'><IonAvatar key={index}>
+                                                                    <img style={{width: 50, height: 50}}
+                                                                         src={parseUrl(item3.roleAvator)}/>
+                                                                </IonAvatar></IonCol>
+                                                        })}
+                                                        <IonCol style={{padding: 0, margin: 0}} size='2'>
+                                                            <IonAvatar>
+                                                                <img style={{width: 50, height: 50}} src={moreIcon}/>
+                                                            </IonAvatar>
+                                                        </IonCol>
+                                                    </IonRow>
+                                                    <IonRow style={{marginTop:20}}>
+                                                        {item1.TalkList && item1.TalkList.map((item4: any, index: number) => {
+                                                        return <IonRow key={index}> <IonCol size="2"  style={{padding:0,paddingRight:10}}>
+                                                            <IonAvatar><img className='icon-circle full-width' src={parseUrl(item4.Role.Avator)}/></IonAvatar>
 
-                        </IonCard>
+                                                        </IonCol>
+                                                        <IonCol size="10">
 
+                                                            <div style={{fontWeight:700,fontSize:16}}>{item4.Role.RoleName}</div>
+                                                            <div style={{marginTop:5,color:'#999'}}>By {localStorage.getItem("name")}</div>
+                                                            <div style={{marginTop:10}}>{item4.TalkContent}</div>
+                                                        </IonCol></IonRow>
+                                                        })}
+                                                    </IonRow>
+                                                </IonGrid>
+                                            </> : <></>
+                                        }
+
+                                    </IonCard>
+                                })}
+                            </div>
+
+                            {index==list.length -1 && <div className='ion-padding-top ion-padding-bottom'>
+                                <button className='full-width common-button'>Bong</button>
+                            </div>}
+                        </div>
 
                     })}
 
-                    {body && body.TimelineList && body.TimelineList.length > 0 && <div className='ion-padding'>
-                        <button className='full-width common-button'>Bong</button>
-                    </div>}
+
 
 
                 </IonList>
 
-                {body && body.TimelineList  && body.TimelineList.length >0 &&  body.TimelineList[body.TimelineList.length-1].TimelineType == 3  && <IonFab vertical="bottom" horizontal="end" slot="fixed">
+                {body && body.TimelineList && body.TimelineList.length > 0 && body.TimelineList[body.TimelineList.length - 1].TimelineType == 3 &&
+                <IonFab vertical="bottom" horizontal="end" slot="fixed">
                     <IonFabButton onClick={showSendMsg}>
-                        <IonIcon icon={send} />
+                        <IonIcon icon={send}/>
                     </IonFabButton>
                 </IonFab>}
             </IonContent>
 
-            {showSend && body && body.TimelineList  && body.TimelineList.length >0 &&  body.TimelineList[body.TimelineList.length-1].TimelineType == 3  &&<IonFooter  className='ion-padding-start ion-padding-end cursor' style={{background:'#5d58e0',textAlign:'center',fontWeight:'bold'}}>
-                <IonSegment style={{padding:0,margin:0}} onIonChange={e => console.log('Segment selected', e.detail.value)}>
+            {showSend && body && body.TimelineList && body.TimelineList.length > 0 && body.TimelineList[body.TimelineList.length - 1].TimelineType == 3 &&
+            <IonFooter className='ion-padding-start ion-padding-end cursor'
+                       style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
+                <IonSegment style={{padding: 0, margin: 0}}
+                            onIonChange={e => console.log('Segment selected', e.detail.value)}>
                     <IonSegmentButton value="roles">
                         <IonLabel style={{textTransform: 'none'}}>In Role</IonLabel>
                     </IonSegmentButton>
-                    <IonSegmentButton value="addRole">
+                    <IonSegmentButton value="addRole" onClick={() => {
+                        history.push('/editRole/0');
+                    }}>
                         <IonLabel style={{textTransform: 'none'}}>Make Role</IonLabel>
                     </IonSegmentButton>
                 </IonSegment>
-                <IonItem lines="none"  onClick={() => {
-                    history.push(`/roles/${verseId}`)
+                <IonItem lines="none" onClick={() => {
+                    history.push({pathname:`/searchRole/${verseId}`,state:{
+                            select: 1
+                        }})
                 }}>
-                    <IonLabel>Roles:</IonLabel>
-                    <IonLabel slot='end' style={{color:'#ddd'}}>Select Role</IonLabel>
+                    {
+                        role && role.roleId  > 0 && <><IonAvatar slot="start">
+                            <img src={parseUrl(role.roleAvator)}/>
+                        </IonAvatar>
+                            <IonLabel>{role.roleName}</IonLabel></>
+                    }
+                    <IonLabel slot='end' style={{color: '#ddd'}}>Select Role</IonLabel>
                 </IonItem>
-                <IonItem  color='medium' style={{margin:'10px 0'}}>
-                    <IonTextarea rows={3} value={talkContent} placeholder="Say anything" onIonChange={e => setTalkContent(e.detail.value!)} />
+                <IonItem color='medium' style={{margin: '10px 0'}}>
+                    <IonTextarea rows={3} value={talkContent} placeholder="Say anything"
+                                 onIonChange={e => setTalkContent(e.detail.value!)}/>
                 </IonItem>
-                <button className='full-width common-button' style={{marginBottom:15}}>Send</button>
+                <button className='full-width common-button' style={{marginBottom: 15}} onClick={sendMsg}>Send</button>
             </IonFooter>}
 
             <IonPopover

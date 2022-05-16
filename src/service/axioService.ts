@@ -1,26 +1,23 @@
 import axios, { AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import ShowLoading from "../components/widget/Loading";
 
-//基础URL，axios将会自动拼接在url前
-//process.env.NODE_ENV 判断是否为开发环境 根据不同环境使用不同的baseURL 方便调试
 let baseURL = 'https://api.bangs.network';
 
-//默认请求超时时间
+
 const timeout = 30000;
 
-//创建axios实例
+
 const axioService = axios.create({
     timeout,
     baseURL
 });
 
-//统一请求拦截 可配置自定义headers 例如 language、token等
 axioService.interceptors.request.use(
     (config: AxiosRequestConfig) => {
         console.info("interceptors=====")
-        //配置自定义请求头
+
         let customHeaders: AxiosRequestHeaders = {
-            SessionID: localStorage.getItem('SessionID') ||  ""
+            //SessionID: localStorage.getItem('SessionID') ||  ""
         };
         config.headers = customHeaders;
         return config
@@ -31,7 +28,6 @@ axioService.interceptors.request.use(
     }
 )
 
-//axios返回格式
 interface axiosTypes<T>{
     data: T;
     status: number;
@@ -67,29 +63,25 @@ const requestHandler = <T>(method: 'get' | 'post' | 'put' | 'delete', url: strin
 
     return new Promise((resolve, reject) => {
         response.then(res => {
-            //业务代码 可根据需求自行处理
 
             const data = res.data;
             if(data.code !== 1000){
 
-                //特定状态码 处理特定的需求
                 if(data.code == 401){
-                    console.log('登录异常，执行登出...');
+                    console.log('Error...');
                 }
 
                 let e = JSON.stringify(data);
-                console.log(`请求错误：${e}`)
-                //数据请求错误 使用reject将错误返回
-                reject(data);
+                console.log(`Error：${e}`)
+                reject(data.msg);
             }else{
-                //数据请求正确 使用resolve将结果返回
                 resolve(data.body);
             }
 
         }).catch(error => {
             let e = JSON.stringify(error);
-            console.log(`网络错误：${e}`)
-            reject(error);
+            console.log(`Network Error：${e}`)
+            reject(e);
         })
     })
 }

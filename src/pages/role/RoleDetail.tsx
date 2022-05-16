@@ -12,59 +12,70 @@ import {
 import headerIcon from "../../img/0.png";
 import * as React from "react";
 import {useState} from "react";
+import axios from "axios";
+import {RouteComponentProps} from "react-router";
+import parseUrl from "../../util/common";
+import {useEffect} from "react";
 
-const RoleDetail: React.FC = () => {
+interface MenuProps extends RouteComponentProps {}
 
-    const [note, setNote] = useState<string>(' The MUTANT APE YACHT CLUB is a collection of up to 20,000 Mutant Apes that can onl' +
-        '                                    be' +
-        '                                    created by exposing an existing Bored Ape to a vial of MUTANT SERUM or by minting a' +
-        '                                    Mutant Ape in the public sale.');
+const RoleDetail: React.FC<MenuProps> = ({history,match}) => {
+
+    const [data,setData] = useState<any>({roleAvator: "",
+        roleDescription: "",
+        roleId:  0,
+        roleName: ""});
+
+    useEffect(() => {
+        getData()
+    },[]);
+
+    const getData = () => {
+        let params:any = match.params
+        console.info(params.id);
+        const data = {
+            ID:Number(params.id)
+        };
+        axios.get('https://api.bangs.network/role/detail', {
+            params:data
+        }).then(function (response: any) {
+            if (response?.data?.body) {
+                setData(response?.data?.body)
+            }
+            console.info(response)
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    };
 
     return (
-        <IonPage>
-            <IonHeader>
+
+       <IonPage>
+           <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton/>
+                        <IonBackButton  color='secondary'/>
                     </IonButtons>
-                    <IonTitle>CP001</IonTitle>
+                    <IonTitle>{data.roleName}</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent>
+            <IonContent >
 
 
-                <IonItem>
+                <IonItem lines='none'>
                     <IonThumbnail slot="start">
-                        <img src={headerIcon}/>
+                        <img src={parseUrl(data.roleAvator)}/>
                     </IonThumbnail>
                     <IonLabel>
-                        <h2>Cp001</h2>
+                        <h2>{data.roleName}</h2>
                     </IonLabel>
                     <IonButton fill="outline" slot="end">Edit</IonButton>
                 </IonItem>
-                <IonItem>
+                <IonItem  lines='none'>
                     <div>
                         <h2>Role introduce:</h2>
-                        <p>{note}</p>
+                        <p>{data.roleDescription}</p>
                     </div>
-                </IonItem>
-                <IonItem>
-                        <h2>Role attributes:</h2>
-                </IonItem>
-                <IonItem>
-                    <p className='ion-padding-end'>SAN:</p>
-                    <p>5</p>
-                    <IonButton fill="outline" slot="end">Edit</IonButton>
-                </IonItem>
-                <IonItem>
-                    <p className='ion-padding-end'>STR:</p>
-                    <p>5</p>
-                    <IonButton fill="outline" slot="end">Edit</IonButton>
-                </IonItem>
-                <IonItem>
-                    <p className='ion-padding-end'>DEF:</p>
-                    <p>5</p>
-                    <IonButton fill="outline" slot="end">Edit</IonButton>
                 </IonItem>
 
             </IonContent>

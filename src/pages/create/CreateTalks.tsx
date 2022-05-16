@@ -7,7 +7,7 @@ import {
     IonLabel, IonList, IonListHeader, IonLoading,
     IonPage, IonRadio, IonRadioGroup, IonRow, IonTabBar, IonTextarea,
     IonTitle,
-    IonToolbar
+    IonToolbar, useIonToast
 } from '@ionic/react';
 import * as React from "react";
 import {useState} from "react";
@@ -22,6 +22,7 @@ const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
 
     const [showLoading, setShowLoading] = useState(false);
     const dispatch = useAppDispatch();
+    const [present, dismiss] = useIonToast();
 
     const create = () => {
         let params:any = match.params
@@ -37,12 +38,12 @@ const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
         };
         setShowLoading(true);
         VersePointApi(data).then(function (response: any) {
+            setShowLoading(false)
             dispatch(saveLoadState({tag: 'VerseDetail', state: 1}));
             history.goBack()
-            //history.replace(`/verseDetail/${params.id}`);
-            setShowLoading(false)
         }).catch(function (error: any) {
             console.info(error)
+            present(error, 5000);
             setShowLoading(false)
         });
 
@@ -60,7 +61,7 @@ const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home" />
+                        <IonBackButton   color='secondary' defaultHref="/tabs/home" />
                     </IonButtons>
                     <IonTitle className='header-title'>Create Talks</IonTitle>
                 </IonToolbar>
