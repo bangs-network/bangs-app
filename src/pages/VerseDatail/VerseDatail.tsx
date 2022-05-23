@@ -57,6 +57,7 @@ interface MenuProps extends RouteComponentProps {
 const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const [showPopover, setShowPopover] = useState(false);
+    const [isKeeper, setIsKeeper] = useState(0);
     const [showSend, setShowSend] = useState(false);
     const [body, setBody] = useState<any>();
     const [list, setList] = useState<any>();
@@ -70,22 +71,22 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [role, setRole] = useState<any>();
     const [present, dismiss] = useIonToast();
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
-    const roleData:any = useAppSelector(state => state.roleSlice);
+    const roleData: any = useAppSelector(state => state.roleSlice);
     const [showLoading, setShowLoading] = useState(false);
 
     useEffect(() => {
         console.info("roleData===")
         console.info(roleData)
-        if (roleData && roleData.roleId  > 0 ) {
+        if (roleData && roleData.roleId > 0) {
             let role = {
-                roleId:roleData.roleId,
-                roleAvator:roleData.roleAvator,
-                roleName:roleData.roleName,
+                roleId: roleData.roleId,
+                roleAvator: roleData.roleAvator,
+                roleName: roleData.roleName,
             };
             setRole(role);
-            dispatch(saveRoleState({ roleId: 0, roleAvator: '', roleName:'' , amount: ''}))
+            dispatch(saveRoleState({roleId: 0, roleAvator: '', roleName: '', amount: ''}))
         }
-    },[roleData.roleId]);
+    }, [roleData.roleId]);
 
     const presentPopover = (e: React.MouseEvent) => {
         if (!localStorage.getItem("SessionID")) {
@@ -114,9 +115,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const getData = () => {
         let params: any = match.params
         console.info(params.id);
-        setVerseId(params.id)
+        setVerseId(params.id);
         const data = {
-            ID: params.id
+            ID: params.id,
+            Start:1,
+            Offset:10
         };
         axios.get('https://api.bangs.network/verse/detail', {
             params: data
@@ -125,16 +128,80 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                 let list: any = [];
 
-                let timelineList = response?.data?.body.MVerse.TimelineList
+
+                setIsKeeper(response?.data?.body.IsKeeper);
+
+                let timelineList = response?.data?.body.Timelines;
+                if (timelineList && timelineList.length > 0) {
+
+                    if (timelineList[0].timelineType != 1){
+                        getTheme(timelineList[0].theme.ThemeID,response?.data?.body);
+                        return
+                    }
+
+                    let item;
+                    for (let i = 0; i < timelineList.length; i++) {
+                        item = timelineList[i];
+                        if (item.timelineType == 1) {
+                            list.push(item)
+                        } else {
+                            let points: any = list[list.length - 1].points
+                            if (!points) {
+                                list[list.length - 1].points = []
+                            }
+                            list[list.length - 1].points.push(item)
+                        }
+                    }
+                    let newList = [...list];
+
+                    setList(newList)
+                    setBody(response?.data?.body)
+                }
+
+            }
+            console.info("list=",list)
+            console.info(response)
+        }).catch(function (error: any) {
+            console.info(error)
+        })
+    };
+
+    const getTheme = (themeID:number, body:any) => {
+        const data = {
+            ID: Number(themeID)
+        };
+        let list: any = [];
+        let timelineList = body.Timelines;
+
+        axios.get('https://api.bangs.network/timeline/theme', {
+            params: data
+        }).then(function (response: any) {
+            if (response?.data?.body) {
+                let themeBody = response?.data?.body
+                let themeItem = {
+                    backgroundColor: themeBody.backgroundColor,
+                    dices: [],
+                    expression: "",
+                    likeCount: 0,
+                    mainColor: timelineList[0].mainColor,
+                    mainPic: timelineList[0].mainPic,
+                    music: timelineList[0].music,
+                    talkID: 0,
+                    talkList: [],
+                    theme: {ThemeID: themeID},
+                    timelineType: 1,
+                    verseId: timelineList[0].verseId,
+                };
+                list.push(themeItem)
                 let item;
                 for (let i = 0; i < timelineList.length; i++) {
-                    item = timelineList[i]
-                    if (item.TimelineType == 1) {
+                    item = timelineList[i];
+                    if (item.timelineType == 1) {
                         list.push(item)
                     } else {
-                        let points:any = list[list.length - 1].points
+                        let points: any = list[list.length - 1].points
                         if (!points) {
-                            list[list.length - 1].points =  []
+                            list[list.length - 1].points = []
                         }
                         list[list.length - 1].points.push(item)
                     }
@@ -142,10 +209,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 let newList = [...list];
 
                 setList(newList)
-                setBody(response?.data?.body.MVerse)
-
+                setBody(response?.data?.body)
             }
-            console.info(response)
         }).catch(function (error: any) {
             console.info(error)
         })
@@ -175,11 +240,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const sendMsg = () => {
         const roleId = role.roleId
-        const talkId = body.TimelineList[body.TimelineList.length - 1].TalkID;
+        const talkId = body.timelines[body.timelines.length - 1].talkID;
         const data = {
-            RoleId:roleId,
-            TalkId:talkId,
-            TalkContent:talkContent
+            RoleId: roleId,
+            TalkId: talkId,
+            TalkContent: talkContent
         };
         setShowLoading(true);
         TalkCreateApi(data).then(function (response: any) {
@@ -193,16 +258,20 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         });
     };
 
-    const hexToRgba = (bgColor:string) => {
+    const hexToRgba = (bgColor: string) => {
+        if (!bgColor) {
+            return
+        }
+
         let color = bgColor.slice(1);
 
         let rgba = [
 
-            parseInt('0x'+color.slice(0, 2)),
+            parseInt('0x' + color.slice(0, 2)),
 
-            parseInt('0x'+color.slice(2, 4)),
+            parseInt('0x' + color.slice(2, 4)),
 
-            parseInt('0x'+color.slice(4, 6)),
+            parseInt('0x' + color.slice(4, 6)),
 
             0.4
 
@@ -233,11 +302,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         fontWeight: 700,
                         textAlign: 'center'
                     }}>{body ? body.verseName : 'Bangs'}</IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton onClick={presentPopover}>
+                    {isKeeper == 1 && <IonButtons slot="end">
+                        <IonButton onClick={()=>presentPopover}>
                             <IonIcon slot="icon-only" icon={addCircleOutline}/>
                         </IonButton>
-                    </IonButtons>
+                    </IonButtons>}
                 </IonToolbar>
 
 
@@ -247,20 +316,20 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 <IonList lines="none" style={{padding: 0, border: 0, margin: 0}}>
 
 
-                    {list &&  list.length > 0 && list.map((item: any, index: number) => {
+                    {list && list.length > 0 && list.map((item: any, index: number) => {
 
                         return <div key={index} style={{
-                            background: "url(" + parseUrl(item.MainPic) + ")",
+                            background: "url(" + parseUrl(item.mainPic) + ")",
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center',
-                            color: item.MainColor,
-                            paddingBottom:20,
+                            color: item.mainColor,
+
                             backgroundSize: 'cover'
                         }}>
-                            <div className='blur'>
+                            <div className='blur' style={{ paddingBottom: 15}}>
 
                                 <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
-                                    <img src={parseUrl(item.MainPic)} style={{
+                                    <img src={parseUrl(item.mainPic)} style={{
                                         padding: 0,
                                         border: 0,
 
@@ -271,15 +340,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                     }}/>
                                 </IonItemDivider>
 
-                                {item.points &&  item.points.length > 0 &&  item.points.map((item1: any, index: number) => {
+                                {item && item.points && item.points.length > 0 && item.points.map((item1: any, index: number) => {
 
                                     return <IonCard key={index} className='cursor'
-                                             style={{background:hexToRgba(item.BackgroundColor), color: item.MainColor, marginBottom:0}}>
+                                                    style={{
+                                                        background: hexToRgba(item.backgroundColor),
+                                                        color: item.mainColor,
+                                                        marginBottom: 0
+                                                    }}>
 
                                         {
-                                            item1.TimelineType == 2 ? <p style={{padding: '5px 15px'}}>
-                                                {item1.Expression}
-                                            </p> : item1.TimelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                            item1.timelineType == 2 ? <p style={{padding: '5px 15px'}}>
+                                                {item1.expression}
+                                            </p> : item1.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
                                                 {item1.Dices.map((item2: any, index: number) => {
                                                     return <div key={index} className='row' style={{margin: '10px 0'}}>
 
@@ -298,7 +371,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     </div>
                                                 })
                                                 }
-                                            </div> : item1.TimelineType == 3 ? <>
+                                            </div> : item1.timelineType == 3 ? <>
                                                 <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
                                                     <IonRow style={{padding: 0, margin: 0}}>
                                                         {roleList && roleList.map((item3: any, index: number) => {
@@ -315,18 +388,29 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                             </IonAvatar>
                                                         </IonCol>
                                                     </IonRow>
-                                                    <IonRow style={{marginTop:20}}>
-                                                        {item1.TalkList && item1.TalkList.map((item4: any, index: number) => {
-                                                        return <IonRow key={index}> <IonCol size="2"  style={{padding:0,paddingRight:10}}>
-                                                            <IonAvatar><img className='icon-circle full-width' src={parseUrl(item4.Role.Avator)}/></IonAvatar>
+                                                    <IonRow style={{marginTop: 20}}>
+                                                        {item1.talkList && item1.talkList.map((item4: any, index: number) => {
+                                                            return <IonRow key={index}> <IonCol size="2" style={{
+                                                                padding: 0,
+                                                                paddingRight: 10
+                                                            }}>
+                                                                <IonAvatar><img className='icon-circle full-width'
+                                                                                src={parseUrl(item4.Role.Avator)}/></IonAvatar>
 
-                                                        </IonCol>
-                                                        <IonCol size="10">
+                                                            </IonCol>
+                                                                <IonCol size="10">
 
-                                                            <div style={{fontWeight:700,fontSize:16}}>{item4.Role.RoleName}</div>
-                                                            <div style={{marginTop:5,color:'#999'}}>By {localStorage.getItem("name")}</div>
-                                                            <div style={{marginTop:10}}>{item4.TalkContent}</div>
-                                                        </IonCol></IonRow>
+                                                                    <div style={{
+                                                                        fontWeight: 700,
+                                                                        fontSize: 16
+                                                                    }}>{item4.Role.RoleName}</div>
+                                                                    <div style={{
+                                                                        marginTop: 5,
+                                                                        color: '#999'
+                                                                    }}>By {localStorage.getItem("name")}</div>
+                                                                    <div
+                                                                        style={{marginTop: 10}}>{item4.TalkContent}</div>
+                                                                </IonCol></IonRow>
                                                         })}
                                                     </IonRow>
                                                 </IonGrid>
@@ -337,7 +421,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                 })}
                             </div>
 
-                            {index==list.length -1 && <div className='ion-padding-top ion-padding-bottom'>
+                            {index == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 && <div className='ion-padding-top ion-padding-bottom'>
                                 <button className='full-width common-button'>Bong</button>
                             </div>}
                         </div>
@@ -345,11 +429,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     })}
 
 
-
-
                 </IonList>
 
-                {body && body.TimelineList && body.TimelineList.length > 0 && body.TimelineList[body.TimelineList.length - 1].TimelineType == 3 &&
+                {body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 &&
                 <IonFab vertical="bottom" horizontal="end" slot="fixed">
                     <IonFabButton onClick={showSendMsg}>
                         <IonIcon icon={send}/>
@@ -357,7 +439,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 </IonFab>}
             </IonContent>
 
-            {showSend && body && body.TimelineList && body.TimelineList.length > 0 && body.TimelineList[body.TimelineList.length - 1].TimelineType == 3 &&
+            {showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 &&
             <IonFooter className='ion-padding-start ion-padding-end cursor'
                        style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
                 <IonSegment style={{padding: 0, margin: 0}}
@@ -372,12 +454,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </IonSegmentButton>
                 </IonSegment>
                 <IonItem lines="none" onClick={() => {
-                    history.push({pathname:`/searchRole/${verseId}`,state:{
+                    history.push({
+                        pathname: `/searchRole/${verseId}`, state: {
                             select: 1
-                        }})
+                        }
+                    })
                 }}>
                     {
-                        role && role.roleId  > 0 && <><IonAvatar slot="start">
+                        role && role.roleId > 0 && <><IonAvatar slot="start">
                             <img src={parseUrl(role.roleAvator)}/>
                         </IonAvatar>
                             <IonLabel>{role.roleName}</IonLabel></>

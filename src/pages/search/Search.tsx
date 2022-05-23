@@ -2,12 +2,12 @@ import {
     IonCard,
     IonCardHeader, IonCol,
     IonContent, IonGrid,
-    IonHeader, IonItemDivider,
+    IonHeader, IonInfiniteScroll, IonInfiniteScrollContent, IonItemDivider,
     IonItemGroup, IonList,
-    IonPage, IonRow,
+    IonPage, IonRefresher, IonRefresherContent, IonRow,
     IonSearchbar,
     IonTitle,
-    IonToolbar, useIonViewWillEnter
+    IonToolbar, RefresherEventDetail, useIonToast, useIonViewWillEnter
 } from '@ionic/react';
 import './Search.css';
 import {useState} from "react";
@@ -18,36 +18,62 @@ import * as React from "react";
 import {RouteComponentProps} from "react-router";
 import parseUrl from "../../util/common";
 import {HomeVerseApi} from "../../service/Api";
+import {chevronDownCircleOutline} from "ionicons/icons";
 
 
 interface MenuProps extends RouteComponentProps {}
 
+let start = 1;
+
 const Search: React.FC<MenuProps> = ({history}) => {
 
     const [searchText, setSearchText] = useState('');
-    const [start, setStart] = useState(0);
     const [list, setList] = useState<any>([]);
+    const [present, dismiss] = useIonToast();
+    const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
+
 
     useIonViewWillEnter(() => {
-        getData();
+        start = 1;
+        loadData();
     });
 
-    const getData = () => {
+    const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        start = 1;
+        loadData();
+        setTimeout(() => {
+            console.log('Async operation has ended');
+            event.detail.complete();
+        }, 3000);
+    };
+
+
+    const loadData = (ev?: any) => {
         const data = {
             Start: start,
             Offset: 10
         };
+        let arrList: any = []
+        if (start != 1) {
+            arrList = list
+        }
 
         HomeVerseApi(data).then((res: any) => {
             console.info("res.MVserse")
-            console.info(res.MVerse)
-
-            console.info("res.MVserse1")
-            let list = res.MVerse;
-            let newList = [...list];
-            console.info("newList")
-            console.info(newList)
-            setList(newList)
+            let newData = res.MVerse;
+            console.info(newData)
+            if (ev && ev.target) {
+                ev.target.complete();
+            }
+            if (newData && newData.length > 0) {
+                let newList = [...arrList, ...newData];
+                console.info("newList")
+                console.info(newList)
+                setList(newList);
+                start = start + 1
+            } else {
+                setInfiniteDisabled(true)
+            }
 
         })
 
@@ -60,72 +86,105 @@ const Search: React.FC<MenuProps> = ({history}) => {
                     <IonTitle>Search</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent fullscreen>
+
+            <IonContent>
+
                 <IonItemDivider sticky>
-                <IonSearchbar  showCancelButton="never" placeholder="Search"
-                              onIonChange={e => setSearchText(e.detail.value!)}/>
+                    <IonSearchbar  showCancelButton="never" placeholder="Search"
+                                   onIonChange={e => setSearchText(e.detail.value!)}/>
                 </IonItemDivider>
+
+
+                <IonRefresher slot="fixed" style={{background:'#fff',color:'#000'}} onIonRefresh={doRefresh}>
+                    <IonRefresherContent
+                        pullingIcon={chevronDownCircleOutline}
+                        pullingText="Pull to refresh"
+                        refreshingSpinner="circles"
+                        refreshingText="Refreshing...">
+                    </IonRefresherContent>
+                </IonRefresher>
 
                 <IonList lines="none">
 
 
                     {list.map((item: any, index: number) => {
 
-                        return <IonCard className='cursor' style={{background: '#22bc87'}} onClick={() => {
+                        return <IonCard style={{background:'#000'}} key={index} className='cursor' onClick={() => {
                             history.push(`/verseDetail/${item.verseId}`);
                         }}>
-                            <img src={parseUrl(item.verseBanner)}
-                                 style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                            <div key={index} style={{
+                                background: "url(" + parseUrl(item.verseBanner) + ")",
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center',
+                                color: item.MainColor,
+                                backgroundSize: 'cover'
+                            }}>
+                                <div className='blur'>
+                                    <img src={parseUrl(item.verseBanner)}
+                                         style={{width: '100%', height: 240, objectFit: 'cover'}}/>
 
 
-                            <IonCardHeader>
-                                <div style={{fontSize: 32, color: '#fff', fontWeight: 'bold'}}>{item.verseName}</div>
-                                <p style={{color: '#fff'}}>
-                                    {item.verseDesc}
-                                </p>
-                            </IonCardHeader>
+                                    <IonCardHeader>
+                                        <div style={{
+                                            fontSize: 32,
+                                            color: '#fff',
+                                            fontWeight: 'bold'
+                                        }}>{item.verseName}</div>
+                                        <p style={{color: '#fff'}}>
+                                            {item.verseDesc}
+                                        </p>
+                                    </IonCardHeader>
 
-                            {item.TimelineList && item.TimelineList.map((item: any, index: number) => {
+                                    <div style={{paddingBottom:15}}>
 
-                                return <IonCard key={index} className='cursor'
-                                                style={{background: '#5d58e0', color: '#fff'}}>
+                                        {item.TimelineList && item.TimelineList.map((item: any, index: number) => {
 
-                                    {
-                                        item.TimelineType == 2 ? <p   style={{padding:'5px 15px'}}>
-                                            {item.Expression}
-                                        </p> : item.TimelineType == 4 ? <div  style={{padding:'5px 15px'}}>
-                                            {item.Dices.map((item: any, index: number) => {
-                                                return <div key={index} className='row' style={{margin: '10px 0'}}>
+                                            return <IonCard key={index} className='cursor'
+                                                            style={{marginBottom:0,background: 'rgba(0, 0, 0, 0.4)', color: '#fff'}}>
 
-
-                                                    <img style={{width: 40, height: 40,borderRadius:40}} src={parseUrl(item.Role.Avator)}/>
-
-                                                    <div style={{marginLeft: 20}}>
-                                                        {item.Role.RoleName}
-                                                    </div>
-                                                    <div style={{flex: 1}}/>
-                                                    <div>
-                                                        {item.DiceValue}
-                                                    </div>
-
-                                                </div>
-                                            })
-                                            }
-                                        </div> : item.TimelineType == 3 ? <>
-                                            <IonGrid style={{padding:'5px 15px'}}>
-                                                <IonRow  style={{padding:0,margin:0}}>
-                                                    <div>
-                                                        Say anything:
-                                                    </div>
-                                                </IonRow>
-                                            </IonGrid>
-                                        </> : <></>
-                                    }
-
-                                </IonCard>
+                                                {
+                                                    item.timelineType == 2 ? <p style={{padding: '5px 15px'}}>
+                                                        {item.expression}
+                                                    </p> : item.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                                        {item.Dices.map((item: any, index: number) => {
+                                                            return <div key={index} className='row'
+                                                                        style={{margin: '10px 0'}}>
 
 
-                            })}
+                                                                <img style={{width: 40, height: 40, borderRadius: 40}}
+                                                                     src={parseUrl(item.Role.Avator)}/>
+
+                                                                <div style={{marginLeft: 20}}>
+                                                                    {item.Role.RoleName}
+                                                                </div>
+                                                                <div style={{flex: 1}}/>
+                                                                <div>
+                                                                    {item.DiceValue}
+                                                                </div>
+
+                                                            </div>
+                                                        })
+                                                        }
+                                                    </div> : item.timelineType == 3 ? <>
+                                                        <IonGrid style={{padding: '5px 15px'}}>
+                                                            <IonRow style={{padding: 0, margin: 0}}>
+                                                                <div>
+                                                                    Say anything:
+                                                                </div>
+                                                            </IonRow>
+                                                        </IonGrid>
+                                                    </> : <></>
+                                                }
+
+                                            </IonCard>
+
+
+                                        })}
+
+                                    </div>
+
+                                </div>
+                            </div>
 
                         </IonCard>
 
@@ -133,7 +192,20 @@ const Search: React.FC<MenuProps> = ({history}) => {
                     })}
 
                 </IonList>
+
+                <IonInfiniteScroll
+                    onIonInfinite={loadData}
+                    threshold="100px"
+                    disabled={isInfiniteDisabled}
+                >
+                    <IonInfiniteScrollContent
+                        loadingSpinner="bubbles"
+                        loadingText="Loading more data..."
+                    />
+                </IonInfiniteScroll>
+
             </IonContent>
+
         </IonPage>
     );
 };
