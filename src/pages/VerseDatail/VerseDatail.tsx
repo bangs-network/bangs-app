@@ -33,9 +33,16 @@ import {
     IonSelectOption,
     IonSelect,
     IonFab,
-    IonFabButton, useIonToast, IonLoading
+    IonFabButton, useIonToast, IonLoading, IonRefresher, IonRefresherContent, RefresherEventDetail
 } from '@ionic/react';
-import {addCircle, addCircleOutline, arrowForwardCircle, calendar, send} from "ionicons/icons";
+import {
+    addCircle,
+    addCircleOutline,
+    arrowForwardCircle,
+    calendar,
+    chevronDownCircleOutline,
+    send
+} from "ionicons/icons";
 import * as React from "react";
 import moreIcon from "../../img/more.png";
 
@@ -54,6 +61,8 @@ import {TalkCreateApi, VersePointApi} from "../../service/Api";
 interface MenuProps extends RouteComponentProps {
 }
 
+let start = 1;
+
 const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const [showPopover, setShowPopover] = useState(false);
@@ -67,12 +76,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const loadState = useAppSelector(state => state.loadStateSlice);
     const dispatch = useAppDispatch();
     const [roleList, setRoleList] = useState<any>([]);
+    const [timeList, setTimeList] = useState<any>([]);
     const [talkContent, setTalkContent] = useState<any>('');
     const [role, setRole] = useState<any>();
     const [present, dismiss] = useIonToast();
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
     const roleData: any = useAppSelector(state => state.roleSlice);
     const [showLoading, setShowLoading] = useState(false);
+    const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
 
     useEffect(() => {
         console.info("roleData===")
@@ -89,16 +100,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     }, [roleData.roleId]);
 
     const presentPopover = (e: React.MouseEvent) => {
+        console.info("presentPopover===")
         if (!localStorage.getItem("SessionID")) {
             present('Please Login', 3000);
             return
         }
+        console.info("presentPopover2===")
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };
 
     useIonViewWillEnter(() => {
         dispatch(saveLoadState({tag: 'VerseDetail', state: 0}));
+        start = 1;
         getData();
         getRoles();
     });
@@ -107,10 +121,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     useEffect(() => {
         console.info(loadState)
         if (loadState && loadState.tag == 'VerseDetail' && loadState.state == 1) {
+            start = 1;
             getData()
         }
     }, [loadState.tag]);
 
+
+    const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        getData();
+        setTimeout(() => {
+            console.log('Async operation has ended');
+            event.detail.complete();
+        }, 3000);
+    };
 
     const getData = () => {
         let params: any = match.params
@@ -118,7 +141,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         setVerseId(params.id);
         const data = {
             ID: params.id,
-            Start:1,
+            Start:start,
             Offset:10
         };
         axios.get('https://api.bangs.network/verse/detail', {
@@ -126,36 +149,62 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         }).then(function (response: any) {
             if (response?.data?.body) {
 
+                if (start == 1) {
+                    setTimeList([]);
+                }
+
                 let list: any = [];
 
 
                 setIsKeeper(response?.data?.body.IsKeeper);
 
-                let timelineList = response?.data?.body.Timelines;
-                if (timelineList && timelineList.length > 0) {
+                let sTimeList = response?.data?.body.Timelines;
 
-                    if (timelineList[0].timelineType != 1){
-                        getTheme(timelineList[0].theme.ThemeID,response?.data?.body);
-                        return
+                if (sTimeList && sTimeList.length > 0) {
+
+                    let timelineList = [];
+                    if (start == 1){
+                        timelineList = sTimeList
+                        setTimeList(sTimeList);
+                    }  else {
+                       timelineList = [...sTimeList,...timeList];
+                        setTimeList(timelineList);
                     }
 
-                    let item;
-                    for (let i = 0; i < timelineList.length; i++) {
-                        item = timelineList[i];
-                        if (item.timelineType == 1) {
-                            list.push(item)
-                        } else {
-                            let points: any = list[list.length - 1].points
-                            if (!points) {
-                                list[list.length - 1].points = []
+                    console.info("timelineList11===",timelineList)
+                    start = start + 1;
+                    if (timelineList && timelineList.length > 0) {
+                        if (timelineList[0].timelineType != 1){
+                            if (start == 1){
+                                setBody(response?.data?.body)
                             }
-                            list[list.length - 1].points.push(item)
+                            getTheme(timelineList[0].theme.ThemeID,timelineList);
+                            return
                         }
-                    }
-                    let newList = [...list];
 
-                    setList(newList)
-                    setBody(response?.data?.body)
+                        let item;
+                        for (let i = 0; i < timelineList.length; i++) {
+                            item = timelineList[i];
+                            if (item.timelineType == 1) {
+                                list.push(item)
+                            } else {
+                                let points: any = list[list.length - 1].points
+                                if (!points) {
+                                    list[list.length - 1].points = []
+                                }
+                                list[list.length - 1].points.push(item)
+                            }
+                        }
+                        let newList = [...list];
+
+                        setList(newList)
+                        if (start == 1){
+                            setBody(response?.data?.body)
+                        }
+
+                    }
+                } else {
+                    setInfiniteDisabled(true)
                 }
 
             }
@@ -166,12 +215,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         })
     };
 
-    const getTheme = (themeID:number, body:any) => {
+    const getTheme = (themeID:number, timelineList:any) => {
         const data = {
             ID: Number(themeID)
         };
         let list: any = [];
-        let timelineList = body.Timelines;
 
         axios.get('https://api.bangs.network/timeline/theme', {
             params: data
@@ -183,9 +231,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     dices: [],
                     expression: "",
                     likeCount: 0,
-                    mainColor: timelineList[0].mainColor,
-                    mainPic: timelineList[0].mainPic,
-                    music: timelineList[0].music,
+                    mainColor: themeBody.mainColor,
+                    mainPic: themeBody.mainPic,
+                    music: themeBody.music,
                     talkID: 0,
                     talkList: [],
                     theme: {ThemeID: themeID},
@@ -209,7 +257,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 let newList = [...list];
 
                 setList(newList)
-                setBody(response?.data?.body)
             }
         }).catch(function (error: any) {
             console.info(error)
@@ -303,7 +350,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         textAlign: 'center'
                     }}>{body ? body.verseName : 'Bangs'}</IonTitle>
                     {isKeeper == 1 && <IonButtons slot="end">
-                        <IonButton onClick={()=>presentPopover}>
+                        <IonButton onClick={presentPopover}>
                             <IonIcon slot="icon-only" icon={addCircleOutline}/>
                         </IonButton>
                     </IonButtons>}
@@ -312,6 +359,16 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
             </IonHeader>
             <IonContent style={{position: 'relative'}}>
+
+
+                <IonRefresher slot="fixed" style={{background:'#fff',color:'#000'}} onIonRefresh={doRefresh}>
+                    <IonRefresherContent
+                        pullingIcon={chevronDownCircleOutline}
+                        pullingText="Pull to refresh"
+                        refreshingSpinner="circles"
+                        refreshingText="Refreshing...">
+                    </IonRefresherContent>
+                </IonRefresher>
 
                 <IonList lines="none" style={{padding: 0, border: 0, margin: 0}}>
 
@@ -353,7 +410,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                             item1.timelineType == 2 ? <p style={{padding: '5px 15px'}}>
                                                 {item1.expression}
                                             </p> : item1.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
-                                                {item1.Dices.map((item2: any, index: number) => {
+                                                {item1.dices.map((item2: any, index: number) => {
                                                     return <div key={index} className='row' style={{margin: '10px 0'}}>
 
 
