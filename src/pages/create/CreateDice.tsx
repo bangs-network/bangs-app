@@ -25,6 +25,7 @@ interface MenuProps extends RouteComponentProps {}
 const CreateDice: React.FC<MenuProps> = ({history,match}) => {
 
     const [list,setList] = useState<any>([]);
+    const [roleIds,setRoleIds] = useState<any>([]);
     const [dices,setDices] = useState<any>([]);
     const roleData:any = useAppSelector(state => state.roleSlice);
     const [showLoading, setShowLoading] = useState(false);
@@ -50,9 +51,12 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
             dices.push(dice);
             let newDiceList = [...dices];
             setDices(newDiceList);
-            console.info("useEffect");
-            console.info(newList);
-            console.info(newDiceList);
+
+
+            let roleId = roleData.roleId;
+            roleIds.push(roleId);
+            let newRoleList = [...roleIds];
+            setRoleIds(newRoleList);
             dispatch(saveRoleState({ roleId: 0, roleAvator: '', roleName:'' , amount: ''}))
         }
     },[roleData.roleId]);
@@ -93,8 +97,9 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
         let newDiceList = [...dices];
         setDices(newDiceList);
 
-        console.info("deleteItem");
-        console.info(newList);
+        roleIds.splice(index, 1);
+        let newRoleList = [...roleIds];
+        setRoleIds(newRoleList);
     };
 
     const create = () => {
@@ -170,7 +175,11 @@ const CreateDice: React.FC<MenuProps> = ({history,match}) => {
 
                 <IonItem lines='none'  style={{cursor:'pointer'}} onClick={() => {
                     let params:any = match.params
-                    history.push(`/searchRole/${params.id}`);
+                    history.push({
+                        pathname: `/searchRole/${params.id}`, state: {
+                            selectList: roleIds
+                        }
+                    });
                 }}>
                     <IonIcon  size={'large'} slot="start" icon={addCircleOutline}/>
                     <IonLabel style={{color:'#999'}}>Add Dice</IonLabel>

@@ -33,7 +33,7 @@ import {
     IonSelectOption,
     IonSelect,
     IonFab,
-    IonFabButton, useIonToast, IonLoading, IonRefresher, IonRefresherContent, RefresherEventDetail
+    IonFabButton, useIonToast, IonLoading, IonRefresher, IonRefresherContent, RefresherEventDetail, IonInput
 } from '@ionic/react';
 import {
     addCircle,
@@ -45,6 +45,7 @@ import {
 } from "ionicons/icons";
 import * as React from "react";
 import moreIcon from "../../img/more.png";
+import addIcon from "../../img/add.png";
 
 import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
@@ -56,7 +57,8 @@ import parseUrl from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {saveRoleState} from "../state/slice/roleSlice";
-import {TalkCreateApi, VersePointApi} from "../../service/Api";
+import {RoleCreateApi, TalkBongApi, TalkCreateApi, VersePointApi} from "../../service/Api";
+import UploadImage from "../../components/widget/UploadImage";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -67,7 +69,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const [showPopover, setShowPopover] = useState(false);
     const [isKeeper, setIsKeeper] = useState(0);
+    const [replyId, setReplyId] = useState(0);
+    const [replyContent, setReplyContent] = useState('');
     const [showSend, setShowSend] = useState(false);
+    const [roleStatus, setRoleStatus] = useState<any>("1");
+    const [roleName, setRoleName] = useState<any>("");
+    const [roleImage, setRoleImage] = useState<any>("");
+    const [note, setNote] = useState<any>("");
     const [body, setBody] = useState<any>();
     const [list, setList] = useState<any>();
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent>();
@@ -77,13 +85,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const dispatch = useAppDispatch();
     const [roleList, setRoleList] = useState<any>([]);
     const [timeList, setTimeList] = useState<any>([]);
+    const [bongList, setBongList] = useState<any>([]);
     const [talkContent, setTalkContent] = useState<any>('');
     const [role, setRole] = useState<any>();
     const [present, dismiss] = useIonToast();
-    const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
+    const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,1)');
     const roleData: any = useAppSelector(state => state.roleSlice);
     const [showLoading, setShowLoading] = useState(false);
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
+    const contentRef = useRef<any>(null);
 
     useEffect(() => {
         console.info("roleData===")
@@ -127,7 +137,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     }, [loadState.tag]);
 
 
+    const scrollToBottom = () => {
+        const timer = setTimeout(() => contentRef.current?.scrollToBottom(), 1000);
+        return () => clearTimeout(timer);
+    };
+
     const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+        if (start == 1) {
+            start = 2
+        }
         getData();
         setTimeout(() => {
             console.log('Async operation has ended');
@@ -141,8 +159,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         setVerseId(params.id);
         const data = {
             ID: params.id,
-            Start:start,
-            Offset:10
+            Start: start,
+            Offset: 10
         };
         axios.get('https://api.bangs.network/verse/detail', {
             params: data
@@ -151,6 +169,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                 if (start == 1) {
                     setTimeList([]);
+                    setBody(response?.data?.body)
+
                 }
 
                 let list: any = [];
@@ -163,22 +183,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 if (sTimeList && sTimeList.length > 0) {
 
                     let timelineList = [];
-                    if (start == 1){
+                    if (start == 1) {
                         timelineList = sTimeList
                         setTimeList(sTimeList);
-                    }  else {
-                       timelineList = [...sTimeList,...timeList];
+                    } else {
+                        timelineList = [...sTimeList, ...timeList];
                         setTimeList(timelineList);
                     }
 
-                    console.info("timelineList11===",timelineList)
+                    console.info("timelineList11===", timelineList)
                     start = start + 1;
                     if (timelineList && timelineList.length > 0) {
-                        if (timelineList[0].timelineType != 1){
-                            if (start == 1){
-                                setBody(response?.data?.body)
-                            }
-                            getTheme(timelineList[0].theme.ThemeID,timelineList);
+                        if (timelineList[0].timelineType != 1) {
+                            getTheme(timelineList[0].theme.ThemeID, timelineList);
                             return
                         }
 
@@ -197,30 +214,32 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         }
                         let newList = [...list];
 
-                        setList(newList)
-                        if (start == 1){
-                            setBody(response?.data?.body)
-                        }
+                        setList(newList);
 
+                        console.info("list333=", newList)
                     }
                 } else {
                     setInfiniteDisabled(true)
                 }
 
+                if (start <= 2) {
+                    scrollToBottom()
+                }
+
             }
-            console.info("list=",list)
+            console.info("list=", list)
             console.info(response)
         }).catch(function (error: any) {
             console.info(error)
         })
     };
 
-    const getTheme = (themeID:number, timelineList:any) => {
+    const getTheme = (themeID: number, timelineList: any) => {
         const data = {
             ID: Number(themeID)
         };
         let list: any = [];
-
+        console.info("list1234=", timelineList)
         axios.get('https://api.bangs.network/timeline/theme', {
             params: data
         }).then(function (response: any) {
@@ -241,22 +260,30 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     verseId: timelineList[0].verseId,
                 };
                 list.push(themeItem)
-                let item;
                 for (let i = 0; i < timelineList.length; i++) {
-                    item = timelineList[i];
+                    let item = timelineList[i];
                     if (item.timelineType == 1) {
                         list.push(item)
                     } else {
-                        let points: any = list[list.length - 1].points
+                        let points: any = list[list.length - 1].points;
+                        console.info("list.length=", list.length - 1);
                         if (!points) {
+                            console.info("points=", points);
                             list[list.length - 1].points = []
                         }
-                        list[list.length - 1].points.push(item)
+                        if (!list[list.length - 1].points.includes(item)) {
+                            list[list.length - 1].points.push(item)
+                        }
+
                     }
+
                 }
                 let newList = [...list];
 
                 setList(newList)
+                if (start <= 2) {
+                    scrollToBottom()
+                }
             }
         }).catch(function (error: any) {
             console.info(error)
@@ -282,27 +309,133 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     };
 
     const showSendMsg = () => {
+        setReplyId(0);
         setShowSend(!showSend);
     };
 
-    const sendMsg = () => {
-        const roleId = role.roleId
-        const talkId = body.timelines[body.timelines.length - 1].talkID;
+    const reply = (talkId: any, talkContent: any) => {
+        setRoleStatus("1");
+        setShowSend(!showSend);
+        setReplyId(talkId);
+        setReplyContent(talkContent)
+    };
+
+    const bongItem = (talkId: any) => {
+
+        for (let i = 0; i < bongList.length; i++) {
+            if (bongList[i] == talkId) {
+                bongList.splice(i, 1);
+                setBongList([...bongList]);
+                return
+            }
+        }
+
+        bongList.push(talkId);
+        setBongList([...bongList])
+
+    };
+
+    const bong = () => {
+        if (!bongList || bongList.length < 1) {
+            present('Please Select bong Item', 3000);
+            return
+        }
+
         const data = {
-            RoleId: roleId,
-            TalkId: talkId,
-            TalkContent: talkContent
+            TalkIDs: bongList,
         };
         setShowLoading(true);
-        TalkCreateApi(data).then(function (response: any) {
-            setShowSend(false);
-            setTalkContent("");
+        TalkBongApi(data).then(function (response: any) {
+            start = 1;
             getData();
             setShowLoading(false)
         }).catch(function (error: any) {
             console.info(error);
             setShowLoading(false)
         });
+
+    };
+
+
+    const sendMsg = () => {
+
+        if (roleStatus == "2") {
+            if (!roleImage) {
+                present('Please upload role image', 3000);
+                return
+            }
+            if (!roleName) {
+                present('Please fill role Name', 3000);
+                return
+            }
+
+            if (!note) {
+                present('Please fill role detail', 3000);
+                return
+            }
+
+            const data = {
+                VerseID: verseId,
+                RoleName: roleName,
+                Note: note,
+                RoleAvator: roleImage,
+            };
+
+            setShowLoading(true);
+
+            RoleCreateApi(data).then(function (response: any) {
+                setShowLoading(false)
+                send(response.roleId);
+            }).catch(function (error: any) {
+                console.info(error);
+                setShowLoading(false)
+            });
+
+        } else {
+            if (!role || !role.roleId) {
+                present('Please Select role', 3000);
+                return
+            }
+
+            const roleId = role.roleId;
+            send(roleId)
+        }
+
+
+    };
+
+    const send = (roleId:number) => {
+
+
+        const talkId = body.Timelines[body.Timelines.length - 1].talkID;
+
+
+        if (!talkContent || talkContent.length < 1) {
+            present('Please fill content', 3000);
+            return
+        }
+        const data = {
+            RoleId: roleId,
+            TalkId: talkId,
+            ReplyTalkID: replyId,
+            TalkContent: talkContent.replace(/(\r\n)|(\n)/g, '<br/>')
+        };
+        setShowLoading(true);
+        TalkCreateApi(data).then(function (response: any) {
+            setShowSend(false);
+            setTalkContent("");
+            setRoleName("");
+            setRoleImage("");
+            setNote("");
+            start = 1;
+            getData();
+            setShowLoading(false)
+        }).catch(function (error: any) {
+            console.info(error);
+            setShowLoading(false)
+        });
+
+
     };
 
     const hexToRgba = (bgColor: string) => {
@@ -358,10 +491,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
             </IonHeader>
-            <IonContent style={{position: 'relative'}}>
+            <IonContent style={{position: 'relative'}} ref={contentRef}>
 
 
-                <IonRefresher slot="fixed" style={{background:'#fff',color:'#000'}} onIonRefresh={doRefresh}>
+                <IonRefresher slot="fixed" style={{background: '#fff', color: '#000'}} onIonRefresh={doRefresh}>
                     <IonRefresherContent
                         pullingIcon={chevronDownCircleOutline}
                         pullingText="Pull to refresh"
@@ -373,45 +506,67 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 <IonList lines="none" style={{padding: 0, border: 0, margin: 0}}>
 
 
-                    {list && list.length > 0 && list.map((item: any, index: number) => {
+                    {list && list.length > 0 && list.map((item: any, index0: number) => {
 
-                        return <div key={index} style={{
-                            background: "url(" + parseUrl(item.mainPic) + ")",
+                        return <div key={index0} style={{
+                            background: item.mainPic ? "url(" + parseUrl(item.mainPic) + ")" : 'none',
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center',
                             color: item.mainColor,
-
                             backgroundSize: 'cover'
                         }}>
-                            <div className='blur' style={{ paddingBottom: 15}}>
+                            <div className={item.mainPic ? 'blur' : ''} style={{paddingBottom: 15}}>
 
-                                <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
+                                {item.mainPic && <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
                                     <img src={parseUrl(item.mainPic)} style={{
                                         padding: 0,
                                         border: 0,
 
                                         margin: 0,
                                         width: '100vw',
-                                        height: 240,
+                                        height: 220,
                                         objectFit: 'cover'
                                     }}/>
-                                </IonItemDivider>
+                                </IonItemDivider>}
 
-                                {item && item.points && item.points.length > 0 && item.points.map((item1: any, index: number) => {
+                                {item && item.points && item.points.length > 0 && item.points.map((item1: any, index1: number) => {
 
-                                    return <IonCard key={index} className='cursor'
+                                    return <IonCard key={index1} className='cursor'
                                                     style={{
-                                                        background: hexToRgba(item.backgroundColor),
+                                                        marginLeft: 15,
+                                                        marginRight: 15,
+                                                        background: item.mainPic ? hexToRgba(item.backgroundColor) : item.backgroundColor,
                                                         color: item.mainColor,
                                                         marginBottom: 0
-                                                    }}>
+                                                    }}
+                                    >
 
                                         {
-                                            item1.timelineType == 2 ? <p style={{padding: '5px 15px'}}>
-                                                {item1.expression}
-                                            </p> : item1.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
-                                                {item1.dices.map((item2: any, index: number) => {
-                                                    return <div key={index} className='row' style={{margin: '10px 0'}}>
+                                            item1.timelineType == 2 ? <div>
+                                                {item1.visible ? <>{item1.mainPic &&
+                                                <img src={parseUrl(item1.mainPic)} style={{
+                                                    padding: 0,
+                                                    border: 0,
+                                                    margin: 0,
+                                                    width: '100vw',
+                                                    height: 220,
+                                                    objectFit: 'cover'
+                                                }}/>}
+                                                    <div style={{padding: '15px 15px'}}
+                                                         dangerouslySetInnerHTML={{__html: item1.expression}}>
+                                                    </div>
+                                                </> : <div style={{
+                                                    width: '100%',
+                                                    height: 220,
+                                                    lineHeight: '220px',
+                                                    fontSize: 20,
+                                                    fontWeight: 'bold',
+                                                    background: 'red',
+                                                    textAlign: 'center'
+                                                }}>Only some roles can see this expression</div>}
+                                            </div> : item1.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                                {item1.dices.map((item2: any, index2: number) => {
+                                                    return <div key={index2} className='row' style={{margin: '10px 0'}}>
 
 
                                                         <img style={{width: 40, height: 40, borderRadius: 40}}
@@ -445,9 +600,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                             </IonAvatar>
                                                         </IonCol>
                                                     </IonRow>
-                                                    <IonRow style={{marginTop: 20}}>
-                                                        {item1.talkList && item1.talkList.map((item4: any, index: number) => {
-                                                            return <IonRow key={index}> <IonCol size="2" style={{
+                                                    <IonRow>
+                                                        {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
+                                                            return <IonRow key={index3} style={{width: '100%'}}> <IonCol
+                                                                size="2" style={{
                                                                 padding: 0,
                                                                 paddingRight: 10
                                                             }}>
@@ -461,14 +617,62 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                         fontWeight: 700,
                                                                         fontSize: 16
                                                                     }}>{item4.Role.RoleName}</div>
+                                                                    {/*<div style={{*/}
+                                                                    {/*marginTop: 5,*/}
+                                                                    {/*color: '#999'*/}
+                                                                    {/*}}>By {localStorage.getItem("name")}</div>*/}
+                                                                    {item4.ReplyContent && <div style={{
+                                                                        marginTop: 10,
+                                                                        background: '#F1F3F5',
+                                                                        borderRadius: 5,
+                                                                        padding: '10px',
+                                                                        color: '#000'
+                                                                    }}
+                                                                                                dangerouslySetInnerHTML={{__html: item4.ReplyContent}}/>}
+                                                                    <div style={{marginTop: 10}}
+                                                                         dangerouslySetInnerHTML={{__html: item4.TalkContent}}/>
+                                                                    {index0 == list.length - 1 && index1 == item.points.length - 1 &&
                                                                     <div style={{
-                                                                        marginTop: 5,
-                                                                        color: '#999'
-                                                                    }}>By {localStorage.getItem("name")}</div>
-                                                                    <div
-                                                                        style={{marginTop: 10}}>{item4.TalkContent}</div>
-                                                                </IonCol></IonRow>
+                                                                        marginTop: 10,
+                                                                        fontSize: 12
+                                                                    }}><span style={{
+                                                                        background: '#0620F9',
+                                                                        borderRadius: 5,
+                                                                        padding: '4px 8px'
+                                                                    }}
+                                                                             onClick={() => reply(item4.TalkID, item4.TalkContent)}>Reply</span>
+                                                                        {isKeeper && <span style={{
+                                                                            marginLeft: 10,
+                                                                            background: !bongList.includes(item4.TalkID) ? '#0620F9' : 'green',
+                                                                            borderRadius: 5,
+                                                                            padding: '4px 8px'
+                                                                        }} onClick={() => {
+                                                                            bongItem(item4.TalkID);
+                                                                        }
+                                                                        }>Bong</span>}
+                                                                    </div>}
+                                                                    <div style={{
+                                                                        borderTop: '0.5px solid #D6D6D6',
+                                                                        marginTop: '20px'
+                                                                    }}/>
+                                                                </IonCol>
+                                                            </IonRow>
                                                         })}
+                                                        {index0 == list.length - 1 && index1 == item.points.length - 1 &&
+                                                        <IonRow
+                                                            style={{width: '100%', marginBottom: 20, marginTop: 20}}>
+                                                            <div onClick={showSendMsg} style={{
+                                                                width: '100%',
+                                                                height: 32,
+                                                                lineHeight: '32px',
+                                                                paddingLeft: 15,
+                                                                borderRadius: 30,
+                                                                color: '#bcbcbc',
+                                                                border: '1px solid #f5f6f6',
+                                                                background: '#fff'
+                                                            }}>Add a Comment
+                                                            </div>
+                                                        </IonRow>}
                                                     </IonRow>
                                                 </IonGrid>
                                             </> : <></>
@@ -478,8 +682,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                 })}
                             </div>
 
-                            {index == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 && <div className='ion-padding-top ion-padding-bottom'>
-                                <button className='full-width common-button'>Bong</button>
+                            {index0 == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
+                            <div className='ion-padding-top ion-padding-bottom'>
+                                <button onClick={bong} className='full-width common-button'>Bong</button>
                             </div>}
                         </div>
 
@@ -488,29 +693,30 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                 </IonList>
 
-                {body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 &&
-                <IonFab vertical="bottom" horizontal="end" slot="fixed">
-                    <IonFabButton onClick={showSendMsg}>
-                        <IonIcon icon={send}/>
-                    </IonFabButton>
-                </IonFab>}
             </IonContent>
 
-            {showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].TimelineType == 3 &&
+            {showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
             <IonFooter className='ion-padding-start ion-padding-end cursor'
                        style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
+
+
                 <IonSegment style={{padding: 0, margin: 0}}
-                            onIonChange={e => console.log('Segment selected', e.detail.value)}>
-                    <IonSegmentButton value="roles">
+                            onIonChange={e => {
+                                setRole(undefined);
+                                setRoleStatus(e.detail.value)
+                            }}>
+                    <IonSegmentButton value="1">
                         <IonLabel style={{textTransform: 'none'}}>In Role</IonLabel>
                     </IonSegmentButton>
-                    <IonSegmentButton value="addRole" onClick={() => {
-                        history.push('/editRole/0');
-                    }}>
+                    <IonSegmentButton value="2">
                         <IonLabel style={{textTransform: 'none'}}>Make Role</IonLabel>
                     </IonSegmentButton>
                 </IonSegment>
-                <IonItem lines="none" onClick={() => {
+
+                <IonItem lines="none" style={{marginTop: 10}} onClick={() => {
+                    if (roleStatus == "2") {
+                        return
+                    }
                     history.push({
                         pathname: `/searchRole/${verseId}`, state: {
                             select: 1
@@ -523,8 +729,29 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         </IonAvatar>
                             <IonLabel>{role.roleName}</IonLabel></>
                     }
-                    <IonLabel slot='end' style={{color: '#ddd'}}>Select Role</IonLabel>
+                    {
+                        roleStatus == "2" && !role && <>
+                            <UploadImage imgUrl={roleImage} setImgUrl={setRoleImage} width={50}/>
+                            <IonInput style={{marginLeft: 15, border: '1px solid #0620F9'}} value={roleName}
+                                      placeholder="Input Role Name" onIonChange={e => setRoleName(e.detail.value!)}/>
+                        </>
+                    }
+                    {roleStatus == "1" && !role &&
+                    <IonLabel slot='start' style={{color: '#0620F9'}}>Select Role</IonLabel>}
                 </IonItem>
+
+                {
+                    roleStatus == "2" && !role && <IonItem color='medium' style={{margin: '10px 0'}}>
+                        <IonTextarea rows={2} value={note} placeholder="Input Role Detail"
+                                     onIonChange={e => setNote(e.detail.value!)}/></IonItem>
+                }
+
+                {replyId > 0 &&
+                <IonItem color='medium' style={{background: 'green', margin: '10px 0', borderRadius: 5}}>
+                    <div style={{color: '#fff'}}>Reply To: {replyContent}</div>
+                </IonItem>}
+
+
                 <IonItem color='medium' style={{margin: '10px 0'}}>
                     <IonTextarea rows={3} value={talkContent} placeholder="Say anything"
                                  onIonChange={e => setTalkContent(e.detail.value!)}/>

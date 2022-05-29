@@ -41,8 +41,8 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
     const [colorType, setColorType] = useState<number>(0);
     const [mainColor, setMainColor] = useState<string>('#ffffff');
     const [backColor, setBackColor] = useState<string>('#000000');
-    const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
-    const [backImage, setBackImage] = useState<string>('https://api.bangs.network/images/preview/53/26641d23-a23a-4baf-adf2-ca02107dda5d.png');
+    const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,1)');
+    const [backImage, setBackImage] = useState<string>('');
     const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
     const [present, dismiss] = useIonLoading();
     const [showLoading, setShowLoading] = useState(false);
@@ -50,7 +50,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
     //1=theme， 2=expression，3=talk，4=dice
     //  Dice:[{"RoleID":1,"MaxValue":100}]
-    const createExp = () => {
+    const createTheme = () => {
         setShowLoading(true)
         let params:any = match.params
         console.info(params.id);
@@ -99,7 +99,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
             parseInt('0x'+color.slice(4, 6)),
 
-            0.4
+            backImage?0.4:1
 
         ];
 
@@ -186,7 +186,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                     </IonItem>
 
                     <IonItem className='secondary-color'>
-                        <div>Banner Image:</div>
+                        <div>Theme Image:</div>
                     </IonItem>
 
                     <IonItem>
@@ -222,7 +222,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
             </IonContent>
 
-            <IonFooter onClick={createExp} className='ion-padding cursor'
+            <IonFooter onClick={createTheme} className='ion-padding cursor'
                        style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
                 Create Theme
             </IonFooter>

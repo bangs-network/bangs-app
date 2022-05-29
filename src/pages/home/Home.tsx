@@ -98,6 +98,9 @@ const Home: React.FC<MenuProps> = ({history}) => {
                 setList(newList);
                 start = start + 1
             } else {
+                if (start == 1){
+                    setList([]);
+                }
                 setInfiniteDisabled(true)
             }
 
@@ -152,7 +155,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                             }}>
                                 <div className='blur'>
                                     <img src={parseUrl(item.verseBanner)}
-                                         style={{width: '100%', height: 240, objectFit: 'cover'}}/>
+                                         style={{width: '100%', height: 220, objectFit: 'cover'}}/>
 
 
                                     <IonCardHeader>
@@ -161,9 +164,6 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                             color: '#fff',
                                             fontWeight: 'bold'
                                         }}>{item.verseName}</div>
-                                        <p style={{color: '#fff'}}>
-                                            {item.verseDesc}
-                                        </p>
                                     </IonCardHeader>
 
                                     <div style={{paddingBottom:15}}>
@@ -174,9 +174,9 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                         style={{marginBottom:0,background: 'rgba(0, 0, 0, 0.4)', color: '#fff'}}>
 
                                             {
-                                                item.timelineType == 2 ? <p style={{padding: '5px 15px'}}>
-                                                    {item.expression}
-                                                </p> : item.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                                item.timelineType == 2 ? <div style={{padding: '15px 15px'}}
+
+                                                    dangerouslySetInnerHTML={{__html: item.expression}} /> : item.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
                                                     {item.dices.map((item: any, index: number) => {
                                                         return <div key={index} className='row'
                                                                     style={{margin: '10px 0'}}>
@@ -197,11 +197,42 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                     })
                                                     }
                                                 </div> : item.timelineType == 3 ? <>
-                                                    <IonGrid style={{padding: '5px 15px'}}>
-                                                        <IonRow style={{padding: 0, margin: 0}}>
-                                                            <div>
-                                                                Say anything:
-                                                            </div>
+                                                    <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
+                                                        <IonRow>
+                                                            {item.talkList && item.talkList.map((item4: any, index3: number) => {
+                                                                return <IonRow key={index3} style={{width: '100%'}}> <IonCol
+                                                                    size="2" style={{
+                                                                    padding: 0,
+                                                                    paddingRight: 10
+                                                                }}>
+                                                                    <IonAvatar><img className='icon-circle full-width'
+                                                                                    src={parseUrl(item4.Role.Avator)}/></IonAvatar>
+
+                                                                </IonCol>
+                                                                        <IonCol size="10">
+
+                                                                            <div style={{
+                                                                                fontWeight: 700,
+                                                                                fontSize: 16
+                                                                            }}>{item4.Role.RoleName}</div>
+                                                                            {item4.ReplyContent && <div style={{
+                                                                                marginTop: 10,
+                                                                                background: '#F1F3F5',
+                                                                                borderRadius: 5,
+                                                                                padding: '10px',
+                                                                                color: '#000'
+                                                                            }}
+                                                                                                        dangerouslySetInnerHTML={{__html: item4.ReplyContent}}/>}
+                                                                            <div style={{marginTop: 10}}
+                                                                                 dangerouslySetInnerHTML={{__html: item4.TalkContent}}/>
+                                                                        <div style={{
+                                                                            borderTop: '0.5px solid #D6D6D6',
+                                                                            marginTop: '20px'
+                                                                        }}/>
+                                                                    </IonCol>
+                                                                </IonRow>
+                                                            })}
+
                                                         </IonRow>
                                                     </IonGrid>
                                                 </> : <></>

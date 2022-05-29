@@ -9,11 +9,12 @@ import parseUrl from "../../util/common";
 interface ImgInfo {
 
     imgUrl: string,
-    setImgUrl: any
+    setImgUrl: any,
+    width?: any,
 
 }
 
-const UploadImage = ({imgUrl, setImgUrl}: ImgInfo) => {
+const UploadImage = ({imgUrl, setImgUrl,width}: ImgInfo) => {
 
     const [showLoading, setShowLoading] = useState(false);
 
@@ -57,10 +58,9 @@ const UploadImage = ({imgUrl, setImgUrl}: ImgInfo) => {
             message={'Please wait...'}
             duration={10000}
         />
-        <img onClick={uploadImage} className='cursor' style={{width:120,height:120,marginRight:20}}
-                src={addIcon}/>
-        {imgUrl  && <img onClick={uploadImage} className='cursor' style={{width:120,height:120}}
-                 src={parseUrl(imgUrl)}/>}
+        <img onClick={uploadImage} className='cursor' style={{width:width?width:120,height:width?width:120}}
+                src={imgUrl?parseUrl(imgUrl):addIcon}/>
+
     </>
 
 };

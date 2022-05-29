@@ -51,6 +51,7 @@ import CreateTheme from "./pages/create/CreateTheme";
 import EditRole from "./pages/role/EditRole";
 import {Provider} from "react-redux";
 import store from "./pages/state/app/store";
+import Search from "./pages/search/Search";
 
 setupIonicReact();
 
@@ -87,9 +88,9 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
         <IonApp>
             <Provider store={store}>
                 <IonReactHashRouter>
-                    <IonSplitPane contentId="main">
+                    <IonSplitPane contentId="main" style={{background:'#fff'}}>
                         <Menu/>
-                        <IonRouterOutlet id="main">
+                        <IonRouterOutlet id="main"  style={{maxWidth:600}}>
 
                             <Route path="/account" component={Account}/>
                             <Route path="/createTheme/:id" component={CreateTheme}/>

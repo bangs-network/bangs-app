@@ -33,19 +33,26 @@ const SearchRole: React.FC<MenuProps> = ({history,match}) => {
 
     const [searchText, setSearchText] = useState('');
     const [list,setList] = useState<any>([]);
+    const [selectList,setSelectList] = useState<any>([]);
     const dispatch = useAppDispatch();
     const [select,setSelect] = useState<any>(0);
 
     useEffect(() => {
         let location:any = history.location
-        if (location.state && location.state.state) {
-            setSelect(location.state.state.select)
+        console.info(location)
+        if (location.state && location.state.select) {
+            setSelect(location.state.select)
         }
-        getData()
+        let selectList = []
+        if (location.state && location.state.selectList) {
+            selectList = location.state.selectList
+        }
+        console.info(selectList)
+        getData(selectList)
     },[searchText]);
 
 
-    const getData = () => {
+    const getData = (selectList:any) => {
         let params:any = match.params
         const data = {
             VerseID:Number(params.id),
@@ -55,8 +62,16 @@ const SearchRole: React.FC<MenuProps> = ({history,match}) => {
         axios.get('https://api.bangs.network/role/search', {
             params:data
         }).then(function (response: any) {
+
             if (response?.data?.body?.roleList) {
-                setList(response?.data?.body?.roleList)
+                let roleList = response?.data?.body?.roleList;
+                let list = [];
+                for (let i = 0; i < roleList.length; i++) {
+                    if (!selectList.includes(roleList[i].roleId)){
+                        list.push(roleList[i])
+                    }
+                }
+                setList(list)
             }
             console.info(response)
         }).catch(function (error: any) {
@@ -76,9 +91,9 @@ const SearchRole: React.FC<MenuProps> = ({history,match}) => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-                        <IonBackButton/>
+                        <IonBackButton  color='secondary'/>
                     </IonButtons>
-                    <IonTitle>Search  Nft</IonTitle>
+                    <IonTitle >Search  Nft</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
