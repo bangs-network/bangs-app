@@ -2,7 +2,7 @@ import {RouteComponentProps, withRouter} from "react-router";
 import {setDarkMode} from "../../data/user/user.actions";
 import {
     IonAvatar, IonButton,
-    IonContent,
+    IonContent, IonFooter,
     IonIcon,
     IonItem,
     IonLabel,
@@ -25,12 +25,19 @@ import {
 } from "ionicons/icons";
 import {connect} from "../../data/connect";
 import headerIcon from "../../img/head.png";
+import profileIcon from "../../img/profile.png";
+import draftIcon from "../../img/draft.png";
+import historyIcon from "../../img/history.png";
+import helpIcon from "../../img/help.png";
+import aboutIcon from "../../img/about.png";
+import settingIcon from "../../img/setting.png";
 import {emitBox, ethWeb3} from "../emitWeb3/Connectors";
 import {default as React, useEffect, useState} from "react";
 import axios from "axios";
 import {encodePacked, keccak256} from "web3-utils";
 import qs from 'qs';
 import {ChainType} from "@emit-technology/emit-account-node-sdk/lib/types";
+import {ColumnRightWrapper, RowCenterWrapper, RowItemCenterWrapper, RowRightWrapper} from "../../theme/commonStyle";
 
 
 interface StateProps {
@@ -77,11 +84,11 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             setName(name)
         }
 
-        emitBox.onActiveAccountChanged((accounts:any) => {
+        emitBox.onActiveAccountChanged((accounts: any) => {
             setName(accounts.name);
-            localStorage.setItem("name",accounts.name);
+            localStorage.setItem("name", accounts.name);
         })
-    },[]);
+    }, []);
 
     const getNonce = (account: any) => {
         console.log("getNonce:");
@@ -119,10 +126,10 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 headers: {'content-type': 'application/x-www-form-urlencoded'},
                 data: qs.stringify(data),
                 url: 'https://api.bangs.network/account/login'
-            }).then((res:any) => {
+            }).then((res: any) => {
                 setShowLoading(false)
-                localStorage.setItem("SessionID",res.data.body.sessionID);
-                localStorage.setItem("account",account);
+                localStorage.setItem("SessionID", res.data.body.sessionID);
+                localStorage.setItem("account", account);
                 setAlreadyLogin(true);
                 setAccount(account);
                 console.log("login：")
@@ -156,9 +163,9 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
     };
 
     const logout = () => {
-        localStorage.setItem("SessionID",'');
-        localStorage.setItem("account",'');
-        localStorage.setItem("name",'');
+        localStorage.setItem("SessionID", '');
+        localStorage.setItem("account", '');
+        localStorage.setItem("name", '');
         setAlreadyLogin(false);
     };
 
@@ -172,62 +179,89 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 duration={30000}
             />
             <IonContent forceOverscroll={false}>
+
+
                 <IonList lines="none">
 
-                    <IonItem>
-                        <IonAvatar slot="start">
-                            <img onClick={()=>{
+                    {alreadyLogin ? <IonItem>
+                        <RowItemCenterWrapper  className='cursor' style={{
+                            width: '100%',
+                            marginTop:10,
+                            background: 'rgba(240, 242, 244, 0.94)',
+                            borderRadius: 12,
+                            padding: 12
+                        }}>
+                            <img onClick={() => {
                                 history.push('/account')
                             }} src={headerIcon}/>
-                        </IonAvatar>
-                        <IonLabel>
-                            {
-                                alreadyLogin?<div>
-                                    <h2>{name}</h2>
-                                    <p>{!account?'':account?.slice(0, 8) + "..." + account?.slice(account.length - 8)}</p>
-                                    <IonButton color="primary" onClick={showAccountWidget}>Accounts</IonButton>
-                                </div>:<div>
-                                    <IonButton color="primary" onClick={getAccount}>Login</IonButton>
-                                </div>
-                            }
+                            <div style={{marginLeft: 15}}>
+                                <div style={{fontWeight: 'bold'}}>HERMAN.PAN</div>
+                                <div onClick={showAccountWidget} style={{
+                                    color: '#666',
+                                    marginTop: 10
+                                }}> {!account ? '' : account?.slice(0, 8) + "..." + account?.slice(account.length - 8)}</div>
+                            </div>
+                        </RowItemCenterWrapper>
+                    </IonItem>:<IonItem>
+                        <RowCenterWrapper onClick={getAccount} className='cursor' style={{
+                            width: '100%',
+                            marginTop:30,
+                            marginBottom:10,
+                            background: '#0620F9',
+                            color:'#fff',
+                            textAlign:'center',
+                            borderRadius: 12,
+                            padding: 12
+                        }}>Log in</RowCenterWrapper>
+                    </IonItem>}
+
+                    <div style={{borderTop: '1px solid #DBDBDB',width:'100%',marginTop:20,marginBottom:20}} />
 
 
-                        </IonLabel>
+                    {alreadyLogin && <><IonItem  className='cursor' detail={false}>
+                        <img style={{width:20}} src={profileIcon} />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>Profile</IonLabel>
                     </IonItem>
 
-                    <IonMenuToggle   className='cursor'>
-                        <IonItem detail={false}>
-                            <IonIcon slot="start" icon={settingsOutline}/>
-                            <IonLabel>Settings and Privacy</IonLabel>
-                        </IonItem>
-                    </IonMenuToggle>
+                    <IonItem  className='cursor' detail={false}>
+                        <img style={{width:20}} src={draftIcon}  />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>Draft</IonLabel>
+                    </IonItem>
 
-                    <IonMenuToggle   className='cursor'>
-                        <IonItem detail={false}>
-                            <IonIcon slot="start" icon={helpCircleOutline}/>
-                            <IonLabel>Support</IonLabel>
-                        </IonItem>
-                    </IonMenuToggle>
+                    <IonItem  className='cursor' detail={false}>
+                        <img style={{width:20}} src={historyIcon} />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>History</IonLabel>
+                    </IonItem></>}
 
-                    <IonMenuToggle  className='cursor'>
-                        <IonItem detail={false}>
-                            <IonIcon slot="start" icon={alertCircleOutline}/>
-                            <IonLabel>About</IonLabel>
-                        </IonItem>
-                    </IonMenuToggle>
+                    <IonItem  className='cursor' detail={false}>
 
-                    {
-                        alreadyLogin  && <IonMenuToggle>
-                        <IonItem detail={false} className='cursor' onClick={logout}>
-                            <IonIcon slot="start" icon={logOutOutline}/>
-                            <IonLabel>Logout</IonLabel>
-                        </IonItem>
-                    </IonMenuToggle> }
+                        <img style={{width:20}} src={helpIcon}  />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>Help</IonLabel>
+                    </IonItem>
+
+                    <IonItem  className='cursor' detail={false}>
+                        <img style={{width:20}} src={aboutIcon} />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>About</IonLabel>
+                    </IonItem>
+
+                    <IonItem  className='cursor' detail={false}>
+                        <img style={{width:20}} src={settingIcon} />
+                        <IonLabel style={{paddingLeft:17,margin:0}}>Setting and Privacy</IonLabel>
+                    </IonItem>
+
+
 
 
 
                 </IonList>
             </IonContent>
+            <IonFooter  className="ion-no-border">
+                {
+                    alreadyLogin &&
+                    <IonItem  style={{border:'none'}} lines='none' detail={false}   className='cursor'  onClick={logout}>
+                        <span style={{color:'#fff',marginBottom:50,background:'#0620F9',padding:'3px 8px',borderRadius:8}}>Log out</span>
+                    </IonItem>}
+            </IonFooter>
         </IonMenu>
     );
 

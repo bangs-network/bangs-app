@@ -9,7 +9,8 @@ import {
     IonTitle,
     IonToolbar
 } from '@ionic/react';
-import headerIcon from "../../img/2.png";
+import headerIcon from "../../img/head.png";
+import bnbIcon from "../../img/bnb.png";
 import * as React from "react";
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import axios from "axios";
@@ -74,7 +75,7 @@ const User: React.FC = () => {
 
     return (
         <IonPage>
-            <IonHeader>
+            <IonHeader  className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
@@ -83,43 +84,42 @@ const User: React.FC = () => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className='ion-padding'>
-                <div className="ion-padding-top ion-text-center">
-
-                    <img onClick={uploadImage} className='icon-circle p-120 cursor' src={headerIcon}/>
-                    <h2>Gordon</h2>
-                    <p>0xDsI883K...HO8R</p>
+                <div className="ion-padding ion-text-center" style={{ background: 'rgba(240, 242, 244, 0.94)',
+                    borderRadius: 12}}>
+                    <img onClick={uploadImage} className='icon-circle wh-86 cursor' src={headerIcon}/>
+                    <div style={{fontSize:18,fontWeight:'bold',margin:12}}>HERMAN.PAN</div>
+                    <div style={{color:'#868990'}}>0x1091892659873237569812974821783768182</div>
                 </div>
-                <IonGrid style={{background: '#666', color: '#fff'}}>
-                    <IonRow>
-                        <IonCol className="ion-align-self-center">Bangs</IonCol>
-                        <IonCol className="ion-align-self-center">1000</IonCol>
-                        <IonCol><IonButton color="primary">Transfer</IonButton></IonCol>
+
+                <div style={{borderTop: '1px solid #DBDBDB',width:'100%',marginTop:20,marginBottom:20}} />
+
+                <IonGrid style={{background: 'rgba(240, 242, 244, 0.94)',  borderRadius: 12,color: '#fff',padding:0}}>
+                    <IonRow style={{padding:10}}>
+                        <IonCol size="2" className="ion-align-self-center">
+                            <img style={{width:42,height:42}} src={bnbIcon}/>
+                        </IonCol>
+                        <IonCol className="ion-align-self-center">
+                            <div style={{color:'#000',fontWeight: 'bold'}}>Bangs</div>
+                            <div style={{color:'#868990',fontSize:12,marginTop:5}}>Bangs</div>
+
+                        </IonCol>
+                        <IonCol className="ion-align-self-center"  style={{color:'#000'}} size="4">
+                            <div style={{textAlign:'right',color:'#000',fontWeight: 'bold'}}>17000.89</div>
+                            <div style={{textAlign:'right',color:'#868990',fontSize:12,marginTop:5}}>$299.928.12</div>
+                        </IonCol>
                     </IonRow>
-                    <IonRow>
-                        <IonCol className="ion-align-self-center">BNB</IonCol>
-                        <IonCol className="ion-align-self-center">10</IonCol>
-                        <IonCol><IonButton color="primary">Transfer</IonButton></IonCol>
+                    <div style={{borderTop: '1px solid #FFFFFF',width:'100%'}} />
+                    <IonRow style={{height:35}}>
+                        <IonCol className="ion-align-self-center">
+                            <div style={{textAlign:'center',fontWeight: 'bold',color:'#0620F9'}}>Log</div>
+                        </IonCol>
+                        <div style={{borderRight: '1px solid #FFFFFF',height:'100%'}} />
+                        <IonCol className="ion-align-self-center">
+                            <div style={{textAlign:'center',fontWeight: 'bold',color:'#0620F9'}}>Transfer</div>
+                        </IonCol>
                     </IonRow>
                 </IonGrid>
 
-                <div className='ion-padding-top  ion-padding-bottom'>#Verse</div>
-                <IonGrid style={{background: '#666', color: '#fff'}}>
-                    <IonRow>
-                        <IonCol className="ion-padding-top ion-text-center">
-                            <img className='p-120' src={headerIcon}/>
-                            <h2>2</h2>
-                        </IonCol>
-                        <IonCol className="ion-padding-top ion-text-center">
-                            <img className='p-120' src={headerIcon}/>
-                            <h2>4</h2>
-                        </IonCol>
-                        <IonCol className="ion-padding-top ion-text-center">
-                            <img className='p-120' src={headerIcon}/>
-                            <h2>8</h2>
-                        </IonCol>
-                    </IonRow>
-
-                </IonGrid>
 
 
             </IonContent>

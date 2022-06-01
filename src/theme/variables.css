@@ -12,7 +12,7 @@ body {
 :root {
   /*--ion-background-color: #fff;*/
   /** primary **/
-  --ion-color-primary: #ffc409;
+  --ion-color-primary: #000;
   --ion-color-primary-rgb: 56, 128, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -20,12 +20,13 @@ body {
   --ion-color-primary-tint: #ffc409;
 
   /** secondary **/
-  --ion-color-secondary: #000000;
+  --ion-color-secondary: #0620F9;
   --ion-color-secondary-rgb: 61, 194, 255;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
   --ion-color-secondary-shade: #36abe0;
   --ion-color-secondary-tint: #50c8ff;
+
 
   /** tertiary **/
   --ion-color-tertiary: #ffc409;

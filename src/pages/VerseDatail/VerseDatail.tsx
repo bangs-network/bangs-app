@@ -53,12 +53,17 @@ import {RouteComponentProps} from "react-router";
 import './detail.css';
 import {useEffect} from "react";
 import axios from "axios";
-import parseUrl from "../../util/common";
+import parseUrl, {getPoint} from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {saveRoleState} from "../state/slice/roleSlice";
 import {RoleCreateApi, TalkBongApi, TalkCreateApi, VersePointApi} from "../../service/Api";
 import UploadImage from "../../components/widget/UploadImage";
+import {ColumnCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
+import { CircularProgressbar,
+    CircularProgressbarWithChildren,
+    buildStyles } from 'react-circular-progressbar';
+import "react-circular-progressbar/dist/styles.css";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -439,6 +444,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     };
 
     const hexToRgba = (bgColor: string) => {
+        return bgColor;
+
         if (!bgColor) {
             return
         }
@@ -535,11 +542,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     style={{
                                                         marginLeft: 15,
                                                         marginRight: 15,
+                                                        padding:'25px 20px',
                                                         background: item.mainPic ? hexToRgba(item.backgroundColor) : item.backgroundColor,
                                                         color: item.mainColor,
+                                                        borderRadius:12,
                                                         marginBottom: 0
                                                     }}
                                     >
+                                        <div style={{marginBottom:15}}><span style={{color:'#F8616C',background: '#E9EDF2',padding:'4px 10px',borderRadius:70}}>{getPoint(item1.timelineType)}</span></div>
 
                                         {
                                             item1.timelineType == 2 ? <div>
@@ -552,7 +562,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     height: 220,
                                                     objectFit: 'cover'
                                                 }}/>}
-                                                    <div style={{padding: '15px 15px'}}
+                                                    <div
                                                          dangerouslySetInnerHTML={{__html: item1.expression}}>
                                                     </div>
                                                 </> : <div style={{
@@ -564,26 +574,40 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     background: 'red',
                                                     textAlign: 'center'
                                                 }}>Only some roles can see this expression</div>}
-                                            </div> : item1.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                            </div> : item1.timelineType == 4 ? <RowItemCenterWrapper style={{padding: '5px 15px'}}>
                                                 {item1.dices.map((item2: any, index2: number) => {
-                                                    return <div key={index2} className='row' style={{margin: '10px 0'}}>
+                                                    return <ColumnCenterWrapper key={index2}  style={{margin: '0px 30px'}}>
 
-
-                                                        <img style={{width: 40, height: 40, borderRadius: 40}}
-                                                             src={parseUrl(item2.Role.Avator)}/>
-
-                                                        <div style={{marginLeft: 20}}>
-                                                            {item2.Role.RoleName}
-                                                        </div>
-                                                        <div style={{flex: 1}}/>
-                                                        <div>
+                                                        <div style={{fontSize:13,fontWeight:'bold',marginBottom:14}}>
                                                             {item2.DiceValue}
                                                         </div>
 
-                                                    </div>
+
+                                                        <div style={{width: 75, height: 75}}>
+
+
+                                                        <CircularProgressbarWithChildren  value={item2.DiceValue} styles={buildStyles({
+                                                            pathColor: item2.DiceValue < 50?"#E13542":item2.DiceValue==50?'#2889E3':'#5CC55E',
+                                                            trailColor: "#eee"
+                                                        })}>
+
+
+                                                        <img style={{width: 55, height: 55, borderRadius: 40}}
+                                                             src={parseUrl(item2.Role.Avator)}/>
+                                                        </CircularProgressbarWithChildren>
+                                                        </div>
+
+                                                        <div style={{fontSize:13,fontWeight:'bold',marginTop:5,overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap'}}>
+                                                            {item2.Role.RoleName}
+                                                        </div>
+
+
+                                                    </ColumnCenterWrapper>
                                                 })
                                                 }
-                                            </div> : item1.timelineType == 3 ? <>
+                                            </RowItemCenterWrapper> : item1.timelineType == 3 ? <>
                                                 <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
                                                     <IonRow style={{padding: 0, margin: 0}}>
                                                         {roleList && roleList.map((item3: any, index: number) => {
@@ -614,7 +638,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                 <IonCol size="10">
 
                                                                     <div style={{
-                                                                        fontWeight: 700,
+                                                                        fontWeight: 'bold',
                                                                         fontSize: 16
                                                                     }}>{item4.Role.RoleName}</div>
                                                                     {/*<div style={{*/}
@@ -624,7 +648,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     {item4.ReplyContent && <div style={{
                                                                         marginTop: 10,
                                                                         background: '#F1F3F5',
-                                                                        borderRadius: 5,
+                                                                        borderRadius: 12,
                                                                         padding: '10px',
                                                                         color: '#000'
                                                                     }}
@@ -633,19 +657,18 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                          dangerouslySetInnerHTML={{__html: item4.TalkContent}}/>
                                                                     {index0 == list.length - 1 && index1 == item.points.length - 1 &&
                                                                     <div style={{
-                                                                        marginTop: 10,
+                                                                        marginTop: 15,
                                                                         fontSize: 12
                                                                     }}><span style={{
-                                                                        background: '#0620F9',
-                                                                        borderRadius: 5,
-                                                                        padding: '4px 8px'
+                                                                        color:'#F8616C',background: '#E9EDF2',padding:'4px 10px',borderRadius:70
                                                                     }}
                                                                              onClick={() => reply(item4.TalkID, item4.TalkContent)}>Reply</span>
                                                                         {isKeeper && <span style={{
                                                                             marginLeft: 10,
-                                                                            background: !bongList.includes(item4.TalkID) ? '#0620F9' : 'green',
-                                                                            borderRadius: 5,
-                                                                            padding: '4px 8px'
+                                                                            color:!bongList.includes(item4.TalkID) ?'#333':'#fff',
+                                                                            background: !bongList.includes(item4.TalkID) ? '#E9EDF2' : '#F8616C',
+                                                                            borderRadius: 70,
+                                                                            padding: '4px 10px'
                                                                         }} onClick={() => {
                                                                             bongItem(item4.TalkID);
                                                                         }
@@ -663,13 +686,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                             style={{width: '100%', marginBottom: 20, marginTop: 20}}>
                                                             <div onClick={showSendMsg} style={{
                                                                 width: '100%',
-                                                                height: 32,
-                                                                lineHeight: '32px',
+                                                                height:40,
+                                                                lineHeight: '40px',
                                                                 paddingLeft: 15,
                                                                 borderRadius: 30,
                                                                 color: '#bcbcbc',
-                                                                border: '1px solid #f5f6f6',
-                                                                background: '#fff'
+                                                                border: '1px solid #fff',
+                                                                background: '#F1F3F5'
                                                             }}>Add a Comment
                                                             </div>
                                                         </IonRow>}
@@ -683,8 +706,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             </div>
 
                             {index0 == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
-                            <div className='ion-padding-top ion-padding-bottom'>
-                                <button onClick={bong} className='full-width common-button'>Bong</button>
+                            <div className='ion-padding'>
+                                <div style={{background:item.backgroundColor,color:item.mainColor,fontWeight:'bold',fontSize:16,height:50,lineHeight:'50px',textAlign:'center',borderRadius:40}} onClick={bong} >BONG</div>
                             </div>}
                         </div>
 

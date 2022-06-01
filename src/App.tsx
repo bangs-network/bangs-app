@@ -1,8 +1,8 @@
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {
-    IonApp,
+    IonApp, IonContent,
     IonIcon,
-    IonLabel,
+    IonLabel, IonMenu,
     IonRouterOutlet, IonSplitPane,
     IonTabBar,
     IonTabButton,
@@ -52,6 +52,7 @@ import EditRole from "./pages/role/EditRole";
 import {Provider} from "react-redux";
 import store from "./pages/state/app/store";
 import Search from "./pages/search/Search";
+import Menu1 from "./components/menu/Menu1";
 
 setupIonicReact();
 
@@ -88,9 +89,9 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
         <IonApp>
             <Provider store={store}>
                 <IonReactHashRouter>
-                    <IonSplitPane contentId="main" style={{background:'#fff'}}>
+                    <IonSplitPane  when="(min-width: 900px)" contentId="main" style={{background:'#fff'}}>
                         <Menu/>
-                        <IonRouterOutlet id="main"  style={{maxWidth:600}}>
+                        <IonRouterOutlet id="main" style={{minWidth:500,maxWidth:600}}>
 
                             <Route path="/account" component={Account}/>
                             <Route path="/createTheme/:id" component={CreateTheme}/>
@@ -106,7 +107,10 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
                             <Route path="/tabs" render={() => <MainTabs/>}/>
                             <Redirect path="/" to="/tabs/home" exact/>
                         </IonRouterOutlet>
+                        <Menu1/>
                     </IonSplitPane>
+
+
                 </IonReactHashRouter>
             </Provider>
         </IonApp>

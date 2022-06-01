@@ -29,6 +29,11 @@ import {emitBox} from "../../components/emitWeb3/Connectors";
 import axios from "axios";
 import {HomeVerseApi} from "../../service/Api";
 import parseUrl from "../../util/common";
+import {ColumnCenterWrapper, RowContentCenterWrapper, RowItemCenterWrapper} from '../../theme/commonStyle';
+import { CircularProgressbar,
+    CircularProgressbarWithChildren,
+    buildStyles } from 'react-circular-progressbar';
+import "react-circular-progressbar/dist/styles.css";
 
 interface StateProps {
     darkMode: boolean;
@@ -49,6 +54,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
     const [list, setList] = useState<any>([]);
     const [present, dismiss] = useIonToast();
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
+
 
     const presentPopover = (e: React.MouseEvent) => {
         if (!localStorage.getItem("SessionID")) {
@@ -111,17 +117,17 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
     return (
         <IonPage ref={pageRef} id='home-page'>
-            <IonHeader>
+            <IonHeader  className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonMenuButton>
                             <img style={{width: 30, height: 30, borderRadius: 30}} src={headImage}/>
                         </IonMenuButton>
                     </IonButtons>
-                    <IonTitle style={{fontSize: 24, fontWeight: 700, textAlign: 'center'}}>BANGS.</IonTitle>
+                    <IonTitle style={{color:'#0620F9',fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>B<span style={{fontStyle:'italic'}}>A</span>NGS.</IonTitle>
                     <IonButtons slot="end">
                         <IonButton onClick={presentPopover}>
-                            <IonIcon slot="icon-only" icon={addCircleOutline}/>
+                            <IonIcon color={'secondary'}  size={'large'} slot="icon-only" icon={addCircle}/>
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
@@ -138,65 +144,79 @@ const Home: React.FC<MenuProps> = ({history}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
-                <IonList lines="none">
+                <RowContentCenterWrapper style={{background:'#f0f0f0'}}>
+                <IonList lines="none" style={{background:'#f0f0f0',padding:'0 10px',width:'100%'}}>
 
 
                     {list.map((item: any, index: number) => {
 
-                        return <IonCard style={{background:'#000'}} key={index} className='cursor' onClick={() => {
+                        return <IonCard style={{background:'#000',borderRadius:12}} key={index} className='cursor' onClick={() => {
                             history.push(`/verseDetail/${item.verseId}`);
                         }}>
                             <div key={index} style={{
-                                background: "url(" + parseUrl(item.verseBanner) + ")",
+                                background: "#F5F6F7",
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
                                 color: item.MainColor,
                                 backgroundSize: 'cover'
                             }}>
-                                <div className='blur'>
+                                <div>
                                     <img src={parseUrl(item.verseBanner)}
-                                         style={{width: '100%', height: 220, objectFit: 'cover'}}/>
+                                         style={{width: '100%', height: 100, objectFit: 'cover'}}/>
 
 
                                     <IonCardHeader>
                                         <div style={{
-                                            fontSize: 32,
-                                            color: '#fff',
+                                            fontSize: 20,
+                                            color: '#000',
                                             fontWeight: 'bold'
                                         }}>{item.verseName}</div>
                                     </IonCardHeader>
 
-                                    <div style={{paddingBottom:15}}>
+                                    <div>
 
                                     {item.TimelineList && item.TimelineList.map((item: any, index: number) => {
 
-                                        return <IonCard key={index} className='cursor'
-                                                        style={{marginBottom:0,background: 'rgba(0, 0, 0, 0.4)', color: '#fff'}}>
+                                        return <div key={index} className='cursor'
+                                                        style={{marginBottom:0, color: '#333',background:'#fff'}}>
 
                                             {
                                                 item.timelineType == 2 ? <div style={{padding: '15px 15px'}}
 
-                                                    dangerouslySetInnerHTML={{__html: item.expression}} /> : item.timelineType == 4 ? <div style={{padding: '5px 15px'}}>
+                                                    dangerouslySetInnerHTML={{__html: item.expression}} /> : item.timelineType == 4 ? <RowItemCenterWrapper style={{padding: '5px 15px'}}>
                                                     {item.dices.map((item: any, index: number) => {
-                                                        return <div key={index} className='row'
-                                                                    style={{margin: '10px 0'}}>
+                                                        return <ColumnCenterWrapper key={index}  style={{margin: '0px 30px'}}>
 
-
-                                                            <img style={{width: 40, height: 40, borderRadius: 40}}
-                                                                 src={parseUrl(item.Role.Avator)}/>
-
-                                                            <div style={{marginLeft: 20}}>
-                                                                {item.Role.RoleName}
-                                                            </div>
-                                                            <div style={{flex: 1}}/>
-                                                            <div>
+                                                            <div style={{fontSize:13,fontWeight:'bold',marginBottom:14}}>
                                                                 {item.DiceValue}
                                                             </div>
 
-                                                        </div>
+
+                                                            <div style={{width: 80, height: 80}}>
+
+
+                                                                <CircularProgressbarWithChildren  value={60} styles={buildStyles({
+                                                                    pathColor: item.DiceValue < 50?"#E13542":item.DiceValue==50?'#2889E3':'#5CC55E',
+                                                                    trailColor: "#eee"
+                                                                })}>
+
+
+                                                                    <img style={{width: 55, height: 55, borderRadius: 40}}
+                                                                         src={parseUrl(item.Role.Avator)}/>
+                                                                </CircularProgressbarWithChildren>
+                                                            </div>
+
+                                                            <div style={{fontSize:13,fontWeight:'bold',marginTop:5,overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap'}}>
+                                                                {item.Role.RoleName}
+                                                            </div>
+
+
+                                                        </ColumnCenterWrapper>
                                                     })
                                                     }
-                                                </div> : item.timelineType == 3 ? <>
+                                                </RowItemCenterWrapper> : item.timelineType == 3 ? <>
                                                     <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
                                                         <IonRow>
                                                             {item.talkList && item.talkList.map((item4: any, index3: number) => {
@@ -238,7 +258,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 </> : <></>
                                             }
 
-                                        </IonCard>
+                                        </div>
 
 
                                     })}
@@ -254,6 +274,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                     })}
 
                 </IonList>
+                </RowContentCenterWrapper>
 
                 <IonInfiniteScroll
                     onIonInfinite={loadData}
