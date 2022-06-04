@@ -29,7 +29,7 @@ import {emitBox} from "../../components/emitWeb3/Connectors";
 import axios from "axios";
 import {HomeVerseApi} from "../../service/Api";
 import parseUrl from "../../util/common";
-import {ColumnCenterWrapper, RowContentCenterWrapper, RowItemCenterWrapper} from '../../theme/commonStyle';
+import {ColumnCenterWrapper, RowContentCenterWrapper, RowItemCenterWrapper, RowWrapper} from '../../theme/commonStyle';
 import { CircularProgressbar,
     CircularProgressbarWithChildren,
     buildStyles } from 'react-circular-progressbar';
@@ -202,7 +202,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
 
                                                                     <img style={{width: 55, height: 55, borderRadius: 40}}
-                                                                         src={parseUrl(item.Role.Avator)}/>
+                                                                         src={parseUrl(item.Role.avator)}/>
                                                                 </CircularProgressbarWithChildren>
                                                             </div>
 
@@ -220,37 +220,33 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                     <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
                                                         <IonRow>
                                                             {item.talkList && item.talkList.map((item4: any, index3: number) => {
-                                                                return <IonRow key={index3} style={{width: '100%'}}> <IonCol
-                                                                    size="2" style={{
-                                                                    padding: 0,
-                                                                    paddingRight: 10
-                                                                }}>
-                                                                    <IonAvatar><img className='icon-circle full-width'
-                                                                                    src={parseUrl(item4.Role.Avator)}/></IonAvatar>
+                                                                return <RowWrapper key={index3} style={{width: '100%',marginTop:15,}}>
+                                                            <img
+                                                                className='icon-circle' style={{width:60,height:60,marginRight:15}}
+                                                                src={parseUrl(item4.role.avator)}/>
 
-                                                                </IonCol>
-                                                                        <IonCol size="10">
+                                                                <div style={{flex:1}}>
 
-                                                                            <div style={{
-                                                                                fontWeight: 700,
-                                                                                fontSize: 16
-                                                                            }}>{item4.Role.RoleName}</div>
-                                                                            {item4.ReplyContent && <div style={{
-                                                                                marginTop: 10,
-                                                                                background: '#F1F3F5',
-                                                                                borderRadius: 5,
-                                                                                padding: '10px',
-                                                                                color: '#000'
-                                                                            }}
-                                                                                                        dangerouslySetInnerHTML={{__html: item4.ReplyContent}}/>}
-                                                                            <div style={{marginTop: 10}}
-                                                                                 dangerouslySetInnerHTML={{__html: item4.TalkContent}}/>
-                                                                        <div style={{
-                                                                            borderTop: '0.5px solid #D6D6D6',
-                                                                            marginTop: '20px'
-                                                                        }}/>
-                                                                    </IonCol>
-                                                                </IonRow>
+                                                                    <div style={{
+                                                                        fontWeight: 'bold',
+                                                                        fontSize: 16
+                                                                    }}>{item4.role.roleName}</div>
+                                                                    {item4.ReplyContent && <div style={{
+                                                                        marginTop: 10,
+                                                                        background: '#F1F3F5',
+                                                                        borderRadius: 12,
+                                                                        padding: '10px',
+                                                                        color: '#000'
+                                                                    }}
+                                                                                                dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
+                                                                    <div style={{marginTop: 5}}
+                                                                         dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
+                                                                    <div style={{
+                                                                        borderTop: '0.5px solid #D6D6D6',
+                                                                        marginTop: '20px'
+                                                                    }}/>
+                                                                </div>
+                                                                </RowWrapper>
                                                             })}
 
                                                         </IonRow>

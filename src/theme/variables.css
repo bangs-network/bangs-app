@@ -66,15 +66,15 @@ body {
   --ion-color-dark-contrast: #ffffff;
   --ion-color-dark-contrast-rgb: 255, 255, 255;
   --ion-color-dark-shade: #1e2023;
-  --ion-color-dark-tint: #383a3e;
+  --ion-color-dark-tint: #C4C4C4;
 
   /** medium **/
   --ion-color-medium: #92949c; /** input */
   --ion-color-medium-rgb: 146, 148, 156;
   --ion-color-medium-contrast: #ffffff;
   --ion-color-medium-contrast-rgb: 255, 255, 255;
-  --ion-color-medium-shade: #808289;
-  --ion-color-medium-tint: #9d9fa6;
+  --ion-color-medium-shade: #C4C4C4;
+  --ion-color-medium-tint: #C4C4C4;
 
   /** light **/
   --ion-color-light: #ffc409;

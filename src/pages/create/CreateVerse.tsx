@@ -51,7 +51,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
         const data = {
             VerseName:title,
-            VerseDesc:detail,
+            VerseDesc:detail.replace(/(\r\n)|(\n)/g,'<br/>'),
             MainPic: backImage,
             MainColor: mainColor,
             BackgroundColor: backColor,
@@ -137,18 +137,18 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                 <IonList  lines="none">
 
                     <IonItem className='secondary-color'>
-                        <div>Verse Name</div>
+                        <div style={{fontSize:16,color:'#000',fontWeight:'bold'}}>Verse Name</div>
                     </IonItem>
-                    <IonItem color='medium'>
-                        <IonInput value={title} placeholder="Input Verse Name" onIonChange={e => setTitle(e.detail.value!)} />
-                    </IonItem>
+                    <div  color='medium' className='margin-16 radius-6' style={{background:'#F1F3F5'}}>
+                        <IonInput value={title} placeholder="Add a verse name" onIonChange={e => setTitle(e.detail.value!)} />
+                    </div>
                     <IonItem  className='secondary-color'>
-                        <div >Verse Detail</div>
+                        <div style={{fontSize:16,color:'#000',fontWeight:'bold'}}>Description</div>
                     </IonItem>
 
-                    <IonItem  color='medium'>
-                        <IonTextarea rows={4} value={detail} placeholder="Input Verse Detail" onIonChange={e => setDetail(e.detail.value!)} />
-                    </IonItem>
+                    <div  color='medium' className='margin-16 radius-6' style={{background:'#F1F3F5'}}>
+                        <IonTextarea className='radius' rows={4} value={detail} placeholder="Verse Description" onIonChange={e => setDetail(e.detail.value!)} />
+                    </div>
 
                     <IonItem className='secondary-color'>
                         <div>Main Color:</div>

@@ -1,4 +1,5 @@
 import Icon11 from "../img/5.jpg";
+import BigNumber from "bignumber.js";
 
 export default function parseUrl(url: string) {
     if (!url){
@@ -23,5 +24,54 @@ export function getPoint(type: number) {
 
     }
 
-
 }
+
+
+export const convert = (v: any, v2?: any) => {
+    if (!v2) {
+        v2 = 10 ** 18
+    }
+    if (v) {
+        return new BigNumber(v).dividedBy(v2).toFixed()
+    } else {
+        return new BigNumber(0).toFixed()
+    }
+};
+
+export const convertPercent = (v: any, v2?: any) => {
+
+    v = v * 100;
+
+    if (v) {
+        return new BigNumber(v).dividedBy(v2).toFixed()
+    } else {
+        return new BigNumber(0).toFixed()
+    }
+};
+
+export const convertAndFix = (v: any, fixNum: number) => {
+    if (v) {
+        return new BigNumber(v).dividedBy(10 ** 18).toFixed(fixNum,1)
+    } else {
+        return new BigNumber(0).toFixed(fixNum)
+    }
+};
+
+export const convertFix = (v: any, v2: any, fixNum: number) => {
+    if (v) {
+        return new BigNumber(v).dividedBy(v2).toFixed(fixNum,1)
+    } else {
+        return new BigNumber(0).toFixed(fixNum)
+    }
+};
+
+export const multiply = (v: any, v2?: any) => {
+    if (!v2) {
+        v2 = 10 ** 18
+    }
+    if (v) {
+        return new BigNumber(v).multipliedBy(v2).toFixed()
+    } else {
+        return new BigNumber(0).toFixed()
+    }
+};

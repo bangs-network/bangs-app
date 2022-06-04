@@ -1,6 +1,11 @@
 
 import styled from 'styled-components';
 
+export const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`
+
 export const RowContentCenterWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -27,6 +32,11 @@ export const ColumnRightWrapper = styled.div`
   align-items: center;
     justify-content: flex-end;
 `
+
+export const FixUi = styled.div`
+ flex:1
+`
+
 
 export const RowRightWrapper = styled.div`
   display: flex;

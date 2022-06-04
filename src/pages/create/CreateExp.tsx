@@ -27,6 +27,7 @@ interface MenuProps extends RouteComponentProps {}
 const CreateExp: React.FC<MenuProps> = ({history,match}) => {
 
     const [expression, setExpression] = useState<string>();
+    const [title, setTitle] = useState<string>();
     const [present, dismiss] = useIonToast();
     const [showLoading, setShowLoading] = useState(false);
     const dispatch = useAppDispatch();
@@ -54,6 +55,7 @@ const CreateExp: React.FC<MenuProps> = ({history,match}) => {
             RoleIDs:roleIds,
             BackgroundColor:'',
             Music:'',
+            ExpressionTitle:title,
             ExpressionContent:expression.replace(/(\r\n)|(\n)/g,'<br/>')
         };
         setShowLoading(true);
@@ -129,7 +131,14 @@ const CreateExp: React.FC<MenuProps> = ({history,match}) => {
                     </IonItem>
 
                     <IonItem  className='secondary-color'>
-                        <div>Expression</div>
+                        <div>Title</div>
+                    </IonItem>
+                    <IonItem  color='medium'>
+                        <IonTextarea rows={4} value={title} placeholder="Input Expression" onIonChange={e => setTitle(e.detail.value!)} />
+                    </IonItem>
+
+                    <IonItem  className='secondary-color'>
+                        <div>Content</div>
                     </IonItem>
                     <IonItem  color='medium'>
                         <IonTextarea rows={4} value={expression} placeholder="Input Expression" onIonChange={e => setExpression(e.detail.value!)} />

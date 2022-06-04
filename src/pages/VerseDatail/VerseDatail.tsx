@@ -46,6 +46,7 @@ import {
 import * as React from "react";
 import moreIcon from "../../img/more.png";
 import addIcon from "../../img/add.png";
+import DiceIcon from "../../img/dice.png";
 
 import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
@@ -53,17 +54,21 @@ import {RouteComponentProps} from "react-router";
 import './detail.css';
 import {useEffect} from "react";
 import axios from "axios";
-import parseUrl, {getPoint} from "../../util/common";
+import parseUrl, {convertPercent, getPoint} from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {saveRoleState} from "../state/slice/roleSlice";
 import {RoleCreateApi, TalkBongApi, TalkCreateApi, VersePointApi} from "../../service/Api";
 import UploadImage from "../../components/widget/UploadImage";
-import {ColumnCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
-import { CircularProgressbar,
-    CircularProgressbarWithChildren,
-    buildStyles } from 'react-circular-progressbar';
-import "react-circular-progressbar/dist/styles.css";
+import {
+    ColumnCenterWrapper,
+    ColumnItemCenterWrapper,
+    FixUi,
+    RowContentCenterWrapper,
+    RowItemCenterWrapper, RowWrapper
+} from "../../theme/commonStyle";
+
+import DiceUi from "../../components/widget/DiceUi";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -100,19 +105,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
     const contentRef = useRef<any>(null);
 
-    useEffect(() => {
-        console.info("roleData===")
-        console.info(roleData)
-        if (roleData && roleData.roleId > 0) {
-            let role = {
-                roleId: roleData.roleId,
-                roleAvator: roleData.roleAvator,
-                roleName: roleData.roleName,
-            };
-            setRole(role);
-            dispatch(saveRoleState({roleId: 0, roleAvator: '', roleName: '', amount: ''}))
-        }
-    }, [roleData.roleId]);
+    // useEffect(() => {
+    //     console.info("roleData===")
+    //     console.info(roleData)
+    //     if (roleData && roleData.roleId > 0) {
+    //         let role = {
+    //             roleId: roleData.roleId,
+    //             roleAvator: roleData.roleAvator,
+    //             roleName: roleData.roleName,
+    //         };
+    //         setRole(role);
+    //         dispatch(saveRoleState({roleId: 0, roleAvator: '', roleName: '', amount: ''}))
+    //     }
+    // }, [roleData.roleId]);
 
     const presentPopover = (e: React.MouseEvent) => {
         console.info("presentPopover===")
@@ -313,20 +318,22 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         })
     };
 
-    const showSendMsg = () => {
+    const showSendMsg = (e:any) => {
+        e.stopPropagation();
         setReplyId(0);
         setShowSend(!showSend);
     };
 
-    const reply = (talkId: any, talkContent: any) => {
+    const reply = (e:any,talkId: any, talkContent: any) => {
+        e.stopPropagation();
         setRoleStatus("1");
         setShowSend(!showSend);
         setReplyId(talkId);
         setReplyContent(talkContent)
     };
 
-    const bongItem = (talkId: any) => {
-
+    const bongItem = (e:any,talkId: any) => {
+        e.stopPropagation();
         for (let i = 0; i < bongList.length; i++) {
             if (bongList[i] == talkId) {
                 bongList.splice(i, 1);
@@ -340,7 +347,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
-    const bong = () => {
+    const bong = (e:any) => {
+        e.stopPropagation();
         if (!bongList || bongList.length < 1) {
             present('Please Select bong Item', 3000);
             return
@@ -409,7 +417,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
-    const send = (roleId:number) => {
+    const send = (roleId: number) => {
 
 
         const talkId = body.Timelines[body.Timelines.length - 1].talkID;
@@ -498,7 +506,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
             </IonHeader>
-            <IonContent style={{position: 'relative'}} ref={contentRef}>
+            <IonContent style={{position: 'relative'}} ref={contentRef} onClick={(e) => {
+                e.stopPropagation();
+                setShowSend(false)
+            }}>
 
 
                 <IonRefresher slot="fixed" style={{background: '#fff', color: '#000'}} onIonRefresh={doRefresh}>
@@ -542,14 +553,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     style={{
                                                         marginLeft: 15,
                                                         marginRight: 15,
-                                                        padding:'25px 20px',
+                                                        padding: '25px 20px',
                                                         background: item.mainPic ? hexToRgba(item.backgroundColor) : item.backgroundColor,
                                                         color: item.mainColor,
-                                                        borderRadius:12,
+                                                        borderRadius: 12,
                                                         marginBottom: 0
                                                     }}
                                     >
-                                        <div style={{marginBottom:15}}><span style={{color:'#F8616C',background: '#E9EDF2',padding:'4px 10px',borderRadius:70}}>{getPoint(item1.timelineType)}</span></div>
+                                        <div style={{marginBottom: 15}}><span style={{
+                                            color: '#F8616C',
+                                            background: '#E9EDF2',
+                                            padding: '4px 10px',
+                                            borderRadius: 70
+                                        }}>{getPoint(item1.timelineType)}</span></div>
 
                                         {
                                             item1.timelineType == 2 ? <div>
@@ -558,12 +574,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     padding: 0,
                                                     border: 0,
                                                     margin: 0,
+                                                    marginBottom: 10,
                                                     width: '100vw',
-                                                    height: 220,
+                                                    borderRadius: 12,
+                                                    height: 200,
                                                     objectFit: 'cover'
                                                 }}/>}
+                                                    <div style={{
+                                                        fontSize: 16,
+                                                        fontWeight: 'bold',
+                                                        marginBottom: 10
+                                                    }}>{item1.expressionTitle}</div>
                                                     <div
-                                                         dangerouslySetInnerHTML={{__html: item1.expression}}>
+                                                        dangerouslySetInnerHTML={{__html: item1.expression}}>
                                                     </div>
                                                 </> : <div style={{
                                                     width: '100%',
@@ -574,131 +597,109 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     background: 'red',
                                                     textAlign: 'center'
                                                 }}>Only some roles can see this expression</div>}
-                                            </div> : item1.timelineType == 4 ? <RowItemCenterWrapper style={{padding: '5px 15px'}}>
-                                                {item1.dices.map((item2: any, index2: number) => {
-                                                    return <ColumnCenterWrapper key={index2}  style={{margin: '0px 30px'}}>
+                                            </div> : item1.timelineType == 4 ?
+                                                <RowItemCenterWrapper style={{padding: '5px 15px'}}>
+                                                    {item1.dices.map((item2: any, index2: number) => {
+                                                        return <DiceUi key={index2} item2={item2}/>
+                                                    })
+                                                    }
+                                                </RowItemCenterWrapper> : item1.timelineType == 3 ? <>
+                                                    <IonGrid style={{ margin: '10px 0 0'}}>
+                                                        <RowItemCenterWrapper style={{padding: 0, margin: 0}}>
+                                                            {roleList && roleList.map((item3: any, index: number) => {
+                                                                return index < 5 &&
+                                                                    <RowItemCenterWrapper key={index} style={{
+                                                                        padding: 0,
+                                                                        margin: 0
+                                                                    }}>
+                                                                        <img style={{
+                                                                            width: 50,
+                                                                            height: 50,
+                                                                            borderRadius: '50px',
+                                                                            marginRight: 16
+                                                                        }}
+                                                                             src={parseUrl(item3.roleAvator)}/>
+                                                                    </RowItemCenterWrapper>
+                                                            })}
+                                                        </RowItemCenterWrapper>
+                                                        <div>
+                                                            {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
+                                                                return <RowWrapper key={index3} style={{width: '100%',marginTop:15,}}>
+                                                                    <img
+                                                                            className='icon-circle' style={{width:60,height:60,marginRight:15}}
+                                                                            src={parseUrl(item4.role.avator)}/>
 
-                                                        <div style={{fontSize:13,fontWeight:'bold',marginBottom:14}}>
-                                                            {item2.DiceValue}
+                                                                    <div style={{flex:1}}>
+
+                                                                        <div style={{
+                                                                            fontWeight: 'bold',
+                                                                            fontSize: 16
+                                                                        }}>{item4.role.roleName}</div>
+                                                                        {/*<div style={{*/}
+                                                                        {/*marginTop: 5,*/}
+                                                                        {/*color: '#999'*/}
+                                                                        {/*}}>By {localStorage.getItem("name")}</div>*/}
+                                                                        {item4.ReplyContent && <div style={{
+                                                                            marginTop: 10,
+                                                                            background: '#F1F3F5',
+                                                                            borderRadius: 12,
+                                                                            padding: '10px',
+                                                                            color: '#000'
+                                                                        }}
+                                                                                                    dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
+                                                                        <div style={{marginTop: 5}}
+                                                                             dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
+                                                                        {index0 == list.length - 1 && index1 == item.points.length - 1 &&
+                                                                        <div style={{
+                                                                            marginTop: 15,
+                                                                            fontSize: 12
+                                                                        }}><span style={{
+                                                                            color: '#F8616C',
+                                                                            background: '#E9EDF2',
+                                                                            padding: '4px 10px',
+                                                                            borderRadius: 70
+                                                                        }}
+                                                                                 onClick={(e) => reply(e,item4.talkID, item4.talkContent)}>Reply</span>
+                                                                            {isKeeper && <span style={{
+                                                                                marginLeft: 10,
+                                                                                color: !bongList.includes(item4.talkID) ? '#333' : '#fff',
+                                                                                background: !bongList.includes(item4.talkID) ? '#E9EDF2' : '#F8616C',
+                                                                                borderRadius: 70,
+                                                                                padding: '4px 10px'
+                                                                            }} onClick={(e) => {
+                                                                                bongItem(e,item4.talkID);
+                                                                            }
+                                                                            }>Bong</span>}
+                                                                        </div>}
+                                                                        <div style={{
+                                                                            borderTop: '0.5px solid #D6D6D6',
+                                                                            marginTop: '20px'
+                                                                        }}/>
+                                                                    </div>
+                                                                </RowWrapper>
+                                                            })}
+                                                            {index0 == list.length - 1 && index1 == item.points.length - 1 &&
+                                                            <IonRow
+                                                                style={{
+                                                                    width: '100%',
+                                                                    marginBottom: 20,
+                                                                    marginTop: 20
+                                                                }}>
+                                                                <div onClick={(e)=>showSendMsg(e)} style={{
+                                                                    width: '100%',
+                                                                    height: 40,
+                                                                    lineHeight: '40px',
+                                                                    paddingLeft: 15,
+                                                                    borderRadius: 30,
+                                                                    color: '#bcbcbc',
+                                                                    border: '1px solid #fff',
+                                                                    background: '#F1F3F5'
+                                                                }}>Add a Comment
+                                                                </div>
+                                                            </IonRow>}
                                                         </div>
-
-
-                                                        <div style={{width: 75, height: 75}}>
-
-
-                                                        <CircularProgressbarWithChildren  value={item2.DiceValue} styles={buildStyles({
-                                                            pathColor: item2.DiceValue < 50?"#E13542":item2.DiceValue==50?'#2889E3':'#5CC55E',
-                                                            trailColor: "#eee"
-                                                        })}>
-
-
-                                                        <img style={{width: 55, height: 55, borderRadius: 40}}
-                                                             src={parseUrl(item2.Role.Avator)}/>
-                                                        </CircularProgressbarWithChildren>
-                                                        </div>
-
-                                                        <div style={{fontSize:13,fontWeight:'bold',marginTop:5,overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap'}}>
-                                                            {item2.Role.RoleName}
-                                                        </div>
-
-
-                                                    </ColumnCenterWrapper>
-                                                })
-                                                }
-                                            </RowItemCenterWrapper> : item1.timelineType == 3 ? <>
-                                                <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
-                                                    <IonRow style={{padding: 0, margin: 0}}>
-                                                        {roleList && roleList.map((item3: any, index: number) => {
-                                                            return index < 5 &&
-                                                                <IonCol key={index} style={{padding: 0, margin: 0}}
-                                                                        size='2'><IonAvatar key={index}>
-                                                                    <img style={{width: 50, height: 50}}
-                                                                         src={parseUrl(item3.roleAvator)}/>
-                                                                </IonAvatar></IonCol>
-                                                        })}
-                                                        <IonCol style={{padding: 0, margin: 0}} size='2'>
-                                                            <IonAvatar>
-                                                                <img style={{width: 50, height: 50}} src={moreIcon}/>
-                                                            </IonAvatar>
-                                                        </IonCol>
-                                                    </IonRow>
-                                                    <IonRow>
-                                                        {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
-                                                            return <IonRow key={index3} style={{width: '100%'}}> <IonCol
-                                                                size="2" style={{
-                                                                padding: 0,
-                                                                paddingRight: 10
-                                                            }}>
-                                                                <IonAvatar><img className='icon-circle full-width'
-                                                                                src={parseUrl(item4.Role.Avator)}/></IonAvatar>
-
-                                                            </IonCol>
-                                                                <IonCol size="10">
-
-                                                                    <div style={{
-                                                                        fontWeight: 'bold',
-                                                                        fontSize: 16
-                                                                    }}>{item4.Role.RoleName}</div>
-                                                                    {/*<div style={{*/}
-                                                                    {/*marginTop: 5,*/}
-                                                                    {/*color: '#999'*/}
-                                                                    {/*}}>By {localStorage.getItem("name")}</div>*/}
-                                                                    {item4.ReplyContent && <div style={{
-                                                                        marginTop: 10,
-                                                                        background: '#F1F3F5',
-                                                                        borderRadius: 12,
-                                                                        padding: '10px',
-                                                                        color: '#000'
-                                                                    }}
-                                                                                                dangerouslySetInnerHTML={{__html: item4.ReplyContent}}/>}
-                                                                    <div style={{marginTop: 10}}
-                                                                         dangerouslySetInnerHTML={{__html: item4.TalkContent}}/>
-                                                                    {index0 == list.length - 1 && index1 == item.points.length - 1 &&
-                                                                    <div style={{
-                                                                        marginTop: 15,
-                                                                        fontSize: 12
-                                                                    }}><span style={{
-                                                                        color:'#F8616C',background: '#E9EDF2',padding:'4px 10px',borderRadius:70
-                                                                    }}
-                                                                             onClick={() => reply(item4.TalkID, item4.TalkContent)}>Reply</span>
-                                                                        {isKeeper && <span style={{
-                                                                            marginLeft: 10,
-                                                                            color:!bongList.includes(item4.TalkID) ?'#333':'#fff',
-                                                                            background: !bongList.includes(item4.TalkID) ? '#E9EDF2' : '#F8616C',
-                                                                            borderRadius: 70,
-                                                                            padding: '4px 10px'
-                                                                        }} onClick={() => {
-                                                                            bongItem(item4.TalkID);
-                                                                        }
-                                                                        }>Bong</span>}
-                                                                    </div>}
-                                                                    <div style={{
-                                                                        borderTop: '0.5px solid #D6D6D6',
-                                                                        marginTop: '20px'
-                                                                    }}/>
-                                                                </IonCol>
-                                                            </IonRow>
-                                                        })}
-                                                        {index0 == list.length - 1 && index1 == item.points.length - 1 &&
-                                                        <IonRow
-                                                            style={{width: '100%', marginBottom: 20, marginTop: 20}}>
-                                                            <div onClick={showSendMsg} style={{
-                                                                width: '100%',
-                                                                height:40,
-                                                                lineHeight: '40px',
-                                                                paddingLeft: 15,
-                                                                borderRadius: 30,
-                                                                color: '#bcbcbc',
-                                                                border: '1px solid #fff',
-                                                                background: '#F1F3F5'
-                                                            }}>Add a Comment
-                                                            </div>
-                                                        </IonRow>}
-                                                    </IonRow>
-                                                </IonGrid>
-                                            </> : <></>
+                                                    </IonGrid>
+                                                </> : <></>
                                         }
 
                                     </IonCard>
@@ -707,7 +708,17 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                             {index0 == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
                             <div className='ion-padding'>
-                                <div style={{background:item.backgroundColor,color:item.mainColor,fontWeight:'bold',fontSize:16,height:50,lineHeight:'50px',textAlign:'center',borderRadius:40}} onClick={bong} >BONG</div>
+                                <div style={{
+                                    background: item.backgroundColor,
+                                    color: item.mainColor,
+                                    fontWeight: 'bold',
+                                    fontSize: 16,
+                                    height: 50,
+                                    lineHeight: '50px',
+                                    textAlign: 'center',
+                                    borderRadius: 40
+                                }} onClick={(e)=>bong(e)}>BONG
+                                </div>
                             </div>}
                         </div>
 
@@ -719,54 +730,72 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             </IonContent>
 
             {showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
-            <IonFooter className='ion-padding-start ion-padding-end cursor'
+            <IonFooter className='cursor'
                        style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
 
-
-                <IonSegment style={{padding: 0, margin: 0}}
-                            onIonChange={e => {
-                                setRole(undefined);
-                                setRoleStatus(e.detail.value)
-                            }}>
-                    <IonSegmentButton value="1">
-                        <IonLabel style={{textTransform: 'none'}}>In Role</IonLabel>
-                    </IonSegmentButton>
-                    <IonSegmentButton value="2">
-                        <IonLabel style={{textTransform: 'none'}}>Make Role</IonLabel>
-                    </IonSegmentButton>
-                </IonSegment>
-
-                <IonItem lines="none" style={{marginTop: 10}} onClick={() => {
-                    if (roleStatus == "2") {
-                        return
-                    }
-                    history.push({
-                        pathname: `/searchRole/${verseId}`, state: {
-                            select: 1
-                        }
-                    })
+                <RowItemCenterWrapper style={{
+                    paddingLeft: 16,
+                    paddingRight: 16,
+                    height: 32,
+                    fontSize: 12,
+                    borderBottom: '1px solid #C4C4C4',
+                    color: '#000'
                 }}>
-                    {
-                        role && role.roleId > 0 && <><IonAvatar slot="start">
-                            <img src={parseUrl(role.roleAvator)}/>
-                        </IonAvatar>
-                            <IonLabel>{role.roleName}</IonLabel></>
-                    }
-                    {
-                        roleStatus == "2" && !role && <>
-                            <UploadImage imgUrl={roleImage} setImgUrl={setRoleImage} width={50}/>
-                            <IonInput style={{marginLeft: 15, border: '1px solid #0620F9'}} value={roleName}
-                                      placeholder="Input Role Name" onIonChange={e => setRoleName(e.detail.value!)}/>
-                        </>
-                    }
-                    {roleStatus == "1" && !role &&
-                    <IonLabel slot='start' style={{color: '#0620F9'}}>Select Role</IonLabel>}
-                </IonItem>
+                    <div>Play as Haku</div>
+                    <FixUi/>
+                    <RowItemCenterWrapper style={{background: '#F1F3F5', borderRadius: 8, fontWeight: 'bold'}}>
+                        <div onClick={() => {
+                            setRole(undefined);
+                            setRoleStatus("1")
+                        }} className={roleStatus == "1" ? 'select' : 'un-select'}>Comment
+                        </div>
+                        <div onClick={() => {
+                            setRole(undefined);
+                            setRoleStatus("2")
+                        }} className={roleStatus == "2" ? 'select' : 'un-select'}>Make Role
+                        </div>
+
+                    </RowItemCenterWrapper>
+                </RowItemCenterWrapper>
+
+                <RowItemCenterWrapper style={{padding: 0, margin: 16}}>
+                    {roleList && roleList.map((item3: any, index: number) => {
+                        return <RowItemCenterWrapper key={index} onClick={() => {
+                            setRole(item3)
+                        }}>
+                            <img style={{
+                                width: role && role.roleId == item3.roleId ? 40 : 32,
+                                height: role && role.roleId == item3.roleId ? 40 : 32,
+                                borderRadius: 32,
+                                marginRight: 16,
+                                border: role && role.roleId == item3.roleId ? '2px solid #F8616C' : 'none'
+                            }}
+                                 src={parseUrl(item3.roleAvator)}/></RowItemCenterWrapper>
+                    })}
+                    {/*<RowItemCenterWrapper>*/}
+                    {/*<img style={{width: 32, height: 32,borderRadius:32,marginRight:16}} src={moreIcon}/>*/}
+                    {/*</RowItemCenterWrapper>*/}
+                </RowItemCenterWrapper>
+
+                <div style={{borderBottom: '1px solid #C4C4C4'}}/>
 
                 {
-                    roleStatus == "2" && !role && <IonItem color='medium' style={{margin: '10px 0'}}>
-                        <IonTextarea rows={2} value={note} placeholder="Input Role Detail"
-                                     onIonChange={e => setNote(e.detail.value!)}/></IonItem>
+                    roleStatus == "2" && !role && <><IonItem lines='none' style={{margin: '10px 0'}}>
+                        <RowItemCenterWrapper style={{width: '100%'}}>
+                            <UploadImage imgUrl={roleImage} setImgUrl={setRoleImage} width={50}/>
+                            <div style={{marginLeft: 15, width: '100%'}}>
+                                <IonTextarea className='input' rows={1} value={roleName}
+                                             placeholder="Input Role Name" style={{borderRadius: 6, paddingLeft: 8}}
+                                             onIonChange={e => setRoleName(e.detail.value!)}/>
+                                <IonTextarea className='input' rows={2} style={{borderRadius: 6, paddingLeft: 8}}
+                                             value={note} placeholder="Input Role Detail"
+                                             onIonChange={e => setNote(e.detail.value!)}/>
+                            </div>
+                        </RowItemCenterWrapper>
+
+                    </IonItem>
+                        <div style={{borderBottom: '1px solid #C4C4C4'}}/>
+                    </>
                 }
 
                 {replyId > 0 &&
@@ -775,11 +804,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 </IonItem>}
 
 
-                <IonItem color='medium' style={{margin: '10px 0'}}>
-                    <IonTextarea rows={3} value={talkContent} placeholder="Say anything"
-                                 onIonChange={e => setTalkContent(e.detail.value!)}/>
+                <IonItem lines='none' style={{margin: '10px 0'}}>
+                    <IonTextarea rows={1} className='input' value={talkContent} placeholder="Say anything"
+                                 onIonChange={e => setTalkContent(e.detail.value)}/>
                 </IonItem>
-                <button className='full-width common-button' style={{marginBottom: 15}} onClick={sendMsg}>Send</button>
+                <button className='full-width common-button' onClick={sendMsg}>Send</button>
             </IonFooter>}
 
             <IonPopover
