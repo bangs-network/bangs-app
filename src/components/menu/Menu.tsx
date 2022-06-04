@@ -114,31 +114,49 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         }
         const sign = keccak256(packValue);
 
-        emitBox.batchSignMsg([
-            {msg: sign, chain: ChainType.ETH}
-        ]).then((rest: any) => {
-            const data = {
-                account: account,
-                sig: rest[0].result
-            };
-            axios({
-                method: 'POST',
-                headers: {'content-type': 'application/x-www-form-urlencoded'},
-                data: qs.stringify(data),
-                url: 'https://api.bangs.network/account/login'
-            }).then((res: any) => {
-                setShowLoading(false)
-                localStorage.setItem("SessionID", res.data.body.sessionID);
-                localStorage.setItem("account", account);
-                setAlreadyLogin(true);
-                setAccount(account);
-                console.log("login：")
-                console.log(res)
-            }).catch(function (error: any) {
-                setShowLoading(false)
-                console.info(error)
-            })
-        })
+        ethWeb3.eth.getAccounts((error, accounts) => {
+            ethWeb3.eth.sign(sign,accounts[0]).then(rest=>{
+                console.log(rest,"ssss")
+                const data = {
+                    account: account,
+                    sig: rest
+                };
+                ethWeb3.eth.personal.ecRecover(sign,rest).then(rest=>{
+                    console.log(account,rest)
+                }).catch(e=>{
+                    console.error(e)
+                });
+                axios({
+                    method: 'POST',
+                    headers: {'content-type': 'application/x-www-form-urlencoded'},
+                    data: qs.stringify(data),
+                    url: 'https://api.bangs.network/account/login'
+                }).then((res: any) => {
+                    setShowLoading(false)
+                    localStorage.setItem("SessionID", res.data.body.sessionID);
+                    localStorage.setItem("account", account);
+                    setAlreadyLogin(true);
+                    setAccount(account);
+                    console.log("login：")
+                    console.log(res)
+                }).catch(function (error: any) {
+                    setShowLoading(false)
+                    console.info(error)
+                })
+            });
+
+        }).catch(e=>console.error(e))
+
+
+        // emitBox.batchSignMsg([
+        //     {msg: sign, chain: ChainType.ETH}
+        // ]).then((rest: any) => {
+        //     const data = {
+        //         account: account,
+        //         sig: rest[0].result
+        //     };
+        //
+        // })
 
     };
 

@@ -8,7 +8,7 @@ const dapp = { name: "Bangs", url: window.location.href, category: "web3", contr
 
 export const emitBox = new EmitBox(dapp, network);
 
-const ethNetwork:INetwork = {nodeUrl: "https://node-bsc.bangs.network", chainId: "15", chainType: ChainType.EMIT.valueOf()}
+const ethNetwork:INetwork = {nodeUrl: "https://node-bsc.bangs.network", chainId: "15", chainType: ChainType.ETH.valueOf()}
 
 const ethProvider = emitBox.newProvider({
     dapp: dapp,
