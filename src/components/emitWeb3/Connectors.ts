@@ -1,17 +1,19 @@
-import EmitBox from '@emit-technology/emit-account-node-sdk';
+import EmitBox,{INetwork} from '@emit-technology/emit-account-node-sdk';
+import {ChainType} from '@emit-technology/emit-types'
 import Web3 from 'web3';
 
-enum ChainType { _, SERO, ETH, TRON, BSC, EMIT }
+const network:INetwork = {nodeUrl: "https://node-account-dev.emit.technology", chainId: "667", chainType: ChainType.EMIT.valueOf()}
 
-export const emitBox  = new EmitBox({
-    name: "TESTDEMO",
-    url: "http://localhost:3000",
-    category: "web3",
-    contractAddress: ""
-}, {
-    nodeUrl: "https://mainnet.infura.io/v3/faa4639b090f46499f29d894da0551a0",
-    chainType: ChainType.ETH,
-    chainId: "1"
+const dapp = { name: "Bangs", url: window.location.href, category: "web3", contractAddress: "" }
+
+export const emitBox = new EmitBox(dapp, network);
+
+const ethNetwork:INetwork = {nodeUrl: "https://node-bsc.bangs.network", chainId: "15", chainType: ChainType.EMIT.valueOf()}
+
+const ethProvider = emitBox.newProvider({
+    dapp: dapp,
+    network: ethNetwork,
+    version: "1.0"
 });
 
-export const ethWeb3 = new Web3(emitBox.provider);
+export const ethWeb3 = new Web3(ethProvider);

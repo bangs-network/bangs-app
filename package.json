@@ -11,7 +11,7 @@
     "@capacitor/ios": "3.4.3",
     "@capacitor/keyboard": "1.2.2",
     "@capacitor/status-bar": "1.0.8",
-    "@emit-technology/emit-account-node-sdk": "^1.0.6",
+    "@emit-technology/emit-account-node-sdk": "^1.0.9",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
     "@reduxjs/toolkit": "^1.6.2",
@@ -79,6 +79,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "3.4.3",
+    "@emit-technology/emit-types": "^1.0.2",
     "@types/react-color": "^3.0.6",
     "@types/styled-components": "^5.1.9",
     "assert": "^2.0.0",

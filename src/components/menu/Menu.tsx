@@ -36,7 +36,7 @@ import {default as React, useEffect, useState} from "react";
 import axios from "axios";
 import {encodePacked, keccak256} from "web3-utils";
 import qs from 'qs';
-import {ChainType} from "@emit-technology/emit-account-node-sdk/lib/types";
+import {ChainType} from "@emit-technology/emit-types";
 import {ColumnRightWrapper, RowCenterWrapper, RowItemCenterWrapper, RowRightWrapper} from "../../theme/commonStyle";
 
 
