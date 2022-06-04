@@ -231,7 +231,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                                         fontWeight: 'bold',
                                                                         fontSize: 16
                                                                     }}>{item4.role.roleName}</div>
-                                                                    {item4.ReplyContent && <div style={{
+                                                                    {item4.replyContent && <div style={{
                                                                         marginTop: 10,
                                                                         background: '#F1F3F5',
                                                                         borderRadius: 12,

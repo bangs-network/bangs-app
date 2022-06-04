@@ -12,17 +12,6 @@ import {
     IonMenuToggle,
     IonToggle
 } from "@ionic/react";
-import {
-    hammer,
-    help, helpCircleOutline,
-    logIn,
-    logOutOutline,
-    alertCircleOutline,
-    peopleCircleOutline,
-    personCircleOutline,
-    personAdd,
-    settingsOutline, moonOutline
-} from "ionicons/icons";
 import {connect} from "../../data/connect";
 import headerIcon from "../../img/head.png";
 import profileIcon from "../../img/profile.png";

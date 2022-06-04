@@ -639,7 +639,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                         {/*marginTop: 5,*/}
                                                                         {/*color: '#999'*/}
                                                                         {/*}}>By {localStorage.getItem("name")}</div>*/}
-                                                                        {item4.ReplyContent && <div style={{
+                                                                        {item4.replyContent && <div style={{
                                                                             marginTop: 10,
                                                                             background: '#F1F3F5',
                                                                             borderRadius: 12,
@@ -798,15 +798,18 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </>
                 }
 
-                {replyId > 0 &&
-                <IonItem color='medium' style={{background: 'green', margin: '10px 0', borderRadius: 5}}>
-                    <div style={{color: '#fff'}}>Reply To: {replyContent}</div>
-                </IonItem>}
-
 
                 <IonItem lines='none' style={{margin: '10px 0'}}>
+                    <div style={{  width:'100%'}}>
+                    {replyId > 0 &&<div style={{background: '#F1F3F5',
+                        borderRadius: 100,
+                        padding: '10px 20px',
+                        fontSize:14,
+                        width:'100%',
+                        color: '#000'}}><span style={{color:'#C4C4C4'}}>Reply To: </span> {replyContent}</div>}
                     <IonTextarea rows={1} className='input' value={talkContent} placeholder="Say anything"
                                  onIonChange={e => setTalkContent(e.detail.value)}/>
+                    </div>
                 </IonItem>
                 <button className='full-width common-button' onClick={sendMsg}>Send</button>
             </IonFooter>}
