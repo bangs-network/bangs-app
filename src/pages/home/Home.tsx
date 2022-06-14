@@ -121,20 +121,20 @@ const Home: React.FC<MenuProps> = ({history}) => {
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonMenuButton>
-                            <img style={{width: 30, height: 30, borderRadius: 30}} src={headImage}/>
+                            <img style={{width: 28, height: 28, borderRadius: 30}} src={headImage}/>
                         </IonMenuButton>
                     </IonButtons>
                     <IonTitle style={{color:'#0620F9',fontSize: 20, fontWeight: 'bold', textAlign: 'center'}}>B<span style={{fontStyle:'italic'}}>A</span>NGS.</IonTitle>
                     <IonButtons slot="end">
                         <IonButton onClick={presentPopover}>
-                            <IonIcon color={'secondary'}  size={'large'} slot="icon-only" icon={addCircle}/>
+                            <div  style={{width: 28, height: 28, borderRadius: 30}}><IonIcon color={'secondary'}  size={'large'} slot="icon-only" icon={addCircle}/></div>
                         </IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
 
-
+                <div  style={{background:'#f5f5f5',height:'100%'}}>
                 <IonRefresher slot="fixed" style={{background:'#fff',color:'#000'}} onIonRefresh={doRefresh}>
                     <IonRefresherContent
                         pullingIcon={chevronDownCircleOutline}
@@ -144,8 +144,8 @@ const Home: React.FC<MenuProps> = ({history}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
-                <RowContentCenterWrapper style={{background:'#f0f0f0'}}>
-                <IonList lines="none" style={{background:'#f0f0f0',padding:'0 10px',width:'100%'}}>
+                <RowContentCenterWrapper style={{background:'#f5f5f5'}}>
+                <IonList lines="none" style={{background:'#f5f5f5',padding:'0 10px',width:'100%'}}>
 
 
                     {list.map((item: any, index: number) => {
@@ -282,7 +282,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                         loadingText="Loading more data..."
                     />
                 </IonInfiniteScroll>
-
+                </div>
             </IonContent>
 
             <IonPopover

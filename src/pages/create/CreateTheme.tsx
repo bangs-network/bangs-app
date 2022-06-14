@@ -152,10 +152,10 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                     </IonItem>
 
                     <IonItem className='secondary-color'>
-                        <IonButton style={{height: 35}} onClick={handleMainClick}>Pick Color</IonButton>
-                        <div style={{
+                        <div onClick={handleMainClick} style={{
                             textAlign: 'center',
                             minWidth: 100,
+                            cursor:'pointer',
                             border: '1px solid #000',
                             marginLeft: 20,
                             height: 32,
@@ -171,10 +171,10 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                     </IonItem>
 
                     <IonItem className='secondary-color'>
-                        <IonButton style={{height: 35}} onClick={handleBackClick}>Pick Color</IonButton>
-                        <div style={{
+                        <div onClick={handleBackClick} style={{
                             textAlign: 'center',
                             minWidth: 100,
+                            cursor:'pointer',
                             border: '1px solid #fff',
                             marginLeft: 20,
                             height: 32,
@@ -190,7 +190,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                     </IonItem>
 
                     <IonItem>
-                        <UploadImage imgUrl={backImage} setImgUrl={setBackImage}/>
+                        <UploadImage imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
                     </IonItem>
 
 

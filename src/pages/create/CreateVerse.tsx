@@ -19,19 +19,23 @@ import {saveLoadState} from "../state/slice/loadStateSlice";
 import {useAppDispatch} from "../state/app/hooks";
 import parseUrl from "../../util/common";
 import SketchPicker from "react-color/lib/components/sketch/Sketch";
+import './create.scss';
+import BgIcon from "../../img/create_bg.png";
+import {RowCenterWrapper} from "../../theme/commonStyle";
 
-interface MenuProps extends RouteComponentProps {}
+interface MenuProps extends RouteComponentProps {
+}
 
 const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
     const [title, setTitle] = useState<string>();
     const [detail, setDetail] = useState<string>();
-    const [imgUrl,setImgUrl] = useState<string>('');
+    const [imgUrl, setImgUrl] = useState<string>('');
     const [showLoading, setShowLoading] = useState(false);
     const [present, dismiss] = useIonToast();
     const [colorType, setColorType] = useState<number>(0);
-    const [mainColor, setMainColor] = useState<string>('#ffffff');
-    const [backColor, setBackColor] = useState<string>('#000000');
+    const [mainColor, setMainColor] = useState<string>('#000000');
+    const [backColor, setBackColor] = useState<string>('#ffffff');
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
     const [backImage, setBackImage] = useState<string>('');
     const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
@@ -50,21 +54,21 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
 
         const data = {
-            VerseName:title,
-            VerseDesc:detail.replace(/(\r\n)|(\n)/g,'<br/>'),
+            VerseName: title,
+            VerseDesc: detail.replace(/(\r\n)|(\n)/g, '<br/>'),
             MainPic: backImage,
             MainColor: mainColor,
             BackgroundColor: backColor,
         };
         setShowLoading(true)
-        CreateVerseApi(data).then((res:any) => {
-           console.info(res)
+        CreateVerseApi(data).then((res: any) => {
+            console.info(res)
             setShowLoading(false)
 
             history.replace(`/verseDetail/${res.id}`);
         })
 
-     };
+    };
 
     const handleChangeComplete = (color: any) => {
         console.info(color);
@@ -78,18 +82,18 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
     };
 
-    const hexToRgba = (bgColor:string) => {
+    const hexToRgba = (bgColor: string) => {
         let color = bgColor.slice(1);
 
         let rgba = [
 
-            parseInt('0x'+color.slice(0, 2)),
+            parseInt('0x' + color.slice(0, 2)),
 
-            parseInt('0x'+color.slice(2, 4)),
+            parseInt('0x' + color.slice(2, 4)),
 
-            parseInt('0x'+color.slice(4, 6)),
+            parseInt('0x' + color.slice(4, 6)),
 
-            backImage?0.4:1
+            backImage ? 0.4 : 1
 
         ];
 
@@ -112,7 +116,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
     };
 
     return (
-        <IonPage>
+        <IonPage id="create-verse-page">
             <IonLoading
                 cssClass='my-custom-class'
                 isOpen={showLoading}
@@ -124,110 +128,125 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                 <div className='cover' onClick={handleClose}/>
                 <SketchPicker color={mainColor} onChangeComplete={handleChangeComplete}/>
             </div>}
-            <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonBackButton  color='secondary' defaultHref="/tabs/home" />
-                    </IonButtons>
-                    <IonTitle>Create Verse</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
 
-                <IonList  lines="none">
+            <IonContent className="about-header">
 
-                    <IonItem className='secondary-color'>
-                        <div style={{fontSize:16,color:'#000',fontWeight:'bold'}}>Verse Name</div>
-                    </IonItem>
-                    <div  color='medium' className='margin-16 radius-6' style={{background:'#F1F3F5'}}>
-                        <IonInput value={title} placeholder="Add a verse name" onIonChange={e => setTitle(e.detail.value!)} />
-                    </div>
-                    <IonItem  className='secondary-color'>
-                        <div style={{fontSize:16,color:'#000',fontWeight:'bold'}}>Description</div>
-                    </IonItem>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonButtons slot="start">
+                            <IonBackButton defaultHref="/tabs/home"/>
+                        </IonButtons>
+                    </IonToolbar>
+                </IonHeader>
 
-                    <div  color='medium' className='margin-16 radius-6' style={{background:'#F1F3F5'}}>
-                        <IonTextarea className='radius' rows={4} value={detail} placeholder="Verse Description" onIonChange={e => setDetail(e.detail.value!)} />
-                    </div>
+                <div className="about-header">
+                    {/* Instead of loading an image each time the select changes, use opacity to transition them */}
+                    <img src={BgIcon} className="about-image"/>
+                </div>
 
-                    <IonItem className='secondary-color'>
-                        <div>Main Color:</div>
+                <div className="about-info">
 
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <IonButton style={{height: 35}} onClick={handleMainClick}>Pick Color</IonButton>
-                        <div style={{
-                            textAlign: 'center',
-                            minWidth: 100,
-                            border: '1px solid #000',
-                            marginLeft: 20,
-                            height: 32,
-                            lineHeight: '32px',
-                            padding: '0 10px',
-                            color: mainColor == '#fff' ? 'red' : '#fff',
-                            background: mainColor
-                        }}>{mainColor}</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div>Background Color:</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <IonButton style={{height: 35}} onClick={handleBackClick}>Pick Color</IonButton>
-                        <div style={{
-                            textAlign: 'center',
-                            minWidth: 100,
-                            border: '1px solid #fff',
-                            marginLeft: 20,
-                            height: 32,
-                            lineHeight: '32px',
-                            padding: '0 10px',
-                            color: '#fff',
-                            background: backColor
-                        }}>{backColor}</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div>Banner Image:</div>
-                    </IonItem>
-
-                    <IonItem>
-                        <UploadImage imgUrl={backImage} setImgUrl={setBackImage}/>
-                    </IonItem>
+                    <div style={{borderRadius: 14,padding:"0 22px"}}>
 
 
-                    <IonItem className='secondary-color'>
-                        <div>Style Preview:</div>
-                    </IonItem>
+                            <div className='create-title'>Verse Name</div>
 
-                    <IonItem className='secondary-color'>
-                        <div  style={{
-                            background: "url(" + parseUrl(backImage) + ")",
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'center',
-                            color: mainColor,
-                            backgroundSize:'cover'
-                        }}>
-                            <div className='blur' >
-                                <div  style={{  padding: 20,background:opacityBackColor}}>
-                                    The world's first and largest digital marketplace for crypto collectibles and non-fungible
-                                    tokens (NFTs).<br/><br/>
-                                    Buy, sell, and discover exclusive digital items.<br/><br/>After reading the Privacy Notice,
-                                    you may subscribe for our newsletter to get special offers and occasional surveys delivered
-                                    to your inbox. Unsubscribe at any time by clicking on the link in the email.
+                        <div className='radius-6' style={{background: '#F1F3F5'}}>
+                            <IonInput value={title} placeholder="Add a verse name"
+                                      onIonChange={e => setTitle(e.detail.value!)}/>
+                        </div>
+
+                            <div className='create-title'>Description</div>
+
+
+                        <div color='medium' className='radius-6' style={{background: '#F1F3F5'}}>
+                            <IonTextarea className='radius' rows={4} value={detail} placeholder="Verse Description"
+                                         onIonChange={e => setDetail(e.detail.value!)}/>
+                        </div>
+
+
+                            <div className='create-title'>Main Color:</div>
+
+
+
+
+                            <div onClick={handleMainClick} style={{
+                                textAlign: 'center',
+                                minWidth: 100,
+                                border: '1px solid #ddd',
+                                height: 32,
+                                cursor: 'pointer',
+                                lineHeight: '32px',
+                                padding: '0 10px',
+                                borderRadius:6,
+                                color: mainColor == '#fff' ? 'red' : '#fff',
+                                background: mainColor
+                            }}>{mainColor}</div>
+
+                            <div className='create-title'>Background Color:</div>
+
+                            <div onClick={handleBackClick} style={{
+                                textAlign: 'center',
+                                minWidth: 100,
+                                border: '1px solid #ddd',
+                                height: 32,
+                                cursor: 'pointer',
+                                lineHeight: '32px',
+                                padding: '0 10px',
+                                borderRadius:6,
+                                color: '#fff',
+                                background: backColor
+                            }}>{backColor}</div>
+
+                            <div className='create-title'>Banner Image:</div>
+
+                            <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
+
+                            <div className='create-title'>Style Preview:</div>
+
+                            <div style={{
+                                background: "url(" + parseUrl(backImage) + ")",
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center',
+                                color: mainColor,
+                                backgroundSize: 'cover'
+                            }}>
+                                <div className='blur'>
+                                    <div style={{padding: 20, background: opacityBackColor}}>
+                                        The world's first and largest digital marketplace for crypto collectibles and
+                                        non-fungible
+                                        tokens (NFTs).<br/><br/>
+                                        Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
+                                        Privacy Notice,
+                                        you may subscribe for our newsletter to get special offers and occasional
+                                        surveys delivered
+                                        to your inbox. Unsubscribe at any time by clicking on the link in the email.
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </IonItem>
 
-                </IonList>
+
+                    </div>
+
+                </div>
 
             </IonContent>
 
-            <IonFooter onClick={createVerse} className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
-                Create Verse
+            <IonFooter onClick={createVerse}
+                       className='ion-padding ion-no-border'>
+                <RowCenterWrapper>
+                    <div className='cursor' style={{
+                        background: '#0620F9',
+                        borderRadius: 50,
+                        textAlign: 'center',
+                        width: 227,
+                        height: 39,
+                        lineHeight: '39px'
+                    }}>
+                        Create
+                    </div>
+                </RowCenterWrapper>
+
             </IonFooter>
 
         </IonPage>

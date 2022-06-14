@@ -17,7 +17,7 @@ axioService.interceptors.request.use(
         console.info("interceptors=====")
 
         let customHeaders: AxiosRequestHeaders = {
-            //SessionID: localStorage.getItem('SessionID') ||  ""
+            SessionID: localStorage.getItem('SessionID') ||  ""
         };
         config.headers = customHeaders;
         return config

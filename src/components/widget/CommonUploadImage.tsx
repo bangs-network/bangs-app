@@ -3,20 +3,18 @@ import {Camera, CameraResultType, CameraSource} from "@capacitor/camera";
 import axios from "axios";
 import {useState} from "react";
 import addIcon from "../../img/add.png";
-import addCircleIcon from "../../img/edit_circle.png";
 import {IonLoading} from "@ionic/react";
 import parseUrl from "../../util/common";
 
 interface ImgInfo {
 
-    imgUrl: string,
+    photo: any,
     setImgUrl: any,
-    width?: any,
-    type?: any,
+    height: any,
 
 }
 
-const UploadImage = ({imgUrl, setImgUrl,width,type}: ImgInfo) => {
+const CommonUploadImage = ({photo, setImgUrl,height}: ImgInfo) => {
 
     const [showLoading, setShowLoading] = useState(false);
 
@@ -60,11 +58,11 @@ const UploadImage = ({imgUrl, setImgUrl,width,type}: ImgInfo) => {
             message={'Please wait...'}
             duration={10000}
         />
-        <img onClick={uploadImage} className='cursor' style={{width:width?width:120,height:width?width:120}}
-                src={imgUrl?parseUrl(imgUrl):(type?addIcon:addCircleIcon)}/>
+        <img onClick={uploadImage} className='cursor' style={{height:height}}
+                src={photo}/>
 
     </>
 
 };
 
-export default UploadImage;
+export default CommonUploadImage;
