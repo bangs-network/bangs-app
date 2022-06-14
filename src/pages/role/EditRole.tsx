@@ -18,6 +18,9 @@ import UploadImage from "../../components/widget/UploadImage";
 import {useAppDispatch} from "../state/app/hooks";
 import {saveLoadState} from '../state/slice/loadStateSlice';
 import {RoleCreateApi} from "../../service/Api";
+import BgIcon from "../../img/header-bg.png";
+import parseUrl from "../../util/common";
+import {RowCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -70,7 +73,7 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
         dispatch(saveLoadState({tag: 'Roles', state: 0}));
         let params: any = match.params;
         if (params.id >= 0) {
-            setTitle("Add Role");
+            setTitle("New Role");
         } else {
             setTitle("Edit Role");
         }
@@ -86,50 +89,66 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
                 message={'Please wait...'}
                 duration={10000}
             />
-            <IonPage>
-                <IonHeader>
-                    <IonToolbar>
-                        <IonButtons slot="start">
-                            <IonBackButton  color='secondary' defaultHref="/tabs/home"/>
-                        </IonButtons>
-                        <IonTitle>{title}</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
+            <IonPage id={'create-role'}>
+
                 <IonContent>
 
-                    <IonItem className='secondary-color'>
-                        <div>Role Image</div>
-                    </IonItem>
+                    <IonHeader  className="about-header">
+                        <IonToolbar>
+                            <IonButtons slot="start">
+                                <IonBackButton defaultHref="/tabs/home"/>
+                            </IonButtons>
+                            <IonTitle>{title}</IonTitle>
+                        </IonToolbar>
+                    </IonHeader>
 
-                    <IonItem>
-                        <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl}/>
-                    </IonItem>
+                    <div className="about-header">
+                        {/* Instead of loading an image each time the select changes, use opacity to transition them */}
+                        <img src={BgIcon} className="about-image"/>
+                    </div>
 
-                    <IonItem className='secondary-color'>
-                        <div>Role Name</div>
-                    </IonItem>
-                    <IonItem color='medium'>
-                        <IonInput value={roleName} placeholder="Input Role Name"
-                                  onIonChange={e => setRoleName(e.detail.value!)}/>
-                    </IonItem>
+                    <div className="about-info">
 
+                        <div style={{borderRadius: 14,padding:"0 22px"}}>
 
-                    <IonItem className='secondary-color'>
-                        <div>Role Detail</div>
-                    </IonItem>
+                            <RowItemCenterWrapper style={{width: '100%',marginTop:20}}>
+                                <UploadImage imgUrl={imgUrl} setImgUrl={setImgUrl} width={50}/>
+                                <div style={{marginLeft: 15, width: '100%'}}>
+                                    <div className={'common-title'}>Name</div>
+                                    <IonTextarea className='input' rows={1} value={roleName}
+                                                 placeholder="Add a Name" style={{borderRadius: 6, paddingLeft: 8}}
+                                                 onIonChange={e => setRoleName(e.detail.value!)}/>
+                                </div>
+                            </RowItemCenterWrapper>
+                            <div className={'common-title'} style={{marginBottom:20,marginTop:20}}>Description</div>
+                            <IonTextarea className='input' rows={6} style={{borderRadius: 6, paddingLeft: 8}}
+                                         value={note} placeholder="Role description"
+                                         onIonChange={e => setNote(e.detail.value!)}/>
+                        </div>
 
-                    <IonItem color='medium'>
-                        <IonTextarea rows={4} value={note} placeholder="Input Role Detail"
-                                     onIonChange={e => setNote(e.detail.value!)}/>
-                    </IonItem>
+                    </div>
+
 
 
                 </IonContent>
 
-                <IonFooter onClick={createRole} className='ion-padding cursor'
-                           style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
-                    Add Role
+                <IonFooter onClick={createRole}
+                           className='ion-padding ion-no-border'>
+                    <RowCenterWrapper>
+                        <div className='cursor' style={{
+                            background: '#0620F9',
+                            borderRadius: 50,
+                            textAlign: 'center',
+                            width: 227,
+                            height: 39,
+                            lineHeight: '39px'
+                        }}>
+                            Create
+                        </div>
+                    </RowCenterWrapper>
+
                 </IonFooter>
+
 
             </IonPage>
         </>

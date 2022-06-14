@@ -45,7 +45,7 @@ import {
 } from "ionicons/icons";
 import * as React from "react";
 import moreIcon from "../../img/more.png";
-import addIcon from "../../img/add.png";
+import addIcon from "../../img/add_circle.png";
 import DiceIcon from "../../img/dice.png";
 
 import {useRef, useState} from "react";
@@ -69,6 +69,8 @@ import {
 } from "../../theme/commonStyle";
 
 import DiceUi from "../../components/widget/DiceUi";
+import { Sticky, StickyContainer } from "react-sticky";
+
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -526,13 +528,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                     {list && list.length > 0 && list.map((item: any, index0: number) => {
 
-                        return <div key={index0} style={{
+                        return <StickyContainer key={index0} style={{
                             background: item.mainPic ? "url(" + parseUrl(item.mainPic) + ")" : 'none',
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center',
                             color: item.mainColor,
                             backgroundSize: 'cover'
                         }}>
+
                             <div className={item.mainPic ? 'blur' : ''} style={{paddingBottom: 15}}>
 
                                 {item.mainPic && <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
@@ -707,7 +710,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             </div>
 
                             {index0 == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
-                            <div className='ion-padding'>
+                            <div className='ion-padding cursor'>
                                 <div style={{
                                     background: item.backgroundColor,
                                     color: item.mainColor,
@@ -720,7 +723,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                 }} onClick={(e)=>bong(e)}>BONG
                                 </div>
                             </div>}
-                        </div>
+                        </StickyContainer>
 
                     })}
 
@@ -772,9 +775,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             }}
                                  src={parseUrl(item3.roleAvator)}/></RowItemCenterWrapper>
                     })}
-                    {/*<RowItemCenterWrapper>*/}
-                    {/*<img style={{width: 32, height: 32,borderRadius:32,marginRight:16}} src={moreIcon}/>*/}
-                    {/*</RowItemCenterWrapper>*/}
+                    <RowItemCenterWrapper>
+                    <img  style={{ width: !role ? 40 : 32,
+                        height: !role ? 40 : 32,borderRadius:32,marginRight:16}} src={addIcon}/>
+                    </RowItemCenterWrapper>
                 </RowItemCenterWrapper>
 
                 <div style={{borderBottom: '1px solid #C4C4C4'}}/>

@@ -1,5 +1,5 @@
 body {
-    font-size: 14;
+    font-size: 14px;
 }
 
 .icon-circle {
@@ -13,6 +13,14 @@ body {
 .p-120 {
     width: 120px;
     height: 120px;
+}
+
+.text-16 {
+    font-size: 16px;
+}
+
+.mr-15{
+    margin-right: 15px;
 }
 
 .wh-86 {
@@ -29,11 +37,16 @@ body {
     font-weight: bold;
 }
 
+.common-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
 .full-width {
     width: 100%;
 }
 
-.common-button{
+.common-button {
     background: #F8616C;
     color: #fff;
     font-size: 16px;
@@ -42,7 +55,7 @@ body {
     height: 38px;
 }
 
-.common-black-button{
+.common-black-button {
     background: #000;
     color: #fff;
     font-size: 16px;
@@ -51,11 +64,11 @@ body {
     height: 40px;
 }
 
-.cursor{
+.cursor {
     cursor: pointer;
 }
 
-.popover{
+.popover {
     color: white;
     position: fixed;
     top: 0;
@@ -63,7 +76,7 @@ body {
     z-index: 20;
 }
 
-.cover{
+.cover {
     position: fixed;
     top: 0;
     right: 0;
@@ -77,10 +90,10 @@ body {
 }
 
 .select {
-    height:20px;
-    width:103px;
+    height: 20px;
+    width: 103px;
     line-height: 20px;
-    text-align:center;
+    text-align: center;
     background: #FFFFFF;
     border: 0.5px solid #E9ECEE;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.07), 0px 2px 1px rgba(0, 0, 0, 0.04);
@@ -89,32 +102,145 @@ body {
 
 .input {
     background: #F1F3F5;
-    width:100%;
+    width: 100%;
     font-size: 14px;
     padding: 0px 20px;
-    word-break:break-all;
+    word-break: break-all;
     border: 1px solid #fff;
     border-radius: 40px;
-    color:#000;
+    color: #000;
 }
 
-input::-webkit-input-placeholder{
-    color:#C4C4C4;
+input {
+    resize:none;
 }
+
+input::-webkit-input-placeholder {
+    color: #f4f4f4;
+}
+
+input::placeholder {
+    color: #f4f4f4;
+}
+
+/*.common-input {*/
+    /*--placeholder-color: #C4C4C4;*/
+    /*--placeholder-opacity: 1;*/
+/*}*/
+
+.common-input {
+    resize:none;
+    background: none;
+    border: none;
+
+    outline: none;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.right-button{
+    padding: 0 15px;
+    color: white;
+    line-height: 24px;
+    background: #0620F9;
+    border-radius: 45px;
+    height: 24px;
+}
+
+.primary-color{
+    color: #0620F9;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+.popup-content {
+    margin: auto;
+    background: #fff;
+    width: 286px;
+    font-size: 16px;
+    color:#000;
+    border-radius: 8px;
+}
+
+[role=tooltip].popup-content {
+    width: 200px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .16);
+    border-radius: 5px
+}
+
+.popup-overlay {
+    background: rgba(0, 0, 0, .5)
+}
+
+[data-popup=tooltip].popup-overlay {
+    background: transparent
+}
+
+.popup-arrow {
+    -webkit-filter: drop-shadow(0 -3px 3px rgba(0, 0, 0, .16));
+    filter: drop-shadow(0 -3px 3px rgba(0, 0, 0, .16));
+    color: #fff;
+    stroke-width: 2px;
+    stroke: #d7d7d7;
+    stroke-dasharray: 30px;
+    stroke-dashoffset: -54px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0
+}
+
+.right-top{
+    position: absolute;
+    top: -34px;
+    right: 0;
+}
+
+.text-area{
+    width: 100%;
+
+    min-height: 24px;
+
+    max-height: 300px;
+
+    _height: 120px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+    outline: 0;
+
+    border: none;
+
+    font-size: 14px;
+
+    line-height: 24px;
+
+    word-wrap: break-word;
+
+    overflow-x: hidden;
+
+    overflow-y: auto;
+
+}
+
 
 .un-select {
-    height:20px;
+    height: 20px;
     line-height: 20px;
-    width:103px;
-    text-align:center;
+    width: 103px;
+    text-align: center;
 }
 
 .radius-6 {
     border-radius: 6px;
 }
 
-
-.rc-editable-input-30{
+.rc-editable-input-30 {
     background: red;
     color: #5d58e0;
 }
@@ -130,4 +256,12 @@ input::-webkit-input-placeholder{
     /*background:rgba(0,0,0,0.1);*/
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+}
+
+.create-title {
+    font-size: 16px;
+    color: #000;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
