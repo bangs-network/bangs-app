@@ -2,6 +2,8 @@
   "name": "bangs-app",
   "version": "0.0.1",
   "private": true,
+  "main": "./",
+  "homepage": "./",
   "dependencies": {
     "@capacitor/android": "3.4.3",
     "@capacitor/app": "1.1.1",
