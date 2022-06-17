@@ -24,6 +24,7 @@ import {emitBox, ethWeb3} from "../emitWeb3/Connectors";
 import {default as React, useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {encodePacked, keccak256} from "web3-utils";
+import { keccak256 as  keccak } from "@ethersproject/keccak256";
 import qs from 'qs';
 import {ChainType} from "@emit-technology/emit-types";
 import {ColumnRightWrapper, RowCenterWrapper, RowItemCenterWrapper, RowRightWrapper} from "../../theme/commonStyle";
@@ -148,6 +149,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
     };
 
     const login = (account: any, nonce: number) => {
+        console.log("account:" + account);
         console.log("getNonce:" + nonce);
 
         let packValue = encodePacked({t: "bytes32", v: keccak256(account)}, {t: "uint64", v: nonce})
@@ -157,13 +159,19 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         }
         const sign = keccak256(packValue);
 
+        console.log("sign", sign)
+        const msg = Buffer.from(sign.slice(2), 'hex');
+        const prefix = Buffer.from(`\u0019EMIT Signed Message:\n${msg.length}`, 'utf-8')
+        console.log("msgHash", keccak(Buffer.concat([prefix, msg])))
+
 
         emitBox.batchSignMsg([
-            {msg: sign, chain: ChainType.EMIT}
+            {msg:  {data:sign}, chain: ChainType.EMIT.valueOf()}
         ]).then((rest: any) => {
+            console.info("rest",rest);
             const data = {
                 account: account,
-                sig: rest[0].result
+                sig: "0x" + rest[0].result.r + rest[0].result.s
             };
             axios({
                 method: 'POST',
@@ -171,7 +179,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 data: qs.stringify(data),
                 url: 'https://api.bangs.network/account/login'
             }).then((res: any) => {
-                setShowLoading(false)
+                setShowLoading(false);
                 localStorage.setItem("SessionID", res.data.body.sessionID);
                 localStorage.setItem("account", account);
                 setAlreadyLogin(true);
@@ -192,8 +200,8 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         setShowLoading(true);
         emitBox.requestAccount().then((data: any) => {
             console.log("data:", data);
-            if (data && data.result && data.result.addresses[ChainType.ETH]) {
-                getNonce(data.result.addresses[ChainType.ETH])
+            if (data && data.result && data.result.addresses[ChainType.EMIT]) {
+                getNonce(data.result.addresses[ChainType.EMIT])
             }
 
         }).catch(e => {
@@ -280,7 +288,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                             <IonLabel style={{paddingLeft: 17, margin: 0}}>History</IonLabel>
                         </IonItem></>}
 
-                    <IonItem className='cursor' detail={false}>
+                    <IonItem  onClick={showAccountWidget} className='cursor' detail={false}>
 
                         <img style={{width: 25}} src={helpIcon}/>
                         <IonLabel style={{paddingLeft: 17, margin: 0}}>Help</IonLabel>
