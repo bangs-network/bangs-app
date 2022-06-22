@@ -24,17 +24,17 @@ const DiceUi = ({item2}: Info) => {
         setPercent(Number(convertPercent(item2.DiceValue,item2.DiceOriginValue)))
     }, [item2]);
 
-    return  <ColumnCenterWrapper style={{margin: '0px 30px'}}>
+    return  <ColumnCenterWrapper style={{borderRadius:12,margin: '10px 30px 10px 0',minWidth:110,height:140,background:percent < 50?'linear-gradient(180deg, #FCE3E3 0%, #FFFFFF 94.27%)':percent!=50?'linear-gradient(180deg, #EFFCD4 0%, #FFFFFF 94.27%)':'linear-gradient(180deg, #ECF1FF 0%, #FFFFFF 94.27%)'}}>
 
-        <RowContentCenterWrapper style={{fontSize:15,fontWeight:'bold',marginBottom:8}}>
-            <div>{item2.DiceValue}<span style={{fontSize:13,fontWeight:'normal',color:'#C4C4C4'}}>/{item2.DiceOriginValue}</span></div>
-            <img style={{width:12,height:13,marginLeft:5,marginTop:3}} src={DiceIcon}/>
+        <RowContentCenterWrapper style={{fontSize:22,fontWeight:'bold',marginBottom:2}}>
+            <div style={{color:percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>{item2.DiceValue}<span style={{fontSize:13,fontWeight:'normal',color:'#868990'}}>/{item2.DiceOriginValue}</span></div>
+            <img style={{width:14,height:15,marginLeft:5,marginTop:5}} src={DiceIcon}/>
         </RowContentCenterWrapper>
 
-        <div style={{fontSize:10, marginBottom:8,textAlign:'center',lineHeight:'20px',borderRadius:20,width:80,height:20,color:'#fff',background: percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>
-            {percent < 50?'big failure':percent == 50?'success':'big success'}
+        {/*<div style={{fontSize:10, marginBottom:8,textAlign:'center',lineHeight:'20px',borderRadius:20,width:80,height:20,color:'#fff',background: percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>*/}
+            {/*{percent < 50?'big failure':percent == 50?'success':'big success'}*/}
 
-        </div>
+        {/*</div>*/}
 
 
         <div style={{width: 80, height: 80}}>
@@ -51,10 +51,10 @@ const DiceUi = ({item2}: Info) => {
             </CircularProgressbarWithChildren>
         </div>
 
-        <div style={{fontSize:13,fontWeight:'bold',marginTop:5,overflow: 'hidden',
+        <div style={{fontSize:16,fontWeight:'bold',marginTop:5,overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap'}}>
-            {item2.Role.RoleName}
+            {item2.Role.roleName}
         </div>
 
 

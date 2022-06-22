@@ -78,6 +78,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         }
 
         emitBox.onActiveAccountChanged((accounts: any) => {
+            console.info("accounts==",accounts)
             setName(accounts.name);
             localStorage.setItem("name", accounts.name);
         })
@@ -97,56 +98,6 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         })
     };
 
-    const loginOld = (account: any, nonce: number) => {
-        console.log("getNonce:" + nonce);
-
-        let packValue = encodePacked({t: "bytes32", v: keccak256(account)}, {t: "uint64", v: nonce})
-
-        if (!packValue) {
-            return
-        }
-        const sign = keccak256(packValue);
-
-        ethWeb3.eth.getAccounts((error, accounts) => {
-            ethWeb3.eth.sign(sign, accounts[0]).then(rest => {
-                console.log(rest, "ssss")
-                const data = {
-                    account: account,
-                    sig: rest
-                };
-                axios({
-                    method: 'POST',
-                    headers: {'content-type': 'application/x-www-form-urlencoded'},
-                    data: qs.stringify(data),
-                    url: 'https://api.bangs.network/account/login'
-                }).then((res: any) => {
-                    setShowLoading(false)
-                    localStorage.setItem("SessionID", res.data.body.sessionID);
-                    localStorage.setItem("account", account);
-                    setAlreadyLogin(true);
-                    setAccount(account);
-                    console.log("login：")
-                    console.log(res)
-                }).catch(function (error: any) {
-                    setShowLoading(false)
-                    console.info(error)
-                })
-            });
-
-        }).catch(e => console.error(e))
-
-
-        emitBox.batchSignMsg([
-            {msg: sign, chain: ChainType.ETH}
-        ]).then((rest: any) => {
-            const data = {
-                account: account,
-                sig: rest[0].result
-            };
-
-        })
-
-    };
 
     const login = (account: any, nonce: number) => {
         console.log("account:" + account);
@@ -166,7 +117,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
 
 
         emitBox.batchSignMsg([
-            {msg:  {data:sign}, chain: ChainType.EMIT.valueOf()}
+            {address: account, msg:  {data:sign}, chain: ChainType.EMIT.valueOf()}
         ]).then((rest: any) => {
             console.info("rest",rest);
             const data = {
