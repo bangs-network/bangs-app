@@ -46,6 +46,8 @@ import {
 import * as React from "react";
 import moreIcon from "../../img/more.png";
 import addIcon from "../../img/add_circle.png";
+import addGrayIcon from "../../img/add_circle_gray.png";
+import rightRedIcon from "../../img/right_red.png";
 import DiceIcon from "../../img/dice.png";
 
 import {useRef, useState} from "react";
@@ -58,7 +60,14 @@ import parseUrl, {convertPercent, getPoint} from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {saveRoleState} from "../state/slice/roleSlice";
-import {RoleCreateApi, TalkBongApi, TalkCreateApi, VersePointApi} from "../../service/Api";
+import {
+    RoleCreateApi, RoleSearchApi,
+    TalkBongApi,
+    TalkCreateApi,
+    TimelineThemeApi,
+    VerseDetailApi,
+    VersePointApi
+} from "../../service/Api";
 import UploadImage from "../../components/widget/UploadImage";
 import {
     ColumnCenterWrapper,
@@ -69,7 +78,7 @@ import {
 } from "../../theme/commonStyle";
 
 import DiceUi from "../../components/widget/DiceUi";
-import { Sticky, StickyContainer } from "react-sticky";
+import {Sticky, StickyContainer} from "react-sticky";
 
 
 interface MenuProps extends RouteComponentProps {
@@ -107,19 +116,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
     const contentRef = useRef<any>(null);
 
-    // useEffect(() => {
-    //     console.info("roleData===")
-    //     console.info(roleData)
-    //     if (roleData && roleData.roleId > 0) {
-    //         let role = {
-    //             roleId: roleData.roleId,
-    //             roleAvator: roleData.roleAvator,
-    //             roleName: roleData.roleName,
-    //         };
-    //         setRole(role);
-    //         dispatch(saveRoleState({roleId: 0, roleAvator: '', roleName: '', amount: ''}))
-    //     }
-    // }, [roleData.roleId]);
 
     const presentPopover = (e: React.MouseEvent) => {
         console.info("presentPopover===")
@@ -144,7 +140,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         console.info(loadState)
         if (loadState && loadState.tag == 'VerseDetail' && loadState.state == 1) {
             start = 1;
-            getData()
+            getData();
+            getRoles();
         }
     }, [loadState.tag]);
 
@@ -170,27 +167,24 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         console.info(params.id);
         setVerseId(params.id);
         const data = {
-            ID: params.id,
+            ID: Number(params.id),
             Start: start,
             Offset: 10
         };
-        axios.get('https://api.bangs.network/verse/detail', {
-            params: data
-        }).then(function (response: any) {
-            if (response?.data?.body) {
+        VerseDetailApi(data).then(function (body: any) {
+            if (body) {
 
                 if (start == 1) {
                     setTimeList([]);
-                    setBody(response?.data?.body)
+                    setBody(body)
 
                 }
 
-                let list: any = [];
 
+                setIsKeeper(body.IsKeeper);
 
-                setIsKeeper(response?.data?.body.IsKeeper);
-
-                let sTimeList = response?.data?.body.Timelines;
+                let sTimeList = body.Timelines;
+                console.info("sTimeList===", sTimeList)
 
                 if (sTimeList && sTimeList.length > 0) {
 
@@ -205,31 +199,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                     console.info("timelineList11===", timelineList)
                     start = start + 1;
-                    if (timelineList && timelineList.length > 0) {
-                        if (timelineList[0].timelineType != 1) {
-                            getTheme(timelineList[0].theme.ThemeID, timelineList);
-                            return
-                        }
-
-                        let item;
-                        for (let i = 0; i < timelineList.length; i++) {
-                            item = timelineList[i];
-                            if (item.timelineType == 1) {
-                                list.push(item)
-                            } else {
-                                let points: any = list[list.length - 1].points
-                                if (!points) {
-                                    list[list.length - 1].points = []
-                                }
-                                list[list.length - 1].points.push(item)
-                            }
-                        }
-                        let newList = [...list];
-
-                        setList(newList);
-
-                        console.info("list333=", newList)
-                    }
                 } else {
                     setInfiniteDisabled(true)
                 }
@@ -239,11 +208,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 }
 
             }
-            console.info("list=", list)
-            console.info(response)
         }).catch(function (error: any) {
-            console.info(error)
-        })
+            console.info(error);
+            setShowLoading(false)
+        });
+
     };
 
     const getTheme = (themeID: number, timelineList: any) => {
@@ -252,9 +221,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         };
         let list: any = [];
         console.info("list1234=", timelineList)
-        axios.get('https://api.bangs.network/timeline/theme', {
-            params: data
-        }).then(function (response: any) {
+
+        TimelineThemeApi(data).then(function (response: any) {
             if (response?.data?.body) {
                 let themeBody = response?.data?.body
                 let themeItem = {
@@ -297,9 +265,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     scrollToBottom()
                 }
             }
-        }).catch(function (error: any) {
-            console.info(error)
         })
+
     };
 
     const getRoles = () => {
@@ -308,25 +275,21 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         const data = {
             VerseID: Number(params.id)
         };
-        axios.get('https://api.bangs.network/role/search', {
-            params: data
-        }).then(function (response: any) {
-            if (response?.data?.body?.roleList) {
-                setRoleList(response?.data?.body?.roleList)
+        RoleSearchApi(data).then(function (response: any) {
+            if (response?.roleList) {
+                setRoleList(response.roleList)
                 //setRole(response?.data?.body?.roleList[0])
             }
-        }).catch(function (error: any) {
-            console.info(error)
         })
     };
 
-    const showSendMsg = (e:any) => {
+    const showSendMsg = (e: any) => {
         e.stopPropagation();
         setReplyId(0);
         setShowSend(!showSend);
     };
 
-    const reply = (e:any,talkId: any, talkContent: any) => {
+    const reply = (e: any, talkId: any, talkContent: any) => {
         e.stopPropagation();
         setRoleStatus("1");
         setShowSend(!showSend);
@@ -334,7 +297,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         setReplyContent(talkContent)
     };
 
-    const bongItem = (e:any,talkId: any) => {
+    const bongItem = (e: any, talkId: any) => {
         e.stopPropagation();
         for (let i = 0; i < bongList.length; i++) {
             if (bongList[i] == talkId) {
@@ -349,7 +312,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
-    const bong = (e:any) => {
+    const bong = (e: any) => {
         e.stopPropagation();
         if (!bongList || bongList.length < 1) {
             present('Please Select bong Item', 3000);
@@ -374,7 +337,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const sendMsg = () => {
 
-        if (roleStatus == "2") {
+        if (!role) {
             if (!roleImage) {
                 present('Please upload role image', 3000);
                 return
@@ -453,6 +416,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
+    const toRole = () => {
+        history.push(`/roles/${verseId}`)
+    }
+
+
     const hexToRgba = (bgColor: string) => {
         return bgColor;
 
@@ -523,116 +491,161 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
-                <IonList lines="none" style={{padding: 0, border: 0, margin: 0}}>
+                <IonList lines="none" style={{padding: 0, border: 0, margin: 0, background: '#f8616c'}}>
 
 
-                    {list && list.length > 0 && list.map((item: any, index0: number) => {
+                    {timeList && timeList.length > 0 && timeList.map((item1: any, index1: number) => {
 
-                        return <StickyContainer key={index0} style={{
-                            background: item.mainPic ? "url(" + parseUrl(item.mainPic) + ")" : 'none',
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'center',
-                            color: item.mainColor,
-                            backgroundSize: 'cover'
-                        }}>
+                        return <>
+                            <div key={index1} className='cursor'
+                                 style={{
+                                     marginLeft: 8,
+                                     marginRight: 8,
+                                     background: '#fff',
+                                     color: '#000',
+                                     marginBottom: 12,
+                                     borderRadius: 8
+                                 }}
+                            >
 
-                            <div className={item.mainPic ? 'blur' : ''} style={{paddingBottom: 15}}>
 
-                                {item.mainPic && <IonItemDivider sticky style={{padding: 0, border: 0, margin: 0}}>
-                                    <img src={parseUrl(item.mainPic)} style={{
-                                        padding: 0,
-                                        border: 0,
+                                {
+                                    item1.timelineType == 1 ? item1.mainPic ?
+                                        <IonItemDivider sticky style={{
+                                            background: '#f8616c',
+                                            padding: 0,
+                                            border: 0,
+                                            margin: 0
+                                        }}>
+                                            <img src={parseUrl(item1.mainPic)} style={{
+                                                borderRadius: 12,
+                                                width: '100vw',
+                                                background: '#f8616c',
+                                                height: 220,
+                                                objectFit: 'cover'
+                                            }}/>
+                                        </IonItemDivider> : <></> :
+                                        item1.timelineType == 2 ? <div style={{paddingTop: 12, paddingBottom: 12}}>
 
-                                        margin: 0,
-                                        width: '100vw',
-                                        height: 220,
-                                        objectFit: 'cover'
-                                    }}/>
-                                </IonItemDivider>}
+                                            <div style={{margin: '0 12px 12px 12px'}}>
+                                                <button style={{
+                                                    color: '#F8616C',
+                                                    background: '#F1F3F5',
+                                                    padding: '4px 10px',
+                                                    borderRadius: 70
+                                                }}>{getPoint(item1.timelineType)}</button>
+                                            </div>
 
-                                {item && item.points && item.points.length > 0 && item.points.map((item1: any, index1: number) => {
-
-                                    return <IonCard key={index1} className='cursor'
-                                                    style={{
-                                                        marginLeft: 15,
-                                                        marginRight: 15,
-                                                        padding: '25px 20px',
-                                                        background: item.mainPic ? hexToRgba(item.backgroundColor) : item.backgroundColor,
-                                                        color: item.mainColor,
-                                                        borderRadius: 12,
-                                                        marginBottom: 0
-                                                    }}
-                                    >
-                                        <div style={{marginBottom: 15}}><span style={{
-                                            color: '#F8616C',
-                                            background: '#E9EDF2',
-                                            padding: '4px 10px',
-                                            borderRadius: 70
-                                        }}>{getPoint(item1.timelineType)}</span></div>
-
-                                        {
-                                            item1.timelineType == 2 ? <div>
-                                                {item1.visible ? <>{item1.mainPic &&
-                                                <img src={parseUrl(item1.mainPic)} style={{
-                                                    padding: 0,
-                                                    border: 0,
-                                                    margin: 0,
-                                                    marginBottom: 10,
-                                                    width: '100vw',
-                                                    borderRadius: 12,
-                                                    height: 200,
-                                                    objectFit: 'cover'
-                                                }}/>}
-                                                    <div style={{
-                                                        fontSize: 16,
-                                                        fontWeight: 'bold',
-                                                        marginBottom: 10
-                                                    }}>{item1.expressionTitle}</div>
-                                                    <div
-                                                        dangerouslySetInnerHTML={{__html: item1.expression}}>
-                                                    </div>
-                                                </> : <div style={{
-                                                    width: '100%',
-                                                    height: 220,
-                                                    lineHeight: '220px',
-                                                    fontSize: 20,
-                                                    fontWeight: 'bold',
-                                                    background: 'red',
-                                                    textAlign: 'center'
-                                                }}>Only some roles can see this expression</div>}
-                                            </div> : item1.timelineType == 4 ?
-                                                <RowItemCenterWrapper style={{padding: '5px 15px'}}>
+                                            {item1.visible ? <>{item1.mainPic &&
+                                            <div style={{padding: '0px 12px 12px 12px'}}><img
+                                                src={parseUrl(item1.mainPic)} style={{
+                                                border: 0,
+                                                borderRadius: 12,
+                                                width: '100%',
+                                                height: 200,
+                                                objectFit: 'cover'
+                                            }}/></div>}
+                                                               {item1.expressionTitle && <div style={{
+                                                                   fontSize: 16,
+                                                                   padding: '0 12px 12px 12px',
+                                                                   fontWeight: 'bold'
+                                                               }}>{item1.expressionTitle}</div>}
+                                                <div style={{padding: '0px 12px 12px 12px'}}
+                                                     dangerouslySetInnerHTML={{__html: item1.expression}}>
+                                                </div>
+                                            </> : <div style={{
+                                                width: '100%',
+                                                height: 220,
+                                                lineHeight: '220px',
+                                                fontSize: 20,
+                                                fontWeight: 'bold',
+                                                background: 'red',
+                                                textAlign: 'center'
+                                            }}>Only some roles can see this expression</div>}
+                                        </div> : item1.timelineType == 4 ?
+                                            <div style={{paddingTop: 12}}>
+                                                <div style={{margin: '0 12px 0 12px'}}>
+                                                    <button style={{
+                                                        color: '#F8616C',
+                                                        background: '#F1F3F5',
+                                                        padding: '4px 10px',
+                                                        borderRadius: 70
+                                                    }}>{getPoint(item1.timelineType)}</button>
+                                                </div>
+                                                <RowItemCenterWrapper style={{
+                                                    padding: '5px 15px',
+                                                    overflowX: 'scroll',
+                                                    overflowY: 'hidden'
+                                                }}>
                                                     {item1.dices.map((item2: any, index2: number) => {
                                                         return <DiceUi key={index2} item2={item2}/>
                                                     })
                                                     }
-                                                </RowItemCenterWrapper> : item1.timelineType == 3 ? <>
-                                                    <IonGrid style={{ margin: '10px 0 0'}}>
-                                                        <RowItemCenterWrapper style={{padding: 0, margin: 0}}>
+                                                </RowItemCenterWrapper></div> : item1.timelineType == 3 ?
+                                                <div style={{paddingTop: 12}}>
+                                                    <div style={{margin: '0 12px 12px 12px'}}>
+                                                        <button style={{
+                                                            color: '#F8616C',
+                                                            background: '#F1F3F5',
+                                                            padding: '4px 10px',
+                                                            borderRadius: 70
+                                                        }}>{getPoint(item1.timelineType)}</button>
+                                                    </div>
+                                                    <IonGrid style={{margin: '12px 0 0'}}>
+                                                        <RowItemCenterWrapper onClick={toRole} style={{
+                                                            padding: '4px 8px',
+                                                            background: '#EDEFF1',
+                                                            margin: '0px 35px',
+                                                            borderRadius: 40
+                                                        }}>
                                                             {roleList && roleList.map((item3: any, index: number) => {
-                                                                return index < 5 &&
+                                                                return index < 8 &&
                                                                     <RowItemCenterWrapper key={index} style={{
                                                                         padding: 0,
-                                                                        margin: 0
+                                                                        marginLeft: index != 0 ? -8 : 0
                                                                     }}>
                                                                         <img style={{
-                                                                            width: 50,
-                                                                            height: 50,
+                                                                            width: 30,
+                                                                            height: 30,
+                                                                            border: '2px solid #F1F3F5',
                                                                             borderRadius: '50px',
-                                                                            marginRight: 16
                                                                         }}
                                                                              src={parseUrl(item3.roleAvator)}/>
+
                                                                     </RowItemCenterWrapper>
                                                             })}
+                                                            <div style={{
+                                                                marginLeft: 10,
+                                                                marginRight: 10,
+                                                                height: 28,
+                                                                width: 1,
+                                                                background: '#B6BDC9'
+                                                            }}/>
+                                                            <img style={{
+                                                                width: 30,
+                                                                height: 30,
+                                                                borderRadius: '50px',
+                                                            }}
+                                                                 src={addGrayIcon}/>
+                                                            <FixUi/>
+                                                            <img style={{
+                                                                height: 16,
+                                                            }}
+                                                                 src={rightRedIcon}/>
                                                         </RowItemCenterWrapper>
-                                                        <div>
+                                                        <div style={{margin:12}}>
                                                             {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
-                                                                return <RowWrapper key={index3} style={{width: '100%',marginTop:15,}}>
+                                                                return <RowWrapper key={index3}
+                                                                                   style={{
+                                                                                       width: '100%',
+                                                                                       marginTop: 15,
+                                                                                   }}>
                                                                     <img
-                                                                            className='icon-circle' style={{width:60,height:60,marginRight:15}}
-                                                                            src={parseUrl(item4.role.avator)}/>
+                                                                        className='icon-circle'
+                                                                        style={{width: 44, height: 44, marginRight: 15}}
+                                                                        src={parseUrl(item4.role.avator)}/>
 
-                                                                    <div style={{flex:1}}>
+                                                                    <div style={{flex: 1}}>
 
                                                                         <div style={{
                                                                             fontWeight: 'bold',
@@ -652,7 +665,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                                                     dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
                                                                         <div style={{marginTop: 5}}
                                                                              dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                        {index0 == list.length - 1 && index1 == item.points.length - 1 &&
+                                                                        {index1 == timeList.length - 1 &&
                                                                         <div style={{
                                                                             marginTop: 15,
                                                                             fontSize: 12
@@ -662,7 +675,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                             padding: '4px 10px',
                                                                             borderRadius: 70
                                                                         }}
-                                                                                 onClick={(e) => reply(e,item4.talkID, item4.talkContent)}>Reply</span>
+                                                                                 onClick={(e) => reply(e, item4.talkID, item4.talkContent)}>Reply</span>
                                                                             {isKeeper && <span style={{
                                                                                 marginLeft: 10,
                                                                                 color: !bongList.includes(item4.talkID) ? '#333' : '#fff',
@@ -670,7 +683,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                                 borderRadius: 70,
                                                                                 padding: '4px 10px'
                                                                             }} onClick={(e) => {
-                                                                                bongItem(e,item4.talkID);
+                                                                                bongItem(e, item4.talkID);
                                                                             }
                                                                             }>Bong</span>}
                                                                         </div>}
@@ -681,14 +694,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     </div>
                                                                 </RowWrapper>
                                                             })}
-                                                            {index0 == list.length - 1 && index1 == item.points.length - 1 &&
-                                                            <IonRow
+                                                            {index1 == timeList.length - 1 &&
+                                                            <div
                                                                 style={{
                                                                     width: '100%',
                                                                     marginBottom: 20,
                                                                     marginTop: 20
                                                                 }}>
-                                                                <div onClick={(e)=>showSendMsg(e)} style={{
+                                                                <div onClick={(e) => showSendMsg(e)} style={{
                                                                     width: '100%',
                                                                     height: 40,
                                                                     lineHeight: '40px',
@@ -699,32 +712,30 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     background: '#F1F3F5'
                                                                 }}>Add a Comment
                                                                 </div>
-                                                            </IonRow>}
+                                                            </div>}
                                                         </div>
                                                     </IonGrid>
-                                                </> : <></>
-                                        }
+                                                </div> : <></>
+                                }
 
-                                    </IonCard>
-                                })}
                             </div>
-
-                            {index0 == list.length - 1 && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
-                            <div className='ion-padding cursor'>
-                                <div style={{
-                                    background: item.backgroundColor,
-                                    color: item.mainColor,
+                            {index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 &&
+                            <div className='cursor'>
+                                <ColumnCenterWrapper style={{
+                                    background: '#fff',
+                                    color: '#000',
                                     fontWeight: 'bold',
                                     fontSize: 16,
-                                    height: 50,
-                                    lineHeight: '50px',
+                                    margin: '0 12px 12px 12px',
+                                    height: 54,
                                     textAlign: 'center',
                                     borderRadius: 40
-                                }} onClick={(e)=>bong(e)}>BONG
-                                </div>
-                            </div>}
-                        </StickyContainer>
-
+                                }} onClick={(e) => bong(e)}>
+                                    <div>BONG</div>
+                                    <div style={{fontSize: 12, fontWeight: 'normal', color: '#B6BDC9'}}>Long Press</div>
+                                </ColumnCenterWrapper>
+                            </div>
+                            }</>
                     })}
 
 
@@ -732,91 +743,85 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
             </IonContent>
 
-            {showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
-            <IonFooter className='cursor'
-                       style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
+            {
+                showSend && body && body.Timelines && body.Timelines.length > 0 && body.Timelines[body.Timelines.length - 1].timelineType == 3 &&
+                <IonFooter className='cursor'
+                           style={{background: '#fff', textAlign: 'center', fontWeight: 'bold'}}>
 
-                <RowItemCenterWrapper style={{
-                    paddingLeft: 16,
-                    paddingRight: 16,
-                    height: 32,
-                    fontSize: 12,
-                    borderBottom: '1px solid #C4C4C4',
-                    color: '#000'
-                }}>
-                    <div>Play as Haku</div>
-                    <FixUi/>
-                    <RowItemCenterWrapper style={{background: '#F1F3F5', borderRadius: 8, fontWeight: 'bold'}}>
-                        <div onClick={() => {
-                            setRole(undefined);
-                            setRoleStatus("1")
-                        }} className={roleStatus == "1" ? 'select' : 'un-select'}>Comment
-                        </div>
-                        <div onClick={() => {
-                            setRole(undefined);
-                            setRoleStatus("2")
-                        }} className={roleStatus == "2" ? 'select' : 'un-select'}>Make Role
-                        </div>
-
+                    <RowItemCenterWrapper style={{
+                        paddingLeft: 16,
+                        paddingRight: 16,
+                        height: 32,
+                        fontSize: 12,
+                        borderBottom: '1px solid #C4C4C4',
+                        color: '#000'
+                    }}>
+                        <div>{role ? (<div><span style={{color:'#B6BDC9'}}>Play as </span>{role.roleName}</div>):'Create new role'}</div>
                     </RowItemCenterWrapper>
-                </RowItemCenterWrapper>
 
-                <RowItemCenterWrapper style={{padding: 0, margin: 16}}>
-                    {roleList && roleList.map((item3: any, index: number) => {
-                        return <RowItemCenterWrapper key={index} onClick={() => {
-                            setRole(item3)
-                        }}>
-                            <img style={{
-                                width: role && role.roleId == item3.roleId ? 40 : 32,
-                                height: role && role.roleId == item3.roleId ? 40 : 32,
-                                borderRadius: 32,
-                                marginRight: 16,
-                                border: role && role.roleId == item3.roleId ? '2px solid #F8616C' : 'none'
-                            }}
-                                 src={parseUrl(item3.roleAvator)}/></RowItemCenterWrapper>
-                    })}
-                    <RowItemCenterWrapper>
-                    <img  style={{ width: !role ? 40 : 32,
-                        height: !role ? 40 : 32,borderRadius:32,marginRight:16}} src={addIcon}/>
-                    </RowItemCenterWrapper>
-                </RowItemCenterWrapper>
-
-                <div style={{borderBottom: '1px solid #C4C4C4'}}/>
-
-                {
-                    roleStatus == "2" && !role && <><IonItem lines='none' style={{margin: '10px 0'}}>
-                        <RowItemCenterWrapper style={{width: '100%'}}>
-                            <UploadImage imgUrl={roleImage} setImgUrl={setRoleImage} width={50}/>
-                            <div style={{marginLeft: 15, width: '100%'}}>
-                                <IonTextarea className='input' rows={1} value={roleName}
-                                             placeholder="Input Role Name" style={{borderRadius: 6, paddingLeft: 8}}
-                                             onIonChange={e => setRoleName(e.detail.value!)}/>
-                                <IonTextarea className='input' rows={2} style={{borderRadius: 6, paddingLeft: 8}}
-                                             value={note} placeholder="Input Role Detail"
-                                             onIonChange={e => setNote(e.detail.value!)}/>
-                            </div>
+                    <RowItemCenterWrapper style={{padding: 0, margin: 16}}>
+                        {roleList && roleList.map((item3: any, index: number) => {
+                            return <RowItemCenterWrapper key={index} onClick={() => {
+                                setRole(item3)
+                            }}>
+                                <img style={{
+                                    width: role && role.roleId == item3.roleId ? 40 : 32,
+                                    height: role && role.roleId == item3.roleId ? 40 : 32,
+                                    borderRadius: 32,
+                                    marginRight: 16,
+                                    border: role && role.roleId == item3.roleId ? '2px solid #F8616C' : 'none'
+                                }}
+                                     src={parseUrl(item3.roleAvator)}/></RowItemCenterWrapper>
+                        })}
+                        <RowItemCenterWrapper>
+                            <img onClick={() => {
+                                setRole(null)
+                            }} style={{
+                                width: !role ? 40 : 32,
+                                height: !role ? 40 : 32, borderRadius: 32, marginRight: 16
+                            }} src={addIcon}/>
                         </RowItemCenterWrapper>
+                    </RowItemCenterWrapper>
 
+                    <div style={{borderBottom: '1px solid #C4C4C4'}}/>
+
+                    {
+                        !role && <><IonItem lines='none' style={{margin: '10px 0'}}>
+                            <RowItemCenterWrapper style={{width: '100%'}}>
+                                <UploadImage imgUrl={roleImage} setImgUrl={setRoleImage} width={50}/>
+                                <div style={{marginLeft: 15, width: '100%'}}>
+                                    <IonTextarea className='input' rows={1} value={roleName}
+                                                 placeholder="Input Role Name" style={{borderRadius: 6, paddingLeft: 8}}
+                                                 onIonChange={e => setRoleName(e.detail.value!)}/>
+                                    <IonTextarea className='input' rows={2} style={{borderRadius: 6, paddingLeft: 8}}
+                                                 value={note} placeholder="Input Role Detail"
+                                                 onIonChange={e => setNote(e.detail.value!)}/>
+                                </div>
+                            </RowItemCenterWrapper>
+
+                        </IonItem>
+                            <div style={{borderBottom: '1px solid #C4C4C4'}}/>
+                        </>
+                    }
+
+
+                    <IonItem lines='none' style={{margin: '10px 0'}}>
+                        <div style={{width: '100%'}}>
+                            {replyId > 0 && <div style={{
+                                background: '#F1F3F5',
+                                borderRadius: 100,
+                                padding: '10px 20px',
+                                fontSize: 14,
+                                width: '100%',
+                                color: '#000'
+                            }}><span style={{color: '#C4C4C4'}}>Reply To: </span> {replyContent}</div>}
+                            <IonTextarea rows={1} className='input' value={talkContent} placeholder="Say anything"
+                                         onIonChange={e => setTalkContent(e.detail.value)}/>
+                        </div>
                     </IonItem>
-                        <div style={{borderBottom: '1px solid #C4C4C4'}}/>
-                    </>
-                }
-
-
-                <IonItem lines='none' style={{margin: '10px 0'}}>
-                    <div style={{  width:'100%'}}>
-                    {replyId > 0 &&<div style={{background: '#F1F3F5',
-                        borderRadius: 100,
-                        padding: '10px 20px',
-                        fontSize:14,
-                        width:'100%',
-                        color: '#000'}}><span style={{color:'#C4C4C4'}}>Reply To: </span> {replyContent}</div>}
-                    <IonTextarea rows={1} className='input' value={talkContent} placeholder="Say anything"
-                                 onIonChange={e => setTalkContent(e.detail.value)}/>
-                    </div>
-                </IonItem>
-                <button className='full-width common-button' onClick={sendMsg}>Send</button>
-            </IonFooter>}
+                    <button className='full-width common-button' onClick={sendMsg}>Send</button>
+                </IonFooter>
+            }
 
             <IonPopover
                 isOpen={showPopover}

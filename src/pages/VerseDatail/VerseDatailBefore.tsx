@@ -70,7 +70,7 @@ interface MenuProps extends RouteComponentProps {
 
 let start = 1;
 
-const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
+const VerseDetailBefore: React.FC<MenuProps> = ({history, match}) => {
 
     const [showPopover, setShowPopover] = useState(false);
     const [isKeeper, setIsKeeper] = useState(0);
@@ -793,4 +793,4 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     );
 };
 
-export default VerseDetail;
+export default VerseDetailBefore;

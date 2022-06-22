@@ -75,6 +75,7 @@ const requestHandler = <T>(method: 'get' | 'post' | 'put' | 'delete', url: strin
                 console.log(`Error：${e}`)
                 reject(data.msg);
             }else{
+                console.log(`body：${data.body}`)
                 resolve(data.body);
             }
 
