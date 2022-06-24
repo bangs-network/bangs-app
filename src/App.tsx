@@ -49,6 +49,7 @@ import SearchRole from "./pages/search/SerachRole";
 import CreateVerse from "./pages/create/CreateVerse";
 import CreateTheme from "./pages/create/CreateTheme";
 import EditRole from "./pages/role/EditRole";
+import EditUser from "./pages/user/UserEdit";
 import {Provider} from "react-redux";
 import store from "./pages/state/app/store";
 import Search from "./pages/search/Search";
@@ -97,6 +98,7 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
                             <Route path="/createTheme/:id" component={CreateTheme}/>
                             <Route path="/createVerse" component={CreateVerse}/>
                             <Route path="/editRole/:id" component={EditRole}/>
+                            <Route path="/editUser" component={EditUser}/>
                             <Route path="/verseDetail/:id" component={VerseDetail}/>
                             <Route path="/createTalks/:id" component={CreateTalks}/>
                             <Route path="/createExp/:id" component={CreateExp}/>

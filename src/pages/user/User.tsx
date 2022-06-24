@@ -4,9 +4,9 @@ import {
     IonGrid,
     IonHeader, IonIcon,
     IonItem,
-    IonLabel,
+    IonLabel, IonLoading,
     IonPage, IonRow,
-    IonTitle,
+    IonTitle, IonToast,
     IonToolbar
 } from '@ionic/react';
 import headerIcon from "../../img/head.png";
@@ -22,22 +22,83 @@ import {addCircleOutline} from "ionicons/icons";
 import {emitBox} from "../../components/emitWeb3/Connectors";
 import {
     ColumnCenterWrapper,
-    ColumnItemCenterWrapper,
+    ColumnItemCenterWrapper, FixUi,
     RowCenterWrapper,
     RowItemCenterWrapper
 } from "../../theme/commonStyle";
 import {useState} from "react";
 import {useEffect} from "react";
+import {saveLoadState} from "../state/slice/loadStateSlice";
+import {GetAccountApi, UpdateAccountApi, VersePointApi} from "../../service/Api";
+import parseUrl from "../../util/common";
+import {ChainType} from "@emit-technology/emit-types/es";
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const User: React.FC = () => {
 
-    const [account, setAccount] = useState<string>('RGVQ94kkwsdg22VkeDCnebYzLZRjBuDBPx2SvjphrHveH5z3VRGBRN3dsY24AZyiKVbB1MyZ8joJssdagdHv84bSY9yqqi33JCwT7Tm726s5G7rW9RNs5588dU5hDDNPR');
+    const [account, setAccount] = useState<string>('');
+    const [showLoading, setShowLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [headImg, setHeadImg] = useState('');
+    const [userName, setUserName] = useState('');
 
     useEffect(() => {
-        emitBox.onActiveAccountChanged((accounts: any) => {
-            console.info(accounts)
-        })
+        getAccount()
+        getWallet()
     }, []);
+
+    const updateAccount =  (avater:any) => {
+        setShowLoading(true);
+        const data = {
+            Avater: avater
+        };
+        UpdateAccountApi(data).then(function (response: any) {
+            setShowLoading(false)
+            setHeadImg(avater);
+
+        }).catch(function (error: any) {
+            console.info(error)
+            setShowLoading(false)
+        });
+
+    };
+
+    const getWallet = () => {
+        let accountEmit = localStorage.getItem("accountEmit");
+        if (accountEmit) {
+            setAccount(accountEmit)
+        } else {
+            emitBox.requestAccount().then((data: any) => {
+                console.log("data:", data);
+                if (data && data.result && data.result.addresses[ChainType.EMIT]) {
+                    localStorage.setItem("accountEmit",data.result.addresses[ChainType.EMIT])
+                    setAccount(data.result.addresses[ChainType.EMIT])
+                }
+
+            }).catch(e => {
+                console.error("error", e)
+            })
+        }
+
+    };
+
+
+    const getAccount =  () => {
+        setShowLoading(true);
+        const data = {
+            ID:0
+        };
+        GetAccountApi(data).then(function (response: any) {
+            setShowLoading(false);
+            console.info("UpdateAccountApi==",response)
+            setHeadImg(response.avater)
+            setUserName(response.userName);
+        }).catch(function (error: any) {
+            console.info(error)
+            setShowLoading(false)
+        });
+
+    };
 
 
     const uploadImage = async () => {
@@ -63,11 +124,13 @@ const User: React.FC = () => {
             console.info(file);
             const formData = new FormData();
             formData.append('file', file);
+            setShowLoading(true);
             axios.post('https://api.bangs.network/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(function (response: any) {
+                updateAccount(response.data)
                 console.info(response)
             }).catch(function (error: any) {
                 console.info(error)
@@ -79,20 +142,6 @@ const User: React.FC = () => {
 
     };
 
-    const base64toFile = (dataurl: any, filename: any) => {
-        const arr = dataurl.split(',')
-        const mime = arr[0].match(/:(.*?);/)[1]
-        const suffix = mime.split('/')[1]
-        const bstr = atob(arr[1])
-        let n = bstr.length
-        const u8arr = new Uint8Array(n)
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n)
-        }
-        return new File([u8arr], `${filename}.${suffix}`, {
-            type: mime,
-        })
-    };
 
     const showAccountWidget = () => {
         emitBox.showWidget().catch(e => {
@@ -101,10 +150,36 @@ const User: React.FC = () => {
 
     };
 
+    // const toEdit = () => {
+    //     history.push('/editUser');
+    // };
+
+
+    const copyToast = () => {
+       setOpen(true)
+
+    };
+
+
 
     return (
         <IonPage id='position-top'>
-
+            <IonToast
+                position="top"
+                isOpen={open}
+                animated={true}
+                color='success'
+                onDidDismiss={() => setOpen(false)}
+                message="Copy successful!"
+                duration={2000}
+            />
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={10000}
+            />
             <IonContent>
                 <IonHeader className="about-header">
                     <IonToolbar>
@@ -131,12 +206,12 @@ const User: React.FC = () => {
                         }}>
                             <RowCenterWrapper>
                                 <div style={{position: 'relative'}} className='wh-86 cursor'>
-                                    <img onClick={uploadImage} className='icon-circle wh-86 cursor' src={headerIcon}/>
-                                    <img style={{width: 24, height: 24, position: 'absolute', right: 0, bottom: 0}}
+                                    <img className='icon-circle wh-86 cursor' src={headImg?parseUrl(headImg):headerIcon}/>
+                                    <img onClick={uploadImage} style={{width: 24, height: 24, position: 'absolute', right: 0, bottom: 0}}
                                          src={editIcon}/>
                                 </div>
                             </RowCenterWrapper>
-                            <div style={{fontSize: 18, fontWeight: 'bold', margin: 12}}>HERMAN.PAN</div>
+                            <div style={{fontSize: 18, fontWeight: 'bold', margin: 12}}>{userName}</div>
 
                         </div>
 
@@ -144,7 +219,8 @@ const User: React.FC = () => {
                             <div style={{fontWeight: 'bold', fontSize: 16}}>Receive</div>
                             <div style={{color: '#868990',marginTop:12,marginBottom:15}} >{account}</div>
                         </div>
-                        <div style={{
+                        <CopyToClipboard text={account ? account : ''}
+                                         onCopy={copyToast}><div className='cursor' style={{
                             background: '#0620F9',
                             color:'#fff',
                             zIndex:999,
@@ -156,10 +232,10 @@ const User: React.FC = () => {
                             lineHeight:'29px',
                             boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04)',
                             borderRadius: 71
-                        }}>Copy</div>
+                        }}>Copy</div></CopyToClipboard>
 
                         <div style={{margin:12}}>
-                        <div style={{ marginTop:40,fontSize: 18, fontWeight: 'bold'}}>Coins</div>
+                        <div style={{ marginTop:40,marginBottom:12,fontSize: 18, fontWeight: 'bold'}}>Coins</div>
 
                         <IonGrid
                             style={{
@@ -168,32 +244,33 @@ const User: React.FC = () => {
                                 color: '#fff',
                                 padding: 0
                             }}>
-                            <RowItemCenterWrapper style={{padding: 10}}>
+                            <RowItemCenterWrapper style={{padding: '17px 14px'}}>
                                 <RowItemCenterWrapper style={{width:42}} className="ion-align-self-center">
                                     <img style={{width: 42, height: 42}} src={bnbIcon}/>
                                 </RowItemCenterWrapper>
-                                <ColumnItemCenterWrapper className="ion-align-self-center">
-                                    <div style={{color: '#000', fontWeight: 'bold'}}>Bangs</div>
-                                    <div style={{color: '#868990', fontSize: 12, marginTop: 5}}>Bangs</div>
+                                <div  style={{marginLeft:12}}>
+                                    <div style={{textAlign: 'left',fontSize: 16,  color: '#000', fontWeight: 'bold'}}>Bangs</div>
+                                    <div style={{textAlign: 'left',color: '#868990', fontSize: 12, marginTop: 8}}>Bangs</div>
 
-                                </ColumnItemCenterWrapper>
-                                <ColumnItemCenterWrapper className="ion-align-self-center" style={{color: '#000'}}>
-                                    <div style={{textAlign: 'right', color: '#000', fontWeight: 'bold'}}>17000.89</div>
+                                </div>
+                                <FixUi />
+                                <div  style={{color: '#000'}}>
+                                    <div style={{textAlign: 'right',fontSize: 16,  color: '#000', fontWeight: 'bold'}}>17000.89</div>
                                     <div style={{
                                         textAlign: 'right',
                                         color: '#868990',
                                         fontSize: 12,
-                                        marginTop: 5
+                                        marginTop: 8
                                     }}>$299.928
                                     </div>
-                                </ColumnItemCenterWrapper>
+                                </div>
                             </RowItemCenterWrapper>
                             <div style={{borderTop: '1px solid #f4f4f4', width: '100%'}}/>
                             <IonRow style={{height: 35}}>
                                 <IonCol className="ion-align-self-center">
                                     <div style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Log</div>
                                 </IonCol>
-                                <div style={{borderRight: '1px solid #FFFFFF', height: '100%'}}/>
+                                <div style={{borderRight: '1px solid #f4f4f4', height: '100%'}}/>
                                 <IonCol className="ion-align-self-center">
                                     <div style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Transfer
                                     </div>

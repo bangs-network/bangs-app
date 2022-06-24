@@ -6,6 +6,11 @@ export const RowWrapper = styled.div`
   flex-direction: row;
 `
 
+export const ColumnWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
 export const RowContentCenterWrapper = styled.div`
   display: flex;
   flex-direction: row;

@@ -15,6 +15,7 @@ import {saveLoadState} from "../state/slice/loadStateSlice";
 import {VersePointApi} from "../../service/Api";
 import {RouteComponentProps} from "react-router";
 import {useAppDispatch} from "../state/app/hooks";
+import {RowCenterWrapper} from "../../theme/commonStyle";
 
 interface MenuProps extends RouteComponentProps {}
 const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
@@ -58,7 +59,7 @@ const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
                 message={'Please wait...'}
                 duration={5000}
             />
-            <IonHeader>
+            <IonHeader  className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton   color='secondary' defaultHref="/tabs/home" />
@@ -70,9 +71,23 @@ const CreateTalks: React.FC<MenuProps> = ({history,match}) => {
 
             </IonContent>
 
-            <IonFooter onClick={create} className='ion-padding cursor' style={{background:'#3171e0',textAlign:'center',fontWeight:'bold'}}>
-               Create Talks
+            <IonFooter onClick={create}
+                       className='ion-padding ion-no-border'>
+                <RowCenterWrapper>
+                    <div className='cursor' style={{
+                        background: '#0620F9',
+                        borderRadius: 50,
+                        textAlign: 'center',
+                        width: 227,
+                        height: 39,
+                        lineHeight: '39px'
+                    }}>
+                        Create Talks
+                    </div>
+                </RowCenterWrapper>
+
             </IonFooter>
+
 
         </IonPage>
     );

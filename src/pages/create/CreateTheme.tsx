@@ -22,6 +22,7 @@ import {RouteComponentProps} from "react-router";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {useAppDispatch} from "../state/app/hooks";
 import {VersePointApi} from "../../service/Api";
+import {RowCenterWrapper} from "../../theme/commonStyle";
 
 const popover = {
     position: 'absolute',
@@ -35,15 +36,18 @@ const cover = {
     left: '0px',
 }
 
-interface MenuProps extends RouteComponentProps {}
-const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
+interface MenuProps extends RouteComponentProps {
+}
+
+const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
 
     const [colorType, setColorType] = useState<number>(0);
-    const [mainColor, setMainColor] = useState<string>('#ffffff');
-    const [backColor, setBackColor] = useState<string>('#000000');
+    const [mainColor, setMainColor] = useState<string>('#000');
+    const [backColor, setBackColor] = useState<string>('#fff');
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,1)');
     const [backImage, setBackImage] = useState<string>('');
-    const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+    const [displayBgPicker, setDisplayBgPicker] = useState<boolean>(false);
+    const [displayFontPicker, setDisplayFontPicker] = useState<boolean>(false);
     const [present, dismiss] = useIonLoading();
     const [showLoading, setShowLoading] = useState(false);
     const dispatch = useAppDispatch();
@@ -52,7 +56,7 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
     //  Dice:[{"RoleID":1,"MaxValue":100}]
     const createTheme = () => {
         setShowLoading(true)
-        let params:any = match.params
+        let params: any = match.params
         console.info(params.id);
         const data = {
             VerseID: Number(params.id),
@@ -88,18 +92,18 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
     };
 
-    const hexToRgba = (bgColor:string) => {
+    const hexToRgba = (bgColor: string) => {
         let color = bgColor.slice(1);
 
         let rgba = [
 
-            parseInt('0x'+color.slice(0, 2)),
+            parseInt('0x' + color.slice(0, 2)),
 
-            parseInt('0x'+color.slice(2, 4)),
+            parseInt('0x' + color.slice(2, 4)),
 
-            parseInt('0x'+color.slice(4, 6)),
+            parseInt('0x' + color.slice(4, 6)),
 
-            backImage?0.4:1
+            backImage ? 0.4 : 1
 
         ];
 
@@ -107,17 +111,21 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
 
     };
 
-    const handleClose = () => {
-        setDisplayColorPicker(false);
+    const handleBgClose = () => {
+        setDisplayBgPicker(false);
+    };
+
+    const handleFontClose = () => {
+        setDisplayFontPicker(false);
     };
 
     const handleMainClick = () => {
-        setDisplayColorPicker(true);
+        setDisplayFontPicker(true);
         setColorType(0)
     };
 
     const handleBackClick = () => {
-        setDisplayColorPicker(true);
+        setDisplayBgPicker(true);
         setColorType(1)
     };
 
@@ -130,101 +138,102 @@ const CreateTheme: React.FC<MenuProps> = ({history,match}) => {
                 message={'Please wait...'}
                 duration={10000}
             />
-            {displayColorPicker && <div className='popover'>
-                <div className='cover' onClick={handleClose}/>
+            {displayBgPicker && <div className='popover'>
+                <div className='cover' onClick={handleBgClose}/>
+                <SketchPicker color={backColor} onChangeComplete={handleChangeComplete}/>
+            </div>}
+            {displayFontPicker && <div className='popover'>
+                <div className='cover' onClick={handleFontClose}/>
                 <SketchPicker color={mainColor} onChangeComplete={handleChangeComplete}/>
             </div>}
-            <IonHeader>
+            <IonHeader className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
-                    <IonTitle>Create Theme</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
 
-
-                <IonList lines="none">
-                    <IonItem className='secondary-color'>
-                        <div>Main Color:</div>
-
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div onClick={handleMainClick} style={{
-                            textAlign: 'center',
-                            minWidth: 100,
-                            cursor:'pointer',
-                            border: '1px solid #000',
-                            marginLeft: 20,
-                            height: 32,
-                            lineHeight: '32px',
-                            padding: '0 10px',
-                            color: mainColor == '#fff' ? 'red' : '#fff',
-                            background: mainColor
-                        }}>{mainColor}</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div>Background Color:</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div onClick={handleBackClick} style={{
-                            textAlign: 'center',
-                            minWidth: 100,
-                            cursor:'pointer',
-                            border: '1px solid #fff',
-                            marginLeft: 20,
-                            height: 32,
-                            lineHeight: '32px',
-                            padding: '0 10px',
-                            color: '#fff',
-                            background: backColor
-                        }}>{backColor}</div>
-                    </IonItem>
-
-                    <IonItem className='secondary-color'>
-                        <div>Theme Image:</div>
-                    </IonItem>
-
-                    <IonItem>
-                        <UploadImage imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
-                    </IonItem>
+                <div style={{padding: 15}}>
+                    <div className='create-title'>Main Color:</div>
 
 
-                    <IonItem className='secondary-color'>
-                        <div>Style Preview:</div>
-                    </IonItem>
+                    <div onClick={handleMainClick} style={{
+                        textAlign: 'center',
+                        minWidth: 100,
+                        border: '1px solid #ddd',
+                        height: 32,
+                        cursor: 'pointer',
+                        lineHeight: '32px',
+                        padding: '0 10px',
+                        borderRadius: 6,
+                        color: mainColor == '#fff' ? 'red' : '#fff',
+                        background: mainColor
+                    }}>{mainColor}</div>
 
-                    <IonItem className='secondary-color'>
-                        <div  style={{
-                            background: "url(" + parseUrl(backImage) + ")",
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'center',
-                            color: mainColor,
-                            backgroundSize:'cover'
-                        }}>
-                            <div className='blur' >
-                            <div  style={{  padding: 20,background:opacityBackColor}}>
-                            The world's first and largest digital marketplace for crypto collectibles and non-fungible
-                            tokens (NFTs).<br/><br/>
-                            Buy, sell, and discover exclusive digital items.<br/><br/>After reading the Privacy Notice,
-                            you may subscribe for our newsletter to get special offers and occasional surveys delivered
-                            to your inbox. Unsubscribe at any time by clicking on the link in the email.
+                    <div className='create-title'>Background Color:</div>
+
+                    <div onClick={handleBackClick} style={{
+                        textAlign: 'center',
+                        minWidth: 100,
+                        border: '1px solid #ddd',
+                        height: 32,
+                        cursor: 'pointer',
+                        lineHeight: '32px',
+                        padding: '0 10px',
+                        borderRadius: 6,
+                        color: '#fff',
+                        background: backColor
+                    }}>{backColor}</div>
+
+                    <div className='create-title'>Banner Image:</div>
+
+                    <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
+
+                    <div className='create-title'>Style Preview:</div>
+
+                    <div style={{
+                        background: backColor,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                        color: mainColor,
+                        backgroundSize: 'cover',
+                        border: '1px solid #ddd', borderRadius: 12
+                    }}>
+
+                            <div style={{padding: 20}}>
+                                The world's first and largest digital marketplace for crypto collectibles and
+                                non-fungible
+                                tokens (NFTs).<br/><br/>
+                                Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
+                                Privacy Notice,
+                                you may subscribe for our newsletter to get special offers and occasional
+                                surveys delivered
+                                to your inbox. Unsubscribe at any time by clicking on the link in the email.
                             </div>
-                            </div>
-                        </div>
-                    </IonItem>
 
-                </IonList>
+                    </div>
+
+                </div>
 
             </IonContent>
 
-            <IonFooter onClick={createTheme} className='ion-padding cursor'
-                       style={{background: '#3171e0', textAlign: 'center', fontWeight: 'bold'}}>
-                Create Theme
+            <IonFooter onClick={createTheme}
+                       className='ion-padding ion-no-border'>
+                <RowCenterWrapper>
+                    <div className='cursor' style={{
+                        background: '#0620F9',
+                        borderRadius: 50,
+                        textAlign: 'center',
+                        width: 227,
+                        height: 39,
+                        lineHeight: '39px'
+                    }}>
+                        Create
+                    </div>
+                </RowCenterWrapper>
+
             </IonFooter>
 
         </IonPage>
