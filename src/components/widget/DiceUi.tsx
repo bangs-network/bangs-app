@@ -1,14 +1,16 @@
 import parseUrl, {convertPercent} from "../../util/common";
 import * as React from "react";
-import {ColumnCenterWrapper, RowContentCenterWrapper} from "../../theme/commonStyle";
+import {ColumnCenterWrapper, RowContentCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
 import DiceIcon from "../../img/dice.png";
 import {useState} from "react";
 import {saveRoleState} from "../../pages/state/slice/roleSlice";
 import {useEffect} from "react";
 import {number} from "prop-types";
-import { CircularProgressbar,
+import {
+    CircularProgressbar,
     CircularProgressbarWithChildren,
-    buildStyles } from 'react-circular-progressbar';
+    buildStyles
+} from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
 
 interface Info {
@@ -21,27 +23,29 @@ const DiceUi = ({item2}: Info) => {
 
 
     useEffect(() => {
-        setPercent(Number(convertPercent(item2.DiceValue,item2.DiceOriginValue)))
+        setPercent(Number(convertPercent(item2.DiceValue, item2.DiceOriginValue)))
     }, [item2]);
 
-    return  <ColumnCenterWrapper style={{borderRadius:12,margin: '10px 30px 10px 0',minWidth:110,height:140,background:percent < 50?'linear-gradient(180deg, #FCE3E3 0%, #FFFFFF 94.27%)':percent!=50?'linear-gradient(180deg, #EFFCD4 0%, #FFFFFF 94.27%)':'linear-gradient(180deg, #ECF1FF 0%, #FFFFFF 94.27%)'}}>
+    return <ColumnCenterWrapper style={{
+        borderRadius: 12,
+        margin: '10px 30px 10px 0',
+        minWidth: 110,
+        background: percent < 50 ? 'linear-gradient(180deg, #FCE3E3 0%, #FFFFFF 94.27%)' : percent != 50 ? 'linear-gradient(180deg, #EFFCD4 0%, #FFFFFF 94.27%)' : 'linear-gradient(180deg, #ECF1FF 0%, #FFFFFF 94.27%)'
+    }}>
 
-        <RowContentCenterWrapper style={{fontSize:22,fontWeight:'bold',marginBottom:2}}>
-            <div style={{color:percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>{item2.DiceValue}<span style={{fontSize:13,fontWeight:'normal',color:'#868990'}}>/{item2.DiceOriginValue}</span></div>
-            <img style={{width:14,height:15,marginLeft:5,marginTop:5}} src={DiceIcon}/>
-        </RowContentCenterWrapper>
+
 
         {/*<div style={{fontSize:10, marginBottom:8,textAlign:'center',lineHeight:'20px',borderRadius:20,width:80,height:20,color:'#fff',background: percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>*/}
-            {/*{percent < 50?'big failure':percent == 50?'success':'big success'}*/}
+        {/*{percent < 50?'big failure':percent == 50?'success':'big success'}*/}
 
         {/*</div>*/}
 
 
-        <div style={{width: 80, height: 80}}>
+        <div style={{width: 80, height: 80,marginTop:12}}>
 
 
-            <CircularProgressbarWithChildren  value={percent} styles={buildStyles({
-                pathColor: percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E',
+            <CircularProgressbarWithChildren value={percent} styles={buildStyles({
+                pathColor: percent < 50 ? "#E13542" : percent == 50 ? '#2889E3' : '#5CC55E',
                 trailColor: "#eee"
             })}>
 
@@ -51,11 +55,22 @@ const DiceUi = ({item2}: Info) => {
             </CircularProgressbarWithChildren>
         </div>
 
-        <div style={{fontSize:16,fontWeight:'bold',marginTop:5,overflow: 'hidden',
+        <div style={{
+            fontSize: 16, marginTop: 5, overflow: 'hidden',
             textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'}}>
+            whiteSpace: 'nowrap'
+        }}>
             {item2.Role.roleName}
         </div>
+
+        <RowItemCenterWrapper style={{fontWeight: 'bold', marginBottom: 2}}>
+            <div
+                style={{fontSize: 34,color: percent < 50 ? "#E13542" : percent == 50 ? '#2889E3' : '#5CC55E'}}>{item2.DiceValue}</div>
+            <div>
+                <div style={{fontSize: 12, fontWeight: 'normal', color: '#868990'}}>/{item2.DiceOriginValue}</div>
+                <img style={{width: 14, height: 15, marginLeft:5}} src={DiceIcon}/>
+            </div>
+        </RowItemCenterWrapper>
 
 
     </ColumnCenterWrapper>

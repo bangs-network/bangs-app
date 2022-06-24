@@ -28,12 +28,13 @@ import {useEffect} from "react";
 import {emitBox} from "../../components/emitWeb3/Connectors";
 import axios from "axios";
 import {HomeVerseApi} from "../../service/Api";
-import parseUrl from "../../util/common";
+import parseUrl, {getPoint} from "../../util/common";
 import {ColumnCenterWrapper, RowContentCenterWrapper, RowItemCenterWrapper, RowWrapper} from '../../theme/commonStyle';
 import { CircularProgressbar,
     CircularProgressbarWithChildren,
     buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
+import PointTypeUi from "../../components/widget/PointTypeUi";
 
 interface StateProps {
     darkMode: boolean;
@@ -150,11 +151,10 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                     {list.map((item: any, index: number) => {
 
-                        return <IonCard style={{background:'#000',borderRadius:12}} key={index} className='cursor' onClick={() => {
+                        return <IonCard style={{borderRadius:12}} key={index} className='cursor' onClick={() => {
                             history.push(`/verseDetail/${item.verseId}`);
                         }}>
                             <div key={index} style={{
-                                background: "#F5F6F7",
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center',
                                 color: item.MainColor,
@@ -175,9 +175,15 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                                     <div>
 
+
+
                                     {item.TimelineList && item.TimelineList.map((item: any, index: number) => {
 
-                                        return <div key={index} className='cursor'
+                                        return <>
+                                            <div style={{margin: '0 12px 0 12px'}}>
+                                                <PointTypeUi item={item}/>
+                                            </div>
+                                            <div key={index} className='cursor'
                                                         style={{marginBottom:0, color: '#333',background:'#fff'}}>
 
                                             {
@@ -219,32 +225,33 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 </RowItemCenterWrapper> : item.timelineType == 3 ? <>
                                                     <IonGrid style={{padding: '5px 15px', margin: '10px 0 0'}}>
                                                         <IonRow>
-                                                            {item.talkList && item.talkList.map((item4: any, index3: number) => {
-                                                                return <RowWrapper key={index3} style={{width: '100%',marginTop:15,}}>
+                                                            {item.talkList && item.talkList.map((item4: any, index4: number) => {
+                                                                return <RowWrapper key={index4} style={{width: '100%',marginTop:15,}}>
                                                             <img
-                                                                className='icon-circle' style={{width:60,height:60,marginRight:15}}
+                                                                className='icon-circle' style={{width:32,height:32,marginRight:15}}
                                                                 src={parseUrl(item4.role.avator)}/>
 
                                                                 <div style={{flex:1}}>
 
                                                                     <div style={{
                                                                         fontWeight: 'bold',
-                                                                        fontSize: 16
+                                                                        fontSize: 14
                                                                     }}>{item4.role.roleName}</div>
                                                                     {item4.replyContent && <div style={{
                                                                         marginTop: 10,
                                                                         background: '#F1F3F5',
                                                                         borderRadius: 12,
+                                                                        fontSize: 12,
                                                                         padding: '10px',
                                                                         color: '#000'
                                                                     }}
                                                                                                 dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
-                                                                    <div style={{marginTop: 5}}
+                                                                    <div style={{marginTop: 5, fontSize: 12, marginBottom: '20px'}}
                                                                          dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                    <div style={{
+                                                                    {(index4 != item.talkList.length - 1) && <div style={{
                                                                         borderTop: '0.5px solid #D6D6D6',
-                                                                        marginTop: '20px'
-                                                                    }}/>
+
+                                                                    }}/>}
                                                                 </div>
                                                                 </RowWrapper>
                                                             })}
@@ -254,7 +261,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 </> : <></>
                                             }
 
-                                        </div>
+                                        </div></>
 
 
                                     })}

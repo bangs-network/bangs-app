@@ -20,3 +20,9 @@ export const VerseDetailApi = <T>(params: any) => axiosUtils.get<T>('/verse/deta
 export const TimelineThemeApi = <T>(params: any) => axiosUtils.get<T>('/timeline/theme', params, {timeout: 15000});
 
 export const RoleSearchApi = <T>(params: any) => axiosUtils.get<T>('/role/search', params, {timeout: 15000});
+
+export const UpdateAccountApi = <T>(params: any) => axiosUtils.post<T>('/account/update', params, {timeout: 15000});
+
+export const RoleVerifyApi = <T>(params: any) => axiosUtils.post<T>('/role/verify', params, {timeout: 15000});
+
+export const GetAccountApi = <T>(params: any) => axiosUtils.get<T>('/account/detail', params, {timeout: 15000});

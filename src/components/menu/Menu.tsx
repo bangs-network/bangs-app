@@ -152,6 +152,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         emitBox.requestAccount().then((data: any) => {
             console.log("data:", data);
             if (data && data.result && data.result.addresses[ChainType.EMIT]) {
+                localStorage.setItem("accountEmit",data.result.addresses[ChainType.EMIT])
                 getNonce(data.result.addresses[ChainType.EMIT])
             }
 

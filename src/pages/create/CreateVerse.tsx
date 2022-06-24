@@ -38,7 +38,8 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
     const [backColor, setBackColor] = useState<string>('#ffffff');
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
     const [backImage, setBackImage] = useState<string>('');
-    const [displayColorPicker, setDisplayColorPicker] = useState<boolean>(false);
+    const [displayBgPicker, setDisplayBgPicker] = useState<boolean>(false);
+    const [displayFontPicker, setDisplayFontPicker] = useState<boolean>(false);
 
     const createVerse = () => {
 
@@ -101,17 +102,21 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
     };
 
-    const handleClose = () => {
-        setDisplayColorPicker(false);
+    const handleBgClose = () => {
+        setDisplayBgPicker(false);
+    };
+
+    const handleFontClose = () => {
+        setDisplayFontPicker(false);
     };
 
     const handleMainClick = () => {
-        setDisplayColorPicker(true);
+        setDisplayFontPicker(true);
         setColorType(0)
     };
 
     const handleBackClick = () => {
-        setDisplayColorPicker(true);
+        setDisplayBgPicker(true);
         setColorType(1)
     };
 
@@ -124,8 +129,12 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                 message={'Please wait...'}
                 duration={5000}
             />
-            {displayColorPicker && <div className='popover'>
-                <div className='cover' onClick={handleClose}/>
+            {displayBgPicker && <div className='popover'>
+                <div className='cover' onClick={handleBgClose}/>
+                <SketchPicker color={backColor} onChangeComplete={handleChangeComplete}/>
+            </div>}
+            {displayFontPicker && <div className='popover'>
+                <div className='cover' onClick={handleFontClose}/>
                 <SketchPicker color={mainColor} onChangeComplete={handleChangeComplete}/>
             </div>}
 
@@ -146,17 +155,17 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
                 <div className="about-info">
 
-                    <div style={{borderRadius: 14,padding:"0 22px"}}>
+                    <div style={{borderRadius: 14, padding: "0 22px"}}>
 
 
-                            <div className='create-title'>Verse Name</div>
+                        <div className='create-title'>Verse Name</div>
 
                         <div className='radius-6' style={{background: '#F1F3F5'}}>
                             <IonInput value={title} placeholder="Add a verse name"
                                       onIonChange={e => setTitle(e.detail.value!)}/>
                         </div>
 
-                            <div className='create-title'>Description</div>
+                        <div className='create-title'>Description</div>
 
 
                         <div color='medium' className='radius-6' style={{background: '#F1F3F5'}}>
@@ -165,65 +174,64 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                         </div>
 
 
-                            <div className='create-title'>Main Color:</div>
+                        <div className='create-title'>Main Color:</div>
 
 
+                        <div onClick={handleMainClick} style={{
+                            textAlign: 'center',
+                            minWidth: 100,
+                            border: '1px solid #ddd',
+                            height: 32,
+                            cursor: 'pointer',
+                            lineHeight: '32px',
+                            padding: '0 10px',
+                            borderRadius: 6,
+                            color: mainColor == '#fff' ? 'red' : '#fff',
+                            background: mainColor
+                        }}>{mainColor}</div>
 
+                        <div className='create-title'>Background Color:</div>
 
-                            <div onClick={handleMainClick} style={{
-                                textAlign: 'center',
-                                minWidth: 100,
-                                border: '1px solid #ddd',
-                                height: 32,
-                                cursor: 'pointer',
-                                lineHeight: '32px',
-                                padding: '0 10px',
-                                borderRadius:6,
-                                color: mainColor == '#fff' ? 'red' : '#fff',
-                                background: mainColor
-                            }}>{mainColor}</div>
+                        <div onClick={handleBackClick} style={{
+                            textAlign: 'center',
+                            minWidth: 100,
+                            border: '1px solid #ddd',
+                            height: 32,
+                            cursor: 'pointer',
+                            lineHeight: '32px',
+                            padding: '0 10px',
+                            borderRadius: 6,
+                            color: '#fff',
+                            background: backColor
+                        }}>{backColor}</div>
 
-                            <div className='create-title'>Background Color:</div>
+                        <div className='create-title'>Banner Image:</div>
 
-                            <div onClick={handleBackClick} style={{
-                                textAlign: 'center',
-                                minWidth: 100,
-                                border: '1px solid #ddd',
-                                height: 32,
-                                cursor: 'pointer',
-                                lineHeight: '32px',
-                                padding: '0 10px',
-                                borderRadius:6,
-                                color: '#fff',
-                                background: backColor
-                            }}>{backColor}</div>
+                        <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
 
-                            <div className='create-title'>Banner Image:</div>
+                        <div className='create-title'>Style Preview:</div>
 
-                            <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
+                        <div style={{
+                            background: backColor,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center',
+                            color: mainColor,
+                            backgroundSize: 'cover',
+                            border: '1px solid #ddd', borderRadius: 12
+                        }}>
 
-                            <div className='create-title'>Style Preview:</div>
-
-                            <div style={{
-                                background: "url(" + parseUrl(backImage) + ")",
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center',
-                                color: mainColor,
-                                backgroundSize: 'cover'
-                            }}>
-                                <div className='blur'>
-                                    <div style={{padding: 20, background: opacityBackColor}}>
-                                        The world's first and largest digital marketplace for crypto collectibles and
-                                        non-fungible
-                                        tokens (NFTs).<br/><br/>
-                                        Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
-                                        Privacy Notice,
-                                        you may subscribe for our newsletter to get special offers and occasional
-                                        surveys delivered
-                                        to your inbox. Unsubscribe at any time by clicking on the link in the email.
-                                    </div>
-                                </div>
+                            <div style={{padding: 20}}>
+                                The world's first and largest digital marketplace for crypto collectibles and
+                                non-fungible
+                                tokens (NFTs).<br/><br/>
+                                Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
+                                Privacy Notice,
+                                you may subscribe for our newsletter to get special offers and occasional
+                                surveys delivered
+                                to your inbox. Unsubscribe at any time by clicking on the link in the email.
                             </div>
+
+                        </div>
 
 
                     </div>

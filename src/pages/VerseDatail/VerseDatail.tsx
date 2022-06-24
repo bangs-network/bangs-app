@@ -48,12 +48,20 @@ import moreIcon from "../../img/more.png";
 import addIcon from "../../img/add_circle.png";
 import addGrayIcon from "../../img/add_circle_gray.png";
 import rightRedIcon from "../../img/right_red.png";
+import rightBlueIcon from "../../img/right_blue.png";
 import DiceIcon from "../../img/dice.png";
+import ReviewIcon from "../../img/review_black.png";
+import UnlockIcon from "../../img/unlock.png";
+import LockIcon from "../../img/lock_blue.png";
+import RoleBgIcon from "../../img/role_bg.png";
+import RoleNewIcon from "../../img/new_role.png";
+import PointIcon from "../../img/point.png";
+import BackIcon from "../../img/back.png";
 
 import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
 import {RouteComponentProps} from "react-router";
-import './detail.css';
+import './detail.scss';
 import {useEffect} from "react";
 import axios from "axios";
 import parseUrl, {convertPercent, getPoint} from "../../util/common";
@@ -61,7 +69,7 @@ import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {saveRoleState} from "../state/slice/roleSlice";
 import {
-    RoleCreateApi, RoleSearchApi,
+    RoleCreateApi, RoleSearchApi, RoleVerifyApi,
     TalkBongApi,
     TalkCreateApi,
     TimelineThemeApi,
@@ -71,14 +79,15 @@ import {
 import UploadImage from "../../components/widget/UploadImage";
 import {
     ColumnCenterWrapper,
-    ColumnItemCenterWrapper,
+    ColumnItemCenterWrapper, ColumnWrapper,
     FixUi,
     RowContentCenterWrapper,
-    RowItemCenterWrapper, RowWrapper
+    RowItemCenterWrapper, RowRightWrapper, RowWrapper
 } from "../../theme/commonStyle";
 
 import DiceUi from "../../components/widget/DiceUi";
 import {Sticky, StickyContainer} from "react-sticky";
+import PointTypeUi from "../../components/widget/PointTypeUi";
 
 
 interface MenuProps extends RouteComponentProps {
@@ -123,9 +132,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             present('Please Login', 3000);
             return
         }
+        if (timeList[timeList.length - 1].timelineType == 3) {
+            if (timeList[timeList.length - 1].fixed == 0) {
+                present('There is a talk need to be fix', 3000);
+                return
+            }
+        }
         console.info("presentPopover2===")
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
+    };
+
+    const back = (e: React.MouseEvent) => {
+        history.goBack()
     };
 
     useIonViewWillEnter(() => {
@@ -283,6 +302,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         })
     };
 
+    const toRoleDetail = (roleId: number) => {
+        history.push(`/roleDetail/${roleId}`);
+    };
+
     const showSendMsg = (e: any) => {
         e.stopPropagation();
         setReplyId(0);
@@ -293,6 +316,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         e.stopPropagation();
         setRoleStatus("1");
         setShowSend(!showSend);
+        if (!role){
+            const role = roleList[0];
+            setRole(role);
+        }
+
         setReplyId(talkId);
         setReplyContent(talkContent)
     };
@@ -337,6 +365,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const sendMsg = () => {
 
+        let roleId = 0;
         if (!role) {
             if (!roleImage) {
                 present('Please upload role image', 3000);
@@ -352,38 +381,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 return
             }
 
-            const data = {
-                VerseID: verseId,
-                RoleName: roleName,
-                Note: note,
-                RoleAvator: roleImage,
-            };
-
-            setShowLoading(true);
-
-            RoleCreateApi(data).then(function (response: any) {
-                setShowLoading(false)
-                send(response.roleId);
-            }).catch(function (error: any) {
-                console.info(error);
-                setShowLoading(false)
-            });
-
         } else {
             if (!role || !role.roleId) {
                 present('Please Select role', 3000);
                 return
             }
 
-            const roleId = role.roleId;
-            send(roleId)
+            roleId = role.roleId;
         }
-
-
-    };
-
-    const send = (roleId: number) => {
-
 
         const talkId = body.Timelines[body.Timelines.length - 1].talkID;
 
@@ -395,6 +400,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         const data = {
             RoleId: roleId,
             TalkId: talkId,
+            RoleName: roleName,
+            Note: note,
+            RoleAvator: roleImage,
             ReplyTalkID: replyId,
             TalkContent: talkContent.replace(/(\r\n)|(\n)/g, '<br/>')
         };
@@ -405,6 +413,26 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             setRoleName("");
             setRoleImage("");
             setNote("");
+            start = 1;
+            getData();
+            setShowLoading(false)
+        }).catch(function (error: any) {
+            console.info(error);
+            present(error ? error : 'NetWork error', 3000);
+            setShowLoading(false)
+        });
+
+
+    };
+
+    const verify = (roleId: number) => {
+
+
+        const data = {
+            RoleID: roleId,
+        };
+        setShowLoading(true);
+        RoleVerifyApi(data).then(function (response: any) {
             start = 1;
             getData();
             setShowLoading(false)
@@ -459,19 +487,19 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             />
             <IonHeader className="ion-no-border">
                 <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonBackButton defaultHref="/tabs/home"/>
+                    <IonButtons slot="start" onClick={back}>
+                        <img className='cursor' style={{width: 32, height: 32,marginLeft:20}} src={BackIcon}/>
                     </IonButtons>
                     <IonTitle style={{
                         fontSize: 24,
                         fontWeight: 700,
                         textAlign: 'center'
                     }}>{body ? body.verseName : 'Bangs'}</IonTitle>
-                    {isKeeper == 1 && <IonButtons slot="end">
-                        <IonButton onClick={presentPopover}>
-                            <IonIcon slot="icon-only" icon={addCircleOutline}/>
-                        </IonButton>
-                    </IonButtons>}
+                    {isKeeper == 1 &&
+                        <IonButtons  slot="end" onClick={presentPopover}>
+                            <img className='cursor' style={{width: 32, height: 32,marginRight:20}} src={PointIcon}/>
+                        </IonButtons>
+                    }
                 </IonToolbar>
 
 
@@ -491,7 +519,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
-                <IonList lines="none" style={{padding: 0, border: 0, margin: 0, background: '#f8616c'}}>
+                <IonList lines="none" style={{padding: 0, border: 0, margin: 0, background: '#f5f5f5'}}>
 
 
                     {timeList && timeList.length > 0 && timeList.map((item1: any, index1: number) => {
@@ -499,12 +527,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         return <>
                             <div key={index1} className='cursor'
                                  style={{
-                                     marginLeft: 8,
-                                     marginRight: 8,
+                                     marginLeft: item1.timelineType == 1 ?0:8,
+                                     marginRight: item1.timelineType == 1 ?0:8,
+                                     border: item1.timelineType == 1 ?'none':'1px solid #E3E3E3',
                                      background: '#fff',
                                      color: '#000',
                                      marginBottom: 12,
-                                     borderRadius: 8
+                                     borderRadius: 12
                                  }}
                             >
 
@@ -512,30 +541,28 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                 {
                                     item1.timelineType == 1 ? item1.mainPic ?
                                         <IonItemDivider sticky style={{
-                                            background: '#f8616c',
                                             padding: 0,
                                             border: 0,
                                             margin: 0
                                         }}>
                                             <img src={parseUrl(item1.mainPic)} style={{
-                                                borderRadius: 12,
                                                 width: '100vw',
-                                                background: '#f8616c',
                                                 height: 220,
                                                 objectFit: 'cover'
                                             }}/>
                                         </IonItemDivider> : <></> :
-                                        item1.timelineType == 2 ? <div style={{paddingTop: 12, paddingBottom: 12}}>
+                                        item1.timelineType == 2 ? <div style={{paddingTop: 15, paddingBottom: 12}}>
 
-                                            <div style={{margin: '0 12px 12px 12px'}}>
-                                                <button style={{
-                                                    color: '#F8616C',
-                                                    background: '#F1F3F5',
-                                                    padding: '4px 10px',
-                                                    borderRadius: 70
-                                                }}>{getPoint(item1.timelineType)}</button>
+                                            <div style={{margin: '0 12px 15px 12px'}}>
+                                                <PointTypeUi item={item1}/>
                                             </div>
 
+
+                                            {item1.expressionTitle && <div style={{
+                                                fontSize: 16,
+                                                padding: '0 12px 12px 12px',
+                                                fontWeight: 'bold'
+                                            }}>{item1.expressionTitle}</div>}
                                             {item1.visible ? <>{item1.mainPic &&
                                             <div style={{padding: '0px 12px 12px 12px'}}><img
                                                 src={parseUrl(item1.mainPic)} style={{
@@ -545,11 +572,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                 height: 200,
                                                 objectFit: 'cover'
                                             }}/></div>}
-                                                               {item1.expressionTitle && <div style={{
-                                                                   fontSize: 16,
-                                                                   padding: '0 12px 12px 12px',
-                                                                   fontWeight: 'bold'
-                                                               }}>{item1.expressionTitle}</div>}
                                                 <div style={{padding: '0px 12px 12px 12px'}}
                                                      dangerouslySetInnerHTML={{__html: item1.expression}}>
                                                 </div>
@@ -563,14 +585,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                 textAlign: 'center'
                                             }}>Only some roles can see this expression</div>}
                                         </div> : item1.timelineType == 4 ?
-                                            <div style={{paddingTop: 12}}>
+                                            <div style={{paddingTop: 15}}>
                                                 <div style={{margin: '0 12px 0 12px'}}>
-                                                    <button style={{
-                                                        color: '#F8616C',
-                                                        background: '#F1F3F5',
-                                                        padding: '4px 10px',
-                                                        borderRadius: 70
-                                                    }}>{getPoint(item1.timelineType)}</button>
+                                                    <PointTypeUi item={item1}/>
                                                 </div>
                                                 <RowItemCenterWrapper style={{
                                                     padding: '5px 15px',
@@ -582,20 +599,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     })
                                                     }
                                                 </RowItemCenterWrapper></div> : item1.timelineType == 3 ?
-                                                <div style={{paddingTop: 12}}>
-                                                    <div style={{margin: '0 12px 12px 12px'}}>
-                                                        <button style={{
-                                                            color: '#F8616C',
-                                                            background: '#F1F3F5',
-                                                            padding: '4px 10px',
-                                                            borderRadius: 70
-                                                        }}>{getPoint(item1.timelineType)}</button>
+                                                <div style={{paddingTop: 15}}>
+                                                    <div style={{margin: '0 12px 15px 12px'}}>
+                                                        <PointTypeUi item={item1}/>
                                                     </div>
-                                                    <IonGrid style={{margin: '12px 0 0'}}>
+                                                    <IonGrid style={{margin: '12px 0 0 0', padding: 0}}>
                                                         <RowItemCenterWrapper onClick={toRole} style={{
                                                             padding: '4px 8px',
-                                                            background: '#EDEFF1',
-                                                            margin: '0px 35px',
+                                                            background: '#F5F7F9',
+                                                            margin: '0px 35px 30px 35px',
                                                             borderRadius: 40
                                                         }}>
                                                             {roleList && roleList.map((item3: any, index: number) => {
@@ -614,13 +626,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                                                                     </RowItemCenterWrapper>
                                                             })}
-                                                            <div style={{
+                                                            {roleList && roleList.length > 0 && <div style={{
                                                                 marginLeft: 10,
                                                                 marginRight: 10,
                                                                 height: 28,
                                                                 width: 1,
                                                                 background: '#B6BDC9'
-                                                            }}/>
+                                                            }}/>}
                                                             <img style={{
                                                                 width: 30,
                                                                 height: 30,
@@ -631,75 +643,164 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                             <img style={{
                                                                 height: 16,
                                                             }}
-                                                                 src={rightRedIcon}/>
+                                                                 src={rightBlueIcon}/>
                                                         </RowItemCenterWrapper>
-                                                        <div style={{margin:12}}>
-                                                            {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
-                                                                return <RowWrapper key={index3}
-                                                                                   style={{
-                                                                                       width: '100%',
-                                                                                       marginTop: 15,
-                                                                                   }}>
-                                                                    <img
-                                                                        className='icon-circle'
-                                                                        style={{width: 44, height: 44, marginRight: 15}}
-                                                                        src={parseUrl(item4.role.avator)}/>
+                                                        <div>
+                                                            <div style={{margin: 12}}>
+                                                                {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
+                                                                    return <><RowWrapper key={index3}
+                                                                                         style={{
+                                                                                             width: '100%',
+                                                                                             marginTop: 15,
 
-                                                                    <div style={{flex: 1}}>
+                                                                                         }}>
+                                                                        {
+
+                                                                            item4.newRole ?
+                                                                                <ColumnItemCenterWrapper style={{
+                                                                                    width: 44,
+                                                                                    marginRight: 15
+                                                                                }}>
+                                                                                    <img style={{width: 20, height: 20}}
+                                                                                         src={RoleNewIcon}/>
+                                                                                    <div style={{
+                                                                                        height: '100%',
+                                                                                        width: 1,
+                                                                                        background: '#B6BDC9'
+                                                                                    }}/>
+                                                                                </ColumnItemCenterWrapper> : <img
+                                                                                    className='icon-circle'
+                                                                                    style={{
+                                                                                        width: 44,
+                                                                                        height: 44,
+                                                                                        marginRight: 15
+                                                                                    }}
+                                                                                    src={parseUrl(item4.role.avator)}/>
+                                                                        }
 
                                                                         <div style={{
-                                                                            fontWeight: 'bold',
-                                                                            fontSize: 16
-                                                                        }}>{item4.role.roleName}</div>
-                                                                        {/*<div style={{*/}
-                                                                        {/*marginTop: 5,*/}
-                                                                        {/*color: '#999'*/}
-                                                                        {/*}}>By {localStorage.getItem("name")}</div>*/}
-                                                                        {item4.replyContent && <div style={{
-                                                                            marginTop: 10,
-                                                                            background: '#F1F3F5',
-                                                                            borderRadius: 12,
-                                                                            padding: '10px',
-                                                                            color: '#000'
-                                                                        }}
-                                                                                                    dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
-                                                                        <div style={{marginTop: 5}}
-                                                                             dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                        {index1 == timeList.length - 1 &&
-                                                                        <div style={{
-                                                                            marginTop: 15,
-                                                                            fontSize: 12
-                                                                        }}><span style={{
-                                                                            color: '#F8616C',
-                                                                            background: '#E9EDF2',
-                                                                            padding: '4px 10px',
-                                                                            borderRadius: 70
-                                                                        }}
-                                                                                 onClick={(e) => reply(e, item4.talkID, item4.talkContent)}>Reply</span>
-                                                                            {isKeeper && <span style={{
-                                                                                marginLeft: 10,
-                                                                                color: !bongList.includes(item4.talkID) ? '#333' : '#fff',
-                                                                                background: !bongList.includes(item4.talkID) ? '#E9EDF2' : '#F8616C',
-                                                                                borderRadius: 70,
-                                                                                padding: '4px 10px'
-                                                                            }} onClick={(e) => {
-                                                                                bongItem(e, item4.talkID);
-                                                                            }
-                                                                            }>Bong</span>}
-                                                                        </div>}
-                                                                        <div style={{
-                                                                            borderTop: '0.5px solid #D6D6D6',
-                                                                            marginTop: '20px'
-                                                                        }}/>
-                                                                    </div>
-                                                                </RowWrapper>
-                                                            })}
-                                                            {index1 == timeList.length - 1 &&
+                                                                            flex: 1,
+                                                                            paddingBottom: item4.newRole ? 15 : 0
+                                                                        }}>
+
+                                                                            <div onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                                fontWeight: 'bold',
+                                                                                fontSize: 16
+                                                                            }}>{item4.role.roleName}</div>
+                                                                            {/*<div style={{*/}
+                                                                            {/*marginTop: 5,*/}
+                                                                            {/*color: '#999'*/}
+                                                                            {/*}}>By {localStorage.getItem("name")}</div>*/}
+                                                                            {item4.replyContent && <div style={{
+                                                                                marginTop: 10,
+                                                                                background: '#F1F3F5',
+                                                                                borderRadius: 12,
+                                                                                padding: '10px',
+                                                                                color: '#000'
+                                                                            }}
+                                                                                                        dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
+                                                                            <div style={{marginTop: 5}}
+                                                                                 dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
+                                                                            {index1 == timeList.length - 1 && item1.fixed != 1 &&
+                                                                            <RowRightWrapper onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                                marginTop: 15
+                                                                            }}><img style={{height: 18}}
+                                                                                    onClick={(e) => reply(e, item4.talkID, item4.talkContent)}
+                                                                                    src={ReviewIcon}/>
+                                                                                {isKeeper && <img
+                                                                                    style={{marginLeft: 20, height: 18}}
+                                                                                    src={!bongList.includes(item4.talkID) ? UnlockIcon : LockIcon}
+                                                                                    onClick={(e) => {
+                                                                                        bongItem(e, item4.talkID);
+                                                                                    }
+                                                                                    }/>}
+                                                                            </RowRightWrapper>}
+                                                                            {index3 != item1.talkList.length - 1 && !item4.newRole &&
+                                                                            <div style={{
+                                                                                borderTop: '1px solid #B6BDC9',
+                                                                                marginTop: '10px'
+                                                                            }}/>}
+                                                                        </div>
+                                                                    </RowWrapper>
+                                                                        {
+                                                                            item4.newRole &&
+                                                                            <div key={index3} className='new-role'>
+                                                                                <img style={{
+                                                                                    width: '100%',
+                                                                                    height: '100%',
+                                                                                    position: 'relative'
+                                                                                }} src={RoleBgIcon}/>
+                                                                                <ColumnWrapper style={{
+                                                                                    position: 'absolute',
+                                                                                    top: 0,
+                                                                                    left: 0,
+                                                                                    bottom: 0,
+                                                                                    width: '100%',
+                                                                                    height: '100%',
+                                                                                    padding: '12% 15px 0 15px'
+
+                                                                                }}>
+                                                                                    <RowItemCenterWrapper
+                                                                                    >
+                                                                                        <img
+                                                                                            onClick={()=>toRoleDetail(item4.role.roleID)}
+                                                                                            className='icon-circle'
+                                                                                            style={{
+                                                                                                width: 54,
+                                                                                                height: 54,
+                                                                                                marginRight: 15
+                                                                                            }}
+                                                                                            src={parseUrl(item4.role.avator)}/>
+                                                                                        <div style={{flex: 1}}>
+                                                                                            <div style={{
+                                                                                                fontSize: 12
+                                                                                            }}>Global
+                                                                                            </div>
+                                                                                            <div style={{
+                                                                                                marginTop: 5,
+                                                                                                fontWeight: 'bold',
+                                                                                                fontSize: 16
+                                                                                            }}>{item4.role.roleName}</div>
+                                                                                        </div>
+                                                                                        {item4.role.fixed != 1 && <div onClick={()=>verify(item4.role.roleID)} style={{
+                                                                                            width: 90,
+                                                                                            height: 28,
+                                                                                            color: '#fff',
+                                                                                            lineHeight: '28px',
+                                                                                            textAlign: 'center',
+                                                                                            background: '#0620F9',
+                                                                                            borderRadius: 20
+                                                                                        }}>Verify
+                                                                                        </div>}
+                                                                                    </RowItemCenterWrapper>
+                                                                                    <FixUi style={{minHeight: 22}}/>
+                                                                                    <RowItemCenterWrapper onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                                        borderTop: '1px solid #0620F9',
+                                                                                        padding: '10px 0 20px 0'
+                                                                                    }}>
+                                                                                        <div style={{
+                                                                                            fontWeight: 'bold',
+                                                                                            color: '#0620F9'
+                                                                                        }}>Description
+                                                                                        </div>
+                                                                                        <FixUi/>
+                                                                                        <img style={{
+                                                                                            height: 16,
+                                                                                        }}
+                                                                                             src={rightBlueIcon}/>
+                                                                                    </RowItemCenterWrapper>
+                                                                                </ColumnWrapper>
+                                                                            </div>
+                                                                        }</>
+                                                                })}
+
+                                                            </div>
+                                                            {index1 == timeList.length - 1 && item1.fixed != 1 &&
                                                             <div
                                                                 style={{
                                                                     width: '100%',
-                                                                    marginBottom: 20,
-                                                                    marginTop: 20
+                                                                    borderTop: '1px solid #B6BDC9',
+                                                                    padding: '12px 12px 12px 12px'
                                                                 }}>
                                                                 <div onClick={(e) => showSendMsg(e)} style={{
                                                                     width: '100%',
@@ -709,7 +810,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     borderRadius: 30,
                                                                     color: '#bcbcbc',
                                                                     border: '1px solid #fff',
-                                                                    background: '#F1F3F5'
+                                                                    background: '#F5F7F9'
                                                                 }}>Add a Comment
                                                                 </div>
                                                             </div>}
@@ -719,7 +820,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                 }
 
                             </div>
-                            {index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 &&
+                            {index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 && item1.fixed != 1 &&
                             <div className='cursor'>
                                 <ColumnCenterWrapper style={{
                                     background: '#fff',
@@ -756,7 +857,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         borderBottom: '1px solid #C4C4C4',
                         color: '#000'
                     }}>
-                        <div>{role ? (<div><span style={{color:'#B6BDC9'}}>Play as </span>{role.roleName}</div>):'Create new role'}</div>
+                        <div>{role ? (<div><span style={{color: '#B6BDC9'}}>Play as </span>{role.roleName}
+                        </div>) : 'Create new role'}</div>
                     </RowItemCenterWrapper>
 
                     <RowItemCenterWrapper style={{padding: 0, margin: 16}}>
