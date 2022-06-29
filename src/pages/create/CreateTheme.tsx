@@ -130,7 +130,7 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
     };
 
     return (
-        <IonPage>
+        <IonPage className={'common-bg'}>
             <IonLoading
                 cssClass='my-custom-class'
                 isOpen={showLoading}
@@ -151,17 +151,24 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
                     <IonButtons slot="start">
                         <IonBackButton color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
+                    <IonTitle className='header-title'>Theme</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent>
 
-                <div style={{padding: 15}}>
-                    <div className='create-title'>Main Color:</div>
+                <div style={{padding: 15,background:'#f5f5f5',minHeight:'100vh'}}>
+                    <div className='create-title'>Main Image:</div>
+
+                    <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setBgColor={setBackColor} type={1}/>
+
+
+                    <div className='create-title'>Font Color:</div>
 
 
                     <div onClick={handleMainClick} style={{
                         textAlign: 'center',
                         minWidth: 100,
+                        width:100,
                         border: '1px solid #ddd',
                         height: 32,
                         cursor: 'pointer',
@@ -177,6 +184,7 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
                     <div onClick={handleBackClick} style={{
                         textAlign: 'center',
                         minWidth: 100,
+                        width:100,
                         border: '1px solid #ddd',
                         height: 32,
                         cursor: 'pointer',
@@ -187,33 +195,6 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
                         background: backColor
                     }}>{backColor}</div>
 
-                    <div className='create-title'>Banner Image:</div>
-
-                    <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
-
-                    <div className='create-title'>Style Preview:</div>
-
-                    <div style={{
-                        background: backColor,
-                        backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center',
-                        color: mainColor,
-                        backgroundSize: 'cover',
-                        border: '1px solid #ddd', borderRadius: 12
-                    }}>
-
-                            <div style={{padding: 20}}>
-                                The world's first and largest digital marketplace for crypto collectibles and
-                                non-fungible
-                                tokens (NFTs).<br/><br/>
-                                Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
-                                Privacy Notice,
-                                you may subscribe for our newsletter to get special offers and occasional
-                                surveys delivered
-                                to your inbox. Unsubscribe at any time by clicking on the link in the email.
-                            </div>
-
-                    </div>
 
                 </div>
 

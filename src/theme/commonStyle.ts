@@ -38,6 +38,13 @@ export const ColumnRightWrapper = styled.div`
     justify-content: flex-end;
 `
 
+export const ColumnRightBottomWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+    justify-content: flex-end;
+`
+
 export const FixUi = styled.div`
  flex:1
 `

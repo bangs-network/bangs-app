@@ -19,9 +19,9 @@ const PointTypeUi = ({item}: Info) => {
             item.timelineType == 4?<img style={{width:26,height:26}} src={DiceIcon} />: <></>
         }
         {
-            item.timelineType == 2?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15,color:'#000'}}>Expression</div>:
-                item.timelineType == 3?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15,color:'#000'}}>Talks</div>:
-                    item.timelineType == 4?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15,color:'#000'}}>Dice</div>: <></>
+            item.timelineType == 2?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Expression</div>:
+                item.timelineType == 3?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Talks</div>:
+                    item.timelineType == 4?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Dice</div>: <></>
         }
     </RowItemCenterWrapper>
 

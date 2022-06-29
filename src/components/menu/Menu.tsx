@@ -30,6 +30,8 @@ import {ChainType} from "@emit-technology/emit-types";
 import {ColumnRightWrapper, RowCenterWrapper, RowItemCenterWrapper, RowRightWrapper} from "../../theme/commonStyle";
 import {setMenuEnabled} from "../../data/sessions/sessions.actions";
 import {menu} from "ionicons/icons";
+import {GetAccountApi} from "../../service/Api";
+import parseUrl from "../../util/common";
 
 
 interface StateProps {
@@ -52,6 +54,8 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
     const [name, setName] = useState<string>('');
     const [showLoading, setShowLoading] = useState(false);
     const menuRef = useRef<HTMLIonMenuElement>(null);
+    const [headImg, setHeadImg] = useState('');
+    const [userName, setUserName] = useState('');
 
 
     useEffect(() => {
@@ -83,6 +87,13 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             localStorage.setItem("name", accounts.name);
         })
     }, []);
+
+    useEffect(() => {
+
+        if (alreadyLogin){
+            getAccountInfo()
+        }
+    }, [alreadyLogin]);
 
     const getNonce = (account: any) => {
         console.log("getNonce:");
@@ -135,6 +146,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 localStorage.setItem("account", account);
                 setAlreadyLogin(true);
                 setAccount(account);
+                getAccountInfo()
                 console.log("login：")
                 console.log(res)
             }).catch(function (error: any) {
@@ -164,6 +176,23 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
     const showAccountWidget = () => {
         emitBox.showWidget().catch(e => {
             console.error(e)
+        });
+
+    };
+
+    const getAccountInfo =  () => {
+        setShowLoading(true);
+        const data = {
+            ID:0
+        };
+        GetAccountApi(data).then(function (response: any) {
+            setShowLoading(false);
+            console.info("UpdateAccountApi==",response)
+            setHeadImg(response.avater)
+            setUserName(response.userName);
+        }).catch(function (error: any) {
+            console.info(error)
+            setShowLoading(false)
         });
 
     };
@@ -201,9 +230,9 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                             borderRadius: 12,
                             padding: 12
                         }}>
-                            <img style={{width: 64, height: 64}} src={headerIcon}/>
+                            <img style={{width: 64, height: 64}} src={headImg?parseUrl(headImg):headerIcon}/>
                             <div style={{marginLeft: 15}}>
-                                <div style={{fontWeight: 'bold', fontSize: 18}}>HERMAN.PAN</div>
+                                <div style={{fontWeight: 'bold', fontSize: 18}}>{userName}</div>
                             </div>
                         </RowItemCenterWrapper>
                     </IonItem> : <IonItem>

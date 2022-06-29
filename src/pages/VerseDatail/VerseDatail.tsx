@@ -88,6 +88,8 @@ import {
 import DiceUi from "../../components/widget/DiceUi";
 import {Sticky, StickyContainer} from "react-sticky";
 import PointTypeUi from "../../components/widget/PointTypeUi";
+import getMainColor from "../../util/getMainColor";
+import ExpressionLock from "../../components/timeType/ExpressionLock";
 
 
 interface MenuProps extends RouteComponentProps {
@@ -105,6 +107,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [roleStatus, setRoleStatus] = useState<any>("1");
     const [roleName, setRoleName] = useState<any>("");
     const [roleImage, setRoleImage] = useState<any>("");
+    const [bgColor, setBgColor] = useState<any>("#f5f5f5");
     const [note, setNote] = useState<any>("");
     const [body, setBody] = useState<any>();
     const [list, setList] = useState<any>();
@@ -124,7 +127,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [showLoading, setShowLoading] = useState(false);
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
     const contentRef = useRef<any>(null);
-
+    const [toolbarColor, setToolbarColor] = useState<string>('transparent');
+    const [lastColor, setLastColor] = useState<string>('transparent');
 
     const presentPopover = (e: React.MouseEvent) => {
         console.info("presentPopover===")
@@ -138,7 +142,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 return
             }
         }
-        console.info("presentPopover2===")
+        console.info("presentPopover2===");
         setPopoverEvent(e.nativeEvent);
         setShowPopover(true);
     };
@@ -181,6 +185,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         }, 3000);
     };
 
+
     const getData = () => {
         let params: any = match.params
         console.info(params.id);
@@ -203,10 +208,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 setIsKeeper(body.IsKeeper);
 
                 let sTimeList = body.Timelines;
+
                 console.info("sTimeList===", sTimeList)
 
                 if (sTimeList && sTimeList.length > 0) {
-
+                    setLastColor(sTimeList[sTimeList.length - 1].theme.BackgroundColor);
                     let timelineList = [];
                     if (start == 1) {
                         timelineList = sTimeList
@@ -215,6 +221,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         timelineList = [...sTimeList, ...timeList];
                         setTimeList(timelineList);
                     }
+
 
                     console.info("timelineList11===", timelineList)
                     start = start + 1;
@@ -316,7 +323,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         e.stopPropagation();
         setRoleStatus("1");
         setShowSend(!showSend);
-        if (!role){
+        if (!role) {
             const role = roleList[0];
             setRole(role);
         }
@@ -444,9 +451,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
+
     const toRole = () => {
         history.push(`/roles/${verseId}`)
-    }
+    };
+
+    const scrollToTop = (e: any) => {
+        let opacity = e.detail.scrollTop / 44;
+        setToolbarColor(opacity < 1 ? 'transparent' : lastColor)
+    };
 
 
     const hexToRgba = (bgColor: string) => {
@@ -487,24 +500,27 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             />
             <IonHeader className="ion-no-border">
                 <IonToolbar>
-                    <IonButtons slot="start" onClick={back}>
-                        <img className='cursor' style={{width: 32, height: 32,marginLeft:20}} src={BackIcon}/>
-                    </IonButtons>
-                    <IonTitle style={{
-                        fontSize: 24,
-                        fontWeight: 700,
-                        textAlign: 'center'
-                    }}>{body ? body.verseName : 'Bangs'}</IonTitle>
-                    {isKeeper == 1 &&
-                        <IonButtons  slot="end" onClick={presentPopover}>
-                            <img className='cursor' style={{width: 32, height: 32,marginRight:20}} src={PointIcon}/>
+                    <RowItemCenterWrapper style={{background: toolbarColor, height: '56px'}}>
+                        <IonButtons slot="start" onClick={back}>
+                            <img className='cursor' style={{width: 32, height: 32, marginLeft: 20}} src={BackIcon}/>
                         </IonButtons>
-                    }
+                        <IonTitle style={{
+                            fontSize: 24,
+                            fontWeight: 700,
+                            textAlign: 'center'
+                        }}>{body ? body.verseName : 'Bangs'}</IonTitle>
+                        {isKeeper == 1 &&
+                        <IonButtons slot="end" onClick={presentPopover}>
+                            <img className='cursor' style={{width: 32, height: 32, marginRight: 20}} src={PointIcon}/>
+                        </IonButtons>
+                        }
+                    </RowItemCenterWrapper>
                 </IonToolbar>
 
 
             </IonHeader>
-            <IonContent style={{position: 'relative'}} ref={contentRef} onClick={(e) => {
+            <IonContent scrollEvents={true} onIonScroll={(e) => scrollToTop(e)} style={{position: 'relative'}}
+                        ref={contentRef} onClick={(e) => {
                 e.stopPropagation();
                 setShowSend(false)
             }}>
@@ -519,39 +535,40 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
-                <IonList lines="none" style={{padding: 0, border: 0, margin: 0, background: '#f5f5f5'}}>
+                {timeList && timeList.length > 0 && timeList.map((item1: any, index1: number) => {
+
+                    return <div key={index1} style={{
+                        background: item1.theme.BackgroundColor ? item1.theme.BackgroundColor : '#f5f5f5f',
+                        color: item1.theme.MainColor,
+                        padding: 0.1,
+                        margin: 0
+                    }}>
+                        <div className='cursor'
+                             style={{
+                                 marginLeft: item1.timelineType == 1 ? 0 : 8,
+                                 marginRight: item1.timelineType == 1 ? 0 : 8,
+                                 border: item1.timelineType == 1 ? 'none' : '1px solid #E3E3E3',
+                                 background: '#fff',
+                                 marginBottom: 12,
+                                 borderRadius: 12
+                             }}
+                        >
 
 
-                    {timeList && timeList.length > 0 && timeList.map((item1: any, index1: number) => {
-
-                        return <>
-                            <div key={index1} className='cursor'
-                                 style={{
-                                     marginLeft: item1.timelineType == 1 ?0:8,
-                                     marginRight: item1.timelineType == 1 ?0:8,
-                                     border: item1.timelineType == 1 ?'none':'1px solid #E3E3E3',
-                                     background: '#fff',
-                                     color: '#000',
-                                     marginBottom: 12,
-                                     borderRadius: 12
-                                 }}
-                            >
-
-
-                                {
-                                    item1.timelineType == 1 ? item1.mainPic ?
-                                        <IonItemDivider sticky style={{
-                                            padding: 0,
-                                            border: 0,
-                                            margin: 0
-                                        }}>
-                                            <img src={parseUrl(item1.mainPic)} style={{
-                                                width: '100vw',
-                                                height: 220,
-                                                objectFit: 'cover'
-                                            }}/>
-                                        </IonItemDivider> : <></> :
-                                        item1.timelineType == 2 ? <div style={{paddingTop: 15, paddingBottom: 12}}>
+                            {
+                                item1.timelineType == 1 ? item1.mainPic ?
+                                    <IonItemDivider sticky style={{
+                                        padding: 0,
+                                        border: 0,
+                                        margin: 0
+                                    }}>
+                                        <img src={parseUrl(item1.mainPic)} style={{
+                                            width: '100vw',
+                                            height: 220,
+                                            objectFit: 'cover'
+                                        }}/>
+                                    </IonItemDivider> : <></> :
+                                    item1.timelineType == 2 ? item1.visible ? <div style={{paddingTop: 15, paddingBottom: 12}}>
 
                                             <div style={{margin: '0 12px 15px 12px'}}>
                                                 <PointTypeUi item={item1}/>
@@ -562,207 +579,210 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                 fontSize: 16,
                                                 padding: '0 12px 12px 12px',
                                                 fontWeight: 'bold'
-                                            }}>{item1.expressionTitle}</div>}
-                                            {item1.visible ? <>{item1.mainPic &&
-                                            <div style={{padding: '0px 12px 12px 12px'}}><img
-                                                src={parseUrl(item1.mainPic)} style={{
-                                                border: 0,
-                                                borderRadius: 12,
-                                                width: '100%',
-                                                height: 200,
-                                                objectFit: 'cover'
-                                            }}/></div>}
-                                                <div style={{padding: '0px 12px 12px 12px'}}
-                                                     dangerouslySetInnerHTML={{__html: item1.expression}}>
-                                                </div>
-                                            </> : <div style={{
-                                                width: '100%',
-                                                height: 220,
-                                                lineHeight: '220px',
-                                                fontSize: 20,
-                                                fontWeight: 'bold',
-                                                background: 'red',
-                                                textAlign: 'center'
-                                            }}>Only some roles can see this expression</div>}
-                                        </div> : item1.timelineType == 4 ?
+                                            }}>{item1.expressionTitle}</div>}{item1.mainPic &&
+                                        <div style={{padding: '0px 12px 12px 12px'}}><img
+                                            src={parseUrl(item1.mainPic)} style={{
+                                            border: 0,
+                                            borderRadius: 12,
+                                            width: '100%',
+                                            height: 200,
+                                            objectFit: 'cover'
+                                        }}/></div>}
+                                            <div style={{padding: '0px 12px 12px 12px'}}
+                                                 dangerouslySetInnerHTML={{__html: item1.expression}}>
+                                            </div>
+                                        </div> : <ExpressionLock item2={item1}/> : item1.timelineType == 4 ?
+                                        <div style={{paddingTop: 15}}>
+                                            <div style={{margin: '0 12px 0 12px'}}>
+                                                <PointTypeUi item={item1}/>
+                                            </div>
+                                            <RowItemCenterWrapper style={{
+                                                padding: '5px 15px',
+                                                overflowX: 'scroll',
+                                                overflowY: 'hidden'
+                                            }}>
+                                                {item1.dices.map((item2: any, index2: number) => {
+                                                    return <DiceUi key={index2} item2={item2}/>
+                                                })
+                                                }
+                                            </RowItemCenterWrapper></div> : item1.timelineType == 3 ?
                                             <div style={{paddingTop: 15}}>
-                                                <div style={{margin: '0 12px 0 12px'}}>
+                                                <div style={{margin: '0 12px 15px 12px'}}>
                                                     <PointTypeUi item={item1}/>
                                                 </div>
-                                                <RowItemCenterWrapper style={{
-                                                    padding: '5px 15px',
-                                                    overflowX: 'scroll',
-                                                    overflowY: 'hidden'
-                                                }}>
-                                                    {item1.dices.map((item2: any, index2: number) => {
-                                                        return <DiceUi key={index2} item2={item2}/>
-                                                    })
-                                                    }
-                                                </RowItemCenterWrapper></div> : item1.timelineType == 3 ?
-                                                <div style={{paddingTop: 15}}>
-                                                    <div style={{margin: '0 12px 15px 12px'}}>
-                                                        <PointTypeUi item={item1}/>
-                                                    </div>
-                                                    <IonGrid style={{margin: '12px 0 0 0', padding: 0}}>
-                                                        <RowItemCenterWrapper onClick={toRole} style={{
-                                                            padding: '4px 8px',
-                                                            background: '#F5F7F9',
-                                                            margin: '0px 35px 30px 35px',
-                                                            borderRadius: 40
-                                                        }}>
-                                                            {roleList && roleList.map((item3: any, index: number) => {
-                                                                return index < 8 &&
-                                                                    <RowItemCenterWrapper key={index} style={{
-                                                                        padding: 0,
-                                                                        marginLeft: index != 0 ? -8 : 0
-                                                                    }}>
-                                                                        <img style={{
-                                                                            width: 30,
-                                                                            height: 30,
-                                                                            border: '2px solid #F1F3F5',
-                                                                            borderRadius: '50px',
-                                                                        }}
-                                                                             src={parseUrl(item3.roleAvator)}/>
+                                                <IonGrid style={{margin: '12px 0 0 0', padding: 0}}>
+                                                    <RowItemCenterWrapper onClick={toRole} style={{
+                                                        padding: '4px 8px',
+                                                        background: '#F5F7F9',
+                                                        margin: '0px 35px 30px 35px',
+                                                        borderRadius: 40
+                                                    }}>
+                                                        {roleList && roleList.map((item3: any, index: number) => {
+                                                            return index < 8 &&
+                                                                <RowItemCenterWrapper key={index} style={{
+                                                                    padding: 0,
+                                                                    marginLeft: index != 0 ? -8 : 0
+                                                                }}>
+                                                                    <img style={{
+                                                                        width: 30,
+                                                                        height: 30,
+                                                                        border: '2px solid #F1F3F5',
+                                                                        borderRadius: '50px',
+                                                                    }}
+                                                                         src={parseUrl(item3.roleAvator)}/>
 
-                                                                    </RowItemCenterWrapper>
-                                                            })}
-                                                            {roleList && roleList.length > 0 && <div style={{
-                                                                marginLeft: 10,
-                                                                marginRight: 10,
-                                                                height: 28,
-                                                                width: 1,
-                                                                background: '#B6BDC9'
-                                                            }}/>}
-                                                            <img style={{
-                                                                width: 30,
-                                                                height: 30,
-                                                                borderRadius: '50px',
-                                                            }}
-                                                                 src={addGrayIcon}/>
-                                                            <FixUi/>
-                                                            <img style={{
-                                                                height: 16,
-                                                            }}
-                                                                 src={rightBlueIcon}/>
-                                                        </RowItemCenterWrapper>
-                                                        <div>
-                                                            <div style={{margin: 12}}>
-                                                                {item1.talkList && item1.talkList.map((item4: any, index3: number) => {
-                                                                    return <><RowWrapper key={index3}
-                                                                                         style={{
-                                                                                             width: '100%',
-                                                                                             marginTop: 15,
+                                                                </RowItemCenterWrapper>
+                                                        })}
+                                                        {roleList && roleList.length > 0 && <div style={{
+                                                            marginLeft: 10,
+                                                            marginRight: 10,
+                                                            height: 28,
+                                                            width: 1,
+                                                            background: '#B6BDC9'
+                                                        }}/>}
+                                                        <img style={{
+                                                            width: 30,
+                                                            height: 30,
+                                                            borderRadius: '50px',
+                                                        }}
+                                                             src={addGrayIcon}/>
+                                                        <FixUi/>
+                                                        <img style={{
+                                                            height: 16,
+                                                        }}
+                                                             src={rightBlueIcon}/>
+                                                    </RowItemCenterWrapper>
+                                                    <div>
+                                                        <div style={{margin: 12}}>
+                                                            {item1.talkList && item1.talkList.length > 0 ? item1.talkList.map((item4: any, index3: number) => {
+                                                                return <><RowWrapper key={index3}
+                                                                                     style={{
+                                                                                         width: '100%',
+                                                                                         marginTop: 15,
 
-                                                                                         }}>
-                                                                        {
+                                                                                     }}>
+                                                                    {
 
-                                                                            item4.newRole ?
-                                                                                <ColumnItemCenterWrapper style={{
+                                                                        item4.newRole ?
+                                                                            <ColumnItemCenterWrapper style={{
+                                                                                width: 44,
+                                                                                marginRight: 15
+                                                                            }}>
+                                                                                <img style={{
+                                                                                    width: 20,
+                                                                                    height: 20
+                                                                                }}
+                                                                                     src={RoleNewIcon}/>
+                                                                                <div style={{
+                                                                                    height: '100%',
+                                                                                    width: 1,
+                                                                                    background: '#B6BDC9'
+                                                                                }}/>
+                                                                            </ColumnItemCenterWrapper> : <img
+                                                                                className='icon-circle'
+                                                                                style={{
                                                                                     width: 44,
+                                                                                    height: 44,
                                                                                     marginRight: 15
-                                                                                }}>
-                                                                                    <img style={{width: 20, height: 20}}
-                                                                                         src={RoleNewIcon}/>
-                                                                                    <div style={{
-                                                                                        height: '100%',
-                                                                                        width: 1,
-                                                                                        background: '#B6BDC9'
-                                                                                    }}/>
-                                                                                </ColumnItemCenterWrapper> : <img
-                                                                                    className='icon-circle'
-                                                                                    style={{
-                                                                                        width: 44,
-                                                                                        height: 44,
-                                                                                        marginRight: 15
-                                                                                    }}
-                                                                                    src={parseUrl(item4.role.avator)}/>
-                                                                        }
+                                                                                }}
+                                                                                src={parseUrl(item4.role.avator)}/>
+                                                                    }
 
-                                                                        <div style={{
-                                                                            flex: 1,
-                                                                            paddingBottom: item4.newRole ? 15 : 0
-                                                                        }}>
+                                                                    <div style={{
+                                                                        flex: 1,
+                                                                        paddingBottom: item4.newRole ? 15 : 0
+                                                                    }}>
 
-                                                                            <div onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                        <div
+                                                                            onClick={() => toRoleDetail(item4.role.roleID)}
+                                                                            style={{
                                                                                 fontWeight: 'bold',
                                                                                 fontSize: 16
                                                                             }}>{item4.role.roleName}</div>
-                                                                            {/*<div style={{*/}
-                                                                            {/*marginTop: 5,*/}
-                                                                            {/*color: '#999'*/}
-                                                                            {/*}}>By {localStorage.getItem("name")}</div>*/}
-                                                                            {item4.replyContent && <div style={{
-                                                                                marginTop: 10,
-                                                                                background: '#F1F3F5',
-                                                                                borderRadius: 12,
-                                                                                padding: '10px',
-                                                                                color: '#000'
-                                                                            }}
-                                                                                                        dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
-                                                                            <div style={{marginTop: 5}}
-                                                                                 dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                            {index1 == timeList.length - 1 && item1.fixed != 1 &&
-                                                                            <RowRightWrapper onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                        {/*<div style={{*/}
+                                                                        {/*marginTop: 5,*/}
+                                                                        {/*color: '#999'*/}
+                                                                        {/*}}>By {localStorage.getItem("name")}</div>*/}
+                                                                        {item4.replyContent && <div style={{
+                                                                            marginTop: 10,
+                                                                            background: '#F1F3F5',
+                                                                            borderRadius: 12,
+                                                                            padding: '10px',
+                                                                            color: '#000'
+                                                                        }}
+                                                                                                    dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
+                                                                        <div style={{marginTop: 5}}
+                                                                             dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
+                                                                        {index1 == timeList.length - 1 && item1.fixed != 1 &&
+                                                                        <RowRightWrapper
+                                                                            onClick={() => toRoleDetail(item4.role.roleID)}
+                                                                            style={{
                                                                                 marginTop: 15
                                                                             }}><img style={{height: 18}}
                                                                                     onClick={(e) => reply(e, item4.talkID, item4.talkContent)}
                                                                                     src={ReviewIcon}/>
-                                                                                {isKeeper && <img
-                                                                                    style={{marginLeft: 20, height: 18}}
-                                                                                    src={!bongList.includes(item4.talkID) ? UnlockIcon : LockIcon}
-                                                                                    onClick={(e) => {
-                                                                                        bongItem(e, item4.talkID);
-                                                                                    }
-                                                                                    }/>}
-                                                                            </RowRightWrapper>}
-                                                                            {index3 != item1.talkList.length - 1 && !item4.newRole &&
-                                                                            <div style={{
-                                                                                borderTop: '1px solid #B6BDC9',
-                                                                                marginTop: '10px'
-                                                                            }}/>}
-                                                                        </div>
-                                                                    </RowWrapper>
-                                                                        {
-                                                                            item4.newRole &&
-                                                                            <div key={index3} className='new-role'>
-                                                                                <img style={{
-                                                                                    width: '100%',
-                                                                                    height: '100%',
-                                                                                    position: 'relative'
-                                                                                }} src={RoleBgIcon}/>
-                                                                                <ColumnWrapper style={{
-                                                                                    position: 'absolute',
-                                                                                    top: 0,
-                                                                                    left: 0,
-                                                                                    bottom: 0,
-                                                                                    width: '100%',
-                                                                                    height: '100%',
-                                                                                    padding: '12% 15px 0 15px'
+                                                                            {isKeeper ? <img
+                                                                                style={{
+                                                                                    marginLeft: 20,
+                                                                                    height: 18
+                                                                                }}
+                                                                                src={!bongList.includes(item4.talkID) ? UnlockIcon : LockIcon}
+                                                                                onClick={(e) => {
+                                                                                    bongItem(e, item4.talkID);
+                                                                                }
+                                                                                }/> : <></>}
+                                                                        </RowRightWrapper>}
+                                                                        {index3 != item1.talkList.length - 1 && !item4.newRole &&
+                                                                        <div style={{
+                                                                            borderTop: '1px solid #B6BDC9',
+                                                                            marginTop: '10px'
+                                                                        }}/>}
+                                                                    </div>
+                                                                </RowWrapper>
+                                                                    {
+                                                                        item4.newRole &&
+                                                                        <div key={index3} className='new-role'>
+                                                                            <img style={{
+                                                                                width: '100%',
+                                                                                height: '100%',
+                                                                                position: 'relative'
+                                                                            }} src={RoleBgIcon}/>
+                                                                            <ColumnWrapper style={{
+                                                                                position: 'absolute',
+                                                                                top: 0,
+                                                                                left: 0,
+                                                                                bottom: 0,
+                                                                                width: '100%',
+                                                                                height: '100%',
+                                                                                padding: '12% 15px 0 15px'
 
-                                                                                }}>
-                                                                                    <RowItemCenterWrapper
-                                                                                    >
-                                                                                        <img
-                                                                                            onClick={()=>toRoleDetail(item4.role.roleID)}
-                                                                                            className='icon-circle'
-                                                                                            style={{
-                                                                                                width: 54,
-                                                                                                height: 54,
-                                                                                                marginRight: 15
-                                                                                            }}
-                                                                                            src={parseUrl(item4.role.avator)}/>
-                                                                                        <div style={{flex: 1}}>
-                                                                                            <div style={{
-                                                                                                fontSize: 12
-                                                                                            }}>Global
-                                                                                            </div>
-                                                                                            <div style={{
-                                                                                                marginTop: 5,
-                                                                                                fontWeight: 'bold',
-                                                                                                fontSize: 16
-                                                                                            }}>{item4.role.roleName}</div>
+                                                                            }}>
+                                                                                <RowItemCenterWrapper
+                                                                                >
+                                                                                    <img
+                                                                                        onClick={() => toRoleDetail(item4.role.roleID)}
+                                                                                        className='icon-circle'
+                                                                                        style={{
+                                                                                            width: 54,
+                                                                                            height: 54,
+                                                                                            marginRight: 15
+                                                                                        }}
+                                                                                        src={parseUrl(item4.role.avator)}/>
+                                                                                    <div style={{flex: 1}}>
+                                                                                        <div style={{
+                                                                                            fontSize: 12
+                                                                                        }}>Global
                                                                                         </div>
-                                                                                        {item4.role.fixed != 1 && <div onClick={()=>verify(item4.role.roleID)} style={{
+                                                                                        <div style={{
+                                                                                            marginTop: 5,
+                                                                                            fontWeight: 'bold',
+                                                                                            fontSize: 16
+                                                                                        }}>{item4.role.roleName}</div>
+                                                                                    </div>
+                                                                                    {item4.role.fixed != 1 &&
+                                                                                    <div
+                                                                                        onClick={() => verify(item4.role.roleID)}
+                                                                                        style={{
                                                                                             width: 90,
                                                                                             height: 28,
                                                                                             color: '#fff',
@@ -771,56 +791,64 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                                             background: '#0620F9',
                                                                                             borderRadius: 20
                                                                                         }}>Verify
-                                                                                        </div>}
-                                                                                    </RowItemCenterWrapper>
-                                                                                    <FixUi style={{minHeight: 22}}/>
-                                                                                    <RowItemCenterWrapper onClick={()=>toRoleDetail(item4.role.roleID)} style={{
+                                                                                    </div>}
+                                                                                </RowItemCenterWrapper>
+                                                                                <FixUi style={{minHeight: 22}}/>
+                                                                                <RowItemCenterWrapper
+                                                                                    onClick={() => toRoleDetail(item4.role.roleID)}
+                                                                                    style={{
                                                                                         borderTop: '1px solid #0620F9',
                                                                                         padding: '10px 0 20px 0'
                                                                                     }}>
-                                                                                        <div style={{
-                                                                                            fontWeight: 'bold',
-                                                                                            color: '#0620F9'
-                                                                                        }}>Description
-                                                                                        </div>
-                                                                                        <FixUi/>
-                                                                                        <img style={{
-                                                                                            height: 16,
-                                                                                        }}
-                                                                                             src={rightBlueIcon}/>
-                                                                                    </RowItemCenterWrapper>
-                                                                                </ColumnWrapper>
-                                                                            </div>
-                                                                        }</>
-                                                                })}
+                                                                                    <div style={{
+                                                                                        fontWeight: 'bold',
+                                                                                        color: '#0620F9'
+                                                                                    }}>Description
+                                                                                    </div>
+                                                                                    <FixUi/>
+                                                                                    <img style={{
+                                                                                        height: 16,
+                                                                                    }}
+                                                                                         src={rightBlueIcon}/>
+                                                                                </RowItemCenterWrapper>
+                                                                            </ColumnWrapper>
+                                                                        </div>
+                                                                    }</>
+                                                            }
+                                                            ):<ColumnCenterWrapper>
+                                                                <div style={{color:'#B6BDC9',fontSize:18,fontWeight:'bold'}}>No Comment</div>
+                                                                <div style={{color:'#B6BDC9',fontSize:13,marginBottom:20,marginTop:5}}>Write a comment</div>
+                                                            </ColumnCenterWrapper>}
 
-                                                            </div>
-                                                            {index1 == timeList.length - 1 && item1.fixed != 1 &&
-                                                            <div
-                                                                style={{
-                                                                    width: '100%',
-                                                                    borderTop: '1px solid #B6BDC9',
-                                                                    padding: '12px 12px 12px 12px'
-                                                                }}>
-                                                                <div onClick={(e) => showSendMsg(e)} style={{
-                                                                    width: '100%',
-                                                                    height: 40,
-                                                                    lineHeight: '40px',
-                                                                    paddingLeft: 15,
-                                                                    borderRadius: 30,
-                                                                    color: '#bcbcbc',
-                                                                    border: '1px solid #fff',
-                                                                    background: '#F5F7F9'
-                                                                }}>Add a Comment
-                                                                </div>
-                                                            </div>}
                                                         </div>
-                                                    </IonGrid>
-                                                </div> : <></>
-                                }
+                                                        {index1 == timeList.length - 1 && item1.fixed != 1 &&
+                                                        <div
+                                                            style={{
+                                                                width: '100%',
+                                                                borderTop: '1px solid #B6BDC9',
+                                                                padding: '12px 12px 12px 12px'
+                                                            }}>
+                                                            <div onClick={(e) => showSendMsg(e)} style={{
+                                                                width: '100%',
+                                                                height: 40,
+                                                                lineHeight: '40px',
+                                                                paddingLeft: 15,
+                                                                borderRadius: 30,
+                                                                color: '#bcbcbc',
+                                                                border: '1px solid #fff',
+                                                                background: '#F5F7F9'
+                                                            }}>Add a Comment
+                                                            </div>
+                                                        </div>}
+                                                    </div>
+                                                </IonGrid>
+                                            </div> : <></>
+                            }
 
-                            </div>
-                            {index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 && item1.fixed != 1 &&
+                        </div>
+
+                        {
+                            index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 && item1.fixed != 1 &&
                             <div className='cursor'>
                                 <ColumnCenterWrapper style={{
                                     background: '#fff',
@@ -833,14 +861,12 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                     borderRadius: 40
                                 }} onClick={(e) => bong(e)}>
                                     <div>BONG</div>
-                                    <div style={{fontSize: 12, fontWeight: 'normal', color: '#B6BDC9'}}>Long Press</div>
+                                    <div style={{fontSize: 12, fontWeight: 'normal', color: '#B6BDC9'}}>Long Press
+                                    </div>
                                 </ColumnCenterWrapper>
                             </div>
-                            }</>
-                    })}
-
-
-                </IonList>
+                        } </div>
+                })}
 
             </IonContent>
 

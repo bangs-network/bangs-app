@@ -22,6 +22,8 @@ import SketchPicker from "react-color/lib/components/sketch/Sketch";
 import './create.scss';
 import BgIcon from "../../img/create_bg.png";
 import {RowCenterWrapper} from "../../theme/commonStyle";
+import getMainColor from "../../util/getMainColor";
+import TextareaAutosize from 'react-textarea-autosize';
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -36,6 +38,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
     const [colorType, setColorType] = useState<number>(0);
     const [mainColor, setMainColor] = useState<string>('#000000');
     const [backColor, setBackColor] = useState<string>('#ffffff');
+    const [toolbarColor, setToolbarColor] = useState<string>('transparent');
     const [opacityBackColor, setOpacityBackColor] = useState<string>('rgba(0,0,0,0.4)');
     const [backImage, setBackImage] = useState<string>('');
     const [displayBgPicker, setDisplayBgPicker] = useState<boolean>(false);
@@ -120,6 +123,17 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
         setColorType(1)
     };
 
+    const scrollToTop = (e:any) => {
+       let opacity = e.detail.scrollTop / 44;
+       setToolbarColor(opacity < 1?'transparent':'#121FF9')
+    };
+
+    const getBgColor = async (pic:string) => {
+        let bgColor =  await getMainColor(pic);
+        console.info("bgColor===", bgColor)
+        setBackColor("#" + bgColor);
+    };
+
     return (
         <IonPage id="create-verse-page">
             <IonLoading
@@ -138,14 +152,18 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                 <SketchPicker color={mainColor} onChangeComplete={handleChangeComplete}/>
             </div>}
 
-            <IonContent className="about-header">
+            <IonContent scrollEvents={true} onIonScroll={(e)=>scrollToTop(e)}>
 
-                <IonHeader>
+                <IonHeader  className="ion-no-border">
+
                     <IonToolbar>
+                        <div style={{background:toolbarColor,height:'56px'}}>
                         <IonButtons slot="start">
                             <IonBackButton defaultHref="/tabs/home"/>
                         </IonButtons>
+                        </div>
                     </IonToolbar>
+
                 </IonHeader>
 
                 <div className="about-header">
@@ -169,12 +187,16 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
 
                         <div color='medium' className='radius-6' style={{background: '#F1F3F5'}}>
-                            <IonTextarea className='radius' rows={4} value={detail} placeholder="Verse Description"
-                                         onIonChange={e => setDetail(e.detail.value!)}/>
+                            <TextareaAutosize style={{paddingLeft:10}} className='radius common-input' rows={4} value={detail} placeholder="Verse Description"
+                                              onChange={e => setDetail(e.target.value!)}/>
                         </div>
 
+                        <div className='create-title'>Main Image:</div>
 
-                        <div className='create-title'>Main Color:</div>
+                        <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setBgColor={setBackColor} type={1}/>
+
+
+                        <div className='create-title'>Font Color:</div>
 
 
                         <div onClick={handleMainClick} style={{
@@ -205,9 +227,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                             background: backColor
                         }}>{backColor}</div>
 
-                        <div className='create-title'>Banner Image:</div>
 
-                        <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} type={1}/>
 
                         <div className='create-title'>Style Preview:</div>
 
@@ -216,19 +236,13 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center',
                             color: mainColor,
+                            paddingBottom:10,
                             backgroundSize: 'cover',
-                            border: '1px solid #ddd', borderRadius: 12
-                        }}>
 
-                            <div style={{padding: 20}}>
-                                The world's first and largest digital marketplace for crypto collectibles and
-                                non-fungible
-                                tokens (NFTs).<br/><br/>
-                                Buy, sell, and discover exclusive digital items.<br/><br/>After reading the
-                                Privacy Notice,
-                                you may subscribe for our newsletter to get special offers and occasional
-                                surveys delivered
-                                to your inbox. Unsubscribe at any time by clicking on the link in the email.
+                        }}>
+                            <img style={{width:'100%'}} src={parseUrl(backImage)}/>
+                            <div style={{margin:15,padding: 20,border: '1px solid #ddd', borderRadius: 8,background:'#fff'}}>
+                                <div  dangerouslySetInnerHTML={{__html:detail?detail:''}}/>
                             </div>
 
                         </div>

@@ -6,6 +6,7 @@ import addIcon from "../../img/add.png";
 import addCircleIcon from "../../img/edit_circle.png";
 import {IonLoading} from "@ionic/react";
 import parseUrl from "../../util/common";
+import getMainColor from "../../util/getMainColor";
 
 interface ImgInfo {
 
@@ -13,12 +14,19 @@ interface ImgInfo {
     setImgUrl: any,
     width?: any,
     type?: any,
+    setBgColor?: any,
 
 }
 
-const UploadImage = ({imgUrl, setImgUrl,width,type}: ImgInfo) => {
+const UploadImage = ({imgUrl, setImgUrl,width,type,setBgColor}: ImgInfo) => {
 
     const [showLoading, setShowLoading] = useState(false);
+
+    const getBgColor = async (pic:string) => {
+        let bgColor =  await getMainColor(pic);
+        console.info("bgColor===", bgColor)
+        setBgColor("#" + bgColor);
+    };
 
     const uploadImage = async () => {
 
@@ -30,6 +38,7 @@ const UploadImage = ({imgUrl, setImgUrl,width,type}: ImgInfo) => {
         });
 
         console.info(image);
+        getBgColor(image.webPath);
         const file = await fetch(image.webPath).then(r => r.blob()).then(blobFile => new File([blobFile], 'file', {type: blobFile.type}));
 
         console.info(file);
