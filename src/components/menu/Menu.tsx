@@ -166,15 +166,19 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             if (data && data.result && data.result.addresses[ChainType.EMIT]) {
                 localStorage.setItem("accountEmit",data.result.addresses[ChainType.EMIT])
                 getNonce(data.result.addresses[ChainType.EMIT])
+            } else {
+                setShowLoading(false)
             }
 
         }).catch(e => {
+            setShowLoading(false)
             console.error("error", e)
         })
     };
 
     const showAccountWidget = () => {
         emitBox.showWidget().catch(e => {
+            setShowLoading(false)
             console.error(e)
         });
 
@@ -230,7 +234,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                             borderRadius: 12,
                             padding: 12
                         }}>
-                            <img style={{width: 64, height: 64}} src={headImg?parseUrl(headImg):headerIcon}/>
+                            <img style={{width: 64, height: 64,borderRadius:64}} src={headImg?parseUrl(headImg):headerIcon}/>
                             <div style={{marginLeft: 15}}>
                                 <div style={{fontWeight: 'bold', fontSize: 18}}>{userName}</div>
                             </div>

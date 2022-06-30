@@ -44,7 +44,7 @@ const contentStyle = {background: '#000'};
 const CreateExp: React.FC<MenuProps> = ({history, match}) => {
 
     const [expression, setExpression] = useState<string>();
-    const [title, setTitle] = useState<string>();
+    const [title, setTitle] = useState<string>('');
     const [present, dismiss] = useIonToast();
     const ImageRef = useRef<any>();
     const [showLoading, setShowLoading] = useState(false);

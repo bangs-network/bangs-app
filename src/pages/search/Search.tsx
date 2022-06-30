@@ -81,7 +81,7 @@ const Search: React.FC<MenuProps> = ({history}) => {
 
     return (
         <IonPage>
-            <IonHeader>
+            <IonHeader  className="ion-no-border">
                 <IonToolbar>
                     <IonTitle>Search</IonTitle>
                 </IonToolbar>

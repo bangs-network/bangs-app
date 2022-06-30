@@ -48,7 +48,7 @@ import moreIcon from "../../img/more.png";
 import addIcon from "../../img/add_circle.png";
 import addGrayIcon from "../../img/add_circle_gray.png";
 import rightRedIcon from "../../img/right_red.png";
-import rightBlueIcon from "../../img/right_blue.png";
+import rightIcon from "../../img/right_black.svg";
 import DiceIcon from "../../img/dice.png";
 import ReviewIcon from "../../img/review_black.png";
 import UnlockIcon from "../../img/unlock.png";
@@ -57,6 +57,7 @@ import RoleBgIcon from "../../img/role_bg.png";
 import RoleNewIcon from "../../img/new_role.png";
 import PointIcon from "../../img/point.png";
 import BackIcon from "../../img/back.png";
+import { ReactSVG } from "react-svg";
 
 import {useRef, useState} from "react";
 import AddPopover from "../../components/pop/Pop";
@@ -90,6 +91,7 @@ import {Sticky, StickyContainer} from "react-sticky";
 import PointTypeUi from "../../components/widget/PointTypeUi";
 import getMainColor from "../../util/getMainColor";
 import ExpressionLock from "../../components/timeType/ExpressionLock";
+import NewRole from "../../components/timeType/NewRole";
 
 
 interface MenuProps extends RouteComponentProps {
@@ -215,7 +217,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     setLastColor(sTimeList[sTimeList.length - 1].theme.BackgroundColor);
                     let timelineList = [];
                     if (start == 1) {
-                        timelineList = sTimeList
+                        setBongList([]);
+                        timelineList = sTimeList;
                         setTimeList(sTimeList);
                     } else {
                         timelineList = [...sTimeList, ...timeList];
@@ -315,6 +318,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
     const showSendMsg = (e: any) => {
         e.stopPropagation();
+        if (roleList && roleList.length > 0){
+            setRole(roleList[0]);
+        }
         setReplyId(0);
         setShowSend(!showSend);
     };
@@ -500,7 +506,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
             />
             <IonHeader className="ion-no-border">
                 <IonToolbar>
-                    <RowItemCenterWrapper style={{background: toolbarColor, height: '56px'}}>
+                    <div className='blur' >
+                    <RowItemCenterWrapper  style={{background: toolbarColor, height: '56px'}}>
                         <IonButtons slot="start" onClick={back}>
                             <img className='cursor' style={{width: 32, height: 32, marginLeft: 20}} src={BackIcon}/>
                         </IonButtons>
@@ -515,6 +522,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         </IonButtons>
                         }
                     </RowItemCenterWrapper>
+                    </div>
                 </IonToolbar>
 
 
@@ -568,9 +576,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                             objectFit: 'cover'
                                         }}/>
                                     </IonItemDivider> : <></> :
-                                    item1.timelineType == 2 ? item1.visible ? <div style={{paddingTop: 15, paddingBottom: 12}}>
+                                    item1.timelineType == 2 ? item1.visible ? <div style={{paddingTop: 18, paddingBottom: 18}}>
 
-                                            <div style={{margin: '0 12px 15px 12px'}}>
+                                            <div style={{margin: '0 12px 16px 12px'}}>
                                                 <PointTypeUi item={item1}/>
                                             </div>
 
@@ -588,10 +596,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                             height: 200,
                                             objectFit: 'cover'
                                         }}/></div>}
-                                            <div style={{padding: '0px 12px 12px 12px'}}
+                                            <div style={{padding: '0px 12px 12px 12px',lineHeight:'21px'}}
                                                  dangerouslySetInnerHTML={{__html: item1.expression}}>
                                             </div>
-                                        </div> : <ExpressionLock item2={item1}/> : item1.timelineType == 4 ?
+                                        </div> : <ExpressionLock color={item1.theme.BackgroundColor} item2={item1}/> : item1.timelineType == 4 ?
                                         <div style={{paddingTop: 15}}>
                                             <div style={{margin: '0 12px 0 12px'}}>
                                                 <PointTypeUi item={item1}/>
@@ -624,8 +632,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     marginLeft: index != 0 ? -8 : 0
                                                                 }}>
                                                                     <img style={{
-                                                                        width: 30,
-                                                                        height: 30,
+                                                                        width: 32,
+                                                                        height: 32,
                                                                         border: '2px solid #F1F3F5',
                                                                         borderRadius: '50px',
                                                                     }}
@@ -647,10 +655,16 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                         }}
                                                              src={addGrayIcon}/>
                                                         <FixUi/>
-                                                        <img style={{
-                                                            height: 16,
+                                                        <ReactSVG
+                                                            className="wrapper"
+                                                            beforeInjection={(svg) => {
+                                                                svg.classList.add('svg-class-name')
+                                                                svg.setAttribute('style', 'fill: red')
+                                                            }}
+                                                            style={{
+                                                            height: 16
                                                         }}
-                                                             src={rightBlueIcon}/>
+                                                             src={rightIcon}/>
                                                     </RowItemCenterWrapper>
                                                     <div>
                                                         <div style={{margin: 12}}>
@@ -740,79 +754,8 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                     </div>
                                                                 </RowWrapper>
                                                                     {
-                                                                        item4.newRole &&
-                                                                        <div key={index3} className='new-role'>
-                                                                            <img style={{
-                                                                                width: '100%',
-                                                                                height: '100%',
-                                                                                position: 'relative'
-                                                                            }} src={RoleBgIcon}/>
-                                                                            <ColumnWrapper style={{
-                                                                                position: 'absolute',
-                                                                                top: 0,
-                                                                                left: 0,
-                                                                                bottom: 0,
-                                                                                width: '100%',
-                                                                                height: '100%',
-                                                                                padding: '12% 15px 0 15px'
-
-                                                                            }}>
-                                                                                <RowItemCenterWrapper
-                                                                                >
-                                                                                    <img
-                                                                                        onClick={() => toRoleDetail(item4.role.roleID)}
-                                                                                        className='icon-circle'
-                                                                                        style={{
-                                                                                            width: 54,
-                                                                                            height: 54,
-                                                                                            marginRight: 15
-                                                                                        }}
-                                                                                        src={parseUrl(item4.role.avator)}/>
-                                                                                    <div style={{flex: 1}}>
-                                                                                        <div style={{
-                                                                                            fontSize: 12
-                                                                                        }}>Global
-                                                                                        </div>
-                                                                                        <div style={{
-                                                                                            marginTop: 5,
-                                                                                            fontWeight: 'bold',
-                                                                                            fontSize: 16
-                                                                                        }}>{item4.role.roleName}</div>
-                                                                                    </div>
-                                                                                    {item4.role.fixed != 1 &&
-                                                                                    <div
-                                                                                        onClick={() => verify(item4.role.roleID)}
-                                                                                        style={{
-                                                                                            width: 90,
-                                                                                            height: 28,
-                                                                                            color: '#fff',
-                                                                                            lineHeight: '28px',
-                                                                                            textAlign: 'center',
-                                                                                            background: '#0620F9',
-                                                                                            borderRadius: 20
-                                                                                        }}>Verify
-                                                                                    </div>}
-                                                                                </RowItemCenterWrapper>
-                                                                                <FixUi style={{minHeight: 22}}/>
-                                                                                <RowItemCenterWrapper
-                                                                                    onClick={() => toRoleDetail(item4.role.roleID)}
-                                                                                    style={{
-                                                                                        borderTop: '1px solid #0620F9',
-                                                                                        padding: '10px 0 20px 0'
-                                                                                    }}>
-                                                                                    <div style={{
-                                                                                        fontWeight: 'bold',
-                                                                                        color: '#0620F9'
-                                                                                    }}>Description
-                                                                                    </div>
-                                                                                    <FixUi/>
-                                                                                    <img style={{
-                                                                                        height: 16,
-                                                                                    }}
-                                                                                         src={rightBlueIcon}/>
-                                                                                </RowItemCenterWrapper>
-                                                                            </ColumnWrapper>
-                                                                        </div>
+                                                                        item4.newRole && <NewRole isKeeper={isKeeper} color={item1.theme.BackgroundColor} item={item4}
+                                                                                                  history={history} />
                                                                     }</>
                                                             }
                                                             ):<ColumnCenterWrapper>
@@ -848,14 +791,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         </div>
 
                         {
-                            index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 && item1.fixed != 1 &&
+                            index1 === timeList.length - 1 && timeList[timeList.length - 1].timelineType == 3 && item1.fixed != 1 &&  item1.talkList && item1.talkList.length > 0 &&
                             <div className='cursor'>
                                 <ColumnCenterWrapper style={{
                                     background: '#fff',
                                     color: '#000',
                                     fontWeight: 'bold',
                                     fontSize: 16,
-                                    margin: '0 12px 12px 12px',
+                                    border:'1px solid #C4C4C4',
+                                    margin: '0 12px 30px 12px',
                                     height: 54,
                                     textAlign: 'center',
                                     borderRadius: 40

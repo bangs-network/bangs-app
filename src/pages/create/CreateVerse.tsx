@@ -234,7 +234,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
                         <div className='create-title'>Style Preview:</div>
 
-                        <div style={{
+                        {backImage && <div style={{
                             background: backColor,
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'center',
@@ -248,7 +248,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                                 <div  dangerouslySetInnerHTML={{__html:detail?detail:''}}/>
                             </div>
 
-                        </div>
+                        </div>}
 
 
                     </div>

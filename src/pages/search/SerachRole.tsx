@@ -25,6 +25,7 @@ import axios from "axios";
 import {useAppDispatch} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {Role, saveRoleState} from "../state/slice/roleSlice";
+import {FixUi, RowItemCenterWrapper} from "../../theme/commonStyle";
 
 
 interface MenuProps extends RouteComponentProps {}
@@ -88,41 +89,49 @@ const SearchRole: React.FC<MenuProps> = ({history,match}) => {
 
     return (
         <IonPage>
-            <IonHeader>
+            <IonHeader  className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton  color='secondary'/>
                     </IonButtons>
-                    <IonTitle >Search  Nft</IonTitle>
+                    <IonTitle>Roles</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Search</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonSearchbar showCancelButton="never" placeholder="Search"
-                              onIonChange={e => setSearchText(e.detail.value!)}/>
+                {/*<IonSearchbar showCancelButton="never" placeholder="Search"*/}
+                              {/*onIonChange={e => setSearchText(e.detail.value!)}/>*/}
                 <IonList lines="none">
 
 
-                    {list.map((item: any, index: number) => {
-
-                        return  <IonItem key={index}>
-
-                            <IonAvatar slot="start">
-                                <img src={parseUrl(item.roleAvator)}/>
-                            </IonAvatar>
-                            <IonLabel>
-                                {item.roleName}
-                            </IonLabel>
-                            <IonButton onClick={()=>selectRole(item)} fill="outline" slot="end">Select</IonButton>
-
-                        </IonItem>
+                    <div style={{background:'#f4f4f4',height:'100%',paddingTop:12}}>
 
 
-                    })}
+                        {list.map((item: any, index: number) => {
+
+                            return <RowItemCenterWrapper onClick={()=>selectRole(item)}  className={'cursor'} style={{height:81,margin:'0 12px 12px 12px',borderRadius:12,background:'#fff',padding:'0 15px'}} key={index} >
+
+
+                                <img style={{width:54,height:54,borderRadius:54}} src={parseUrl(item.roleAvator)}/>
+
+                                <div style={{marginLeft:16}}>
+
+                                    <div style={{fontSize:16,fontWeight:'bold'}}> {item.roleName}</div>
+                                    <div style={{marginTop:8,fontSize:12,color: '#B6BDC9'}}>By @dolosseXD</div>
+                                </div>
+
+                                <FixUi />
+
+                                <div style={{borderRadius:32,width:72,height:30,lineHeight:'30px',color:'#fff',background:'#FF897D',textAlign:'center'}}>Select</div>
+
+
+                                {/*<IonButton onClick={(e:any)=>skipEditRole(e,item.roleId)} fill="outline" slot="end">Edit</IonButton>*/}
+
+                            </RowItemCenterWrapper>
+
+
+                        })}
+
+                    </div>
 
                 </IonList>
 

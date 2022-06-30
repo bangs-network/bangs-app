@@ -21,10 +21,11 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 
 interface Info {
-    item2: any
+    item2: any,
+    color: any,
 }
 
-const ExpressionLock = ({item2}: Info) => {
+const ExpressionLock = ({item2,color}: Info) => {
 
 
 
@@ -36,13 +37,13 @@ const ExpressionLock = ({item2}: Info) => {
         <div style={{
             width: 76,
             height:22,
-            background: '#0620F9',
+            background: color,
             borderRadius: '10px 0px'
         }}>
             <img style={{width: 50,marginLeft:10,marginTop:4}} src={ExpressionLeftIcon}/>
         </div>
         <div style={{
-            color: '#0620F9',
+            color: color,
             marginTop:20,
             fontSize: 18,
             fontWeight:'bold',

@@ -102,10 +102,7 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
                         </IonButton>
                     </IonButtons>}
                 </IonToolbar>
-            </IonHeader>
-            <IonContent style={{padding:0,margin:0}}>
-
-                <RowCenterWrapper>
+                <RowCenterWrapper style={{color:'#000'}}>
                     <FixUi/>
                     <div className='cursor' onClick={()=>selectType(0)} style={{paddingBottom:4,width:60,textAlign:'center', fontWeight:type==0?'bold':'normal',borderBottom:type==0?'3px solid #0620F9':'none'}}>All</div>
                     <FixUi/>
@@ -114,6 +111,10 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
                     <div className='cursor' onClick={()=>selectType(2)} style={{paddingBottom:4,width:60,textAlign:'center', fontWeight:type==2?'bold':'normal',borderBottom:type==2?'3px solid #0620F9':'none'}}>Global</div>
                     <FixUi/>
                 </RowCenterWrapper>
+            </IonHeader>
+            <IonContent style={{padding:0,margin:0}}>
+
+
 
                 <div style={{background:'#f4f4f4',height:'100%',paddingTop:12}}>
 
@@ -123,17 +124,17 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
                         return <RowItemCenterWrapper className={'cursor'} style={{height:81,margin:'0 12px 12px 12px',borderRadius:12,background:'#fff',padding:'0 15px'}} key={index} onClick={() => toRoleDetail(item.roleId)}>
 
 
-                            <img style={{width:54,height:54}} src={parseUrl(item.roleAvator)}/>
+                            <img style={{width:54,height:54,borderRadius:54}} src={parseUrl(item.roleAvator)}/>
 
                             <div style={{marginLeft:16}}>
 
                                 <div style={{fontSize:16,fontWeight:'bold'}}> {item.roleName}</div>
-                                <div style={{marginTop:8,fontSize:12,color: '#B6BDC9'}}>By @dolosseXD</div>
+                                {item.createUserName && <div style={{marginTop:8,fontSize:12,color: '#B6BDC9'}}>By @{item.createUserName}</div>}
                             </div>
 
                             <FixUi />
 
-                            <div style={{borderRadius:32,width:72,height:30,lineHeight:'30px',color:'#fff',background:'#FF897D',textAlign:'center'}}>Global</div>
+                            <div style={{borderRadius:32,width:72,height:30,lineHeight:'30px',color:'#fff',background:'#FF897D',textAlign:'center'}}>Local</div>
 
                             {/*<IonButton onClick={(e:any)=>skipEditRole(e,item.roleId)} fill="outline" slot="end">Edit</IonButton>*/}
 

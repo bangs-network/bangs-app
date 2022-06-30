@@ -266,6 +266,11 @@ input::placeholder {
     backdrop-filter: blur(10px);
 }
 
+.wrapper path {
+    fill: aqua;
+}
+
+
 .create-title {
     font-size: 16px;
     color: #000;
