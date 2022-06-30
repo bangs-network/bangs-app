@@ -159,7 +159,11 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
                 <div style={{padding: 15,background:'#f5f5f5',minHeight:'100vh'}}>
                     <div className='create-title'>Main Image:</div>
 
-                    <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setBgColor={setBackColor} type={1}/>
+                    <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setColor={(bg, font)=>{
+                        console.log(bg,font,"setColor")
+                        setBackColor(bg);
+                        setMainColor(font)
+                    }} type={1}/>
 
 
                     <div className='create-title'>Font Color:</div>

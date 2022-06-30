@@ -89,6 +89,7 @@
     "@capacitor/cli": "3.4.3",
     "@emit-technology/emit-types": "^1.0.2",
     "@types/react-color": "^3.0.6",
+    "@types/react-copy-to-clipboard": "^5.0.2",
     "@types/react-mentions": "^4.1.6",
     "@types/react-sticky": "^6.0.4",
     "@types/styled-components": "^5.1.9",
@@ -103,9 +104,9 @@
     "process": "^0.11.10",
     "qrcode.react": "^3.0.1",
     "react-app-rewired": "^2.2.1",
+    "react-palette": "^1.0.2",
     "safe-buffer": "^5.2.1",
     "stream-browserify": "^3.0.0",
-    "@types/react-copy-to-clipboard": "^5.0.2",
     "stream-http": "^3.2.0",
     "url": "^0.11.0",
     "util": "^0.12.4"

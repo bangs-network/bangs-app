@@ -14,23 +14,24 @@ interface ImgInfo {
     setImgUrl: any,
     width?: any,
     type?: any,
-    setBgColor?: any,
+    setColor?:(bg:string,font:string)=>void,
 
 }
 
-const UploadImage = ({imgUrl, setImgUrl,width,type,setBgColor}: ImgInfo) => {
+const UploadImage = ({imgUrl, setImgUrl,width,type,setColor}: ImgInfo) => {
 
     const [showLoading, setShowLoading] = useState(false);
 
     const getBgColor = async (pic:string) => {
-        let bgColor =  await getMainColor(pic);
-        console.info("bgColor===", bgColor)
-        setBgColor("#" + bgColor);
+        const palette = await getMainColor(pic);
+        if(palette && palette.darkVibrant && palette.darkMuted){
+            let bgColor = palette.darkMuted;
+            console.info("palette===", palette)
+            setColor && setColor(bgColor,palette.darkVibrant);
+        }
     };
 
     const uploadImage = async () => {
-
-
         const image: any = await Camera.getPhoto({
             quality: 100,
             resultType: CameraResultType.Uri,
@@ -38,7 +39,7 @@ const UploadImage = ({imgUrl, setImgUrl,width,type,setBgColor}: ImgInfo) => {
         });
 
         console.info(image);
-        getBgColor(image.webPath);
+        await getBgColor(image.webPath);
         const file = await fetch(image.webPath).then(r => r.blob()).then(blobFile => new File([blobFile], 'file', {type: blobFile.type}));
 
         console.info(file);
