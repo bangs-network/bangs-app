@@ -2,8 +2,8 @@ import { getColor,getPalette } from 'color-thief-react'
 import BigNumber from "bignumber.js";
 
 export interface ThemeColors {
-    primary: string;   //font color
-    palette: Array<string>; //For background border
+    primary: string;
+    palette: Array<string>;
 }
 
 const getMainColor = async (src: string): Promise<ThemeColors> => {
