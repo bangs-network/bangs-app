@@ -175,7 +175,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
     const scrollToBottom = () => {
-        const timer = setTimeout(() => contentRef.current?.scrollToBottom(), 1000);
+        const timer = setTimeout(() => contentRef.current?.scrollToBottom(), 300);
         return () => clearTimeout(timer);
     };
 
@@ -537,7 +537,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
             </IonHeader>
-            <IonContent scrollEvents={true} onIonScroll={(e) => scrollToTop(e)} style={{position: 'relative'}}
+            <IonContent ref={contentRef} scrollEvents={true} onIonScroll={(e) => scrollToTop(e)} style={{position: 'relative'}}
                          onClick={(e) => {
                 e.stopPropagation();
                 setShowSend(false)
