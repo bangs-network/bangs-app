@@ -62,11 +62,9 @@ const NewRole = ({color,item,history,isKeeper}: Info) => {
     };
 
     return <div style={{
-        border: '2px solid #0620F9',
-        borderColor:color,
-        position:'relative',
-        borderRadius: 12
+        paddingBottom:12
     }}>
+        <div style={{  borderRadius: 12,border: '2px solid #0620F9', borderColor:color,position:'relative',}}>
         <img style={{
             position: 'absolute',
             height: '100%',
@@ -153,6 +151,7 @@ const NewRole = ({color,item,history,isKeeper}: Info) => {
                      src={rightBlueIcon}/>
             </RowItemCenterWrapper>
         </ColumnWrapper>
+        </div>
     </div>
 
 };

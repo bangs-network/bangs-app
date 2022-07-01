@@ -66,10 +66,10 @@ const Home: React.FC<MenuProps> = ({history}) => {
         setShowPopover(true);
     };
 
-    useIonViewWillEnter(() => {
+    useEffect(() => {
         start = 1;
         loadData();
-    });
+    },[]);
 
     const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
         start = 1;
@@ -151,18 +151,18 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                     {list.map((item: any, index: number) => {
 
-                        return <IonCard style={{borderRadius:12}} key={index} className='cursor' onClick={() => {
+                        return <div style={{  borderRadius:'12px',marginTop:12}} key={index} className='cursor' onClick={() => {
                             history.push(`/verseDetail/${item.verseId}`);
                         }}>
                             <div key={index} style={{
-                                backgroundRepeat: 'no-repeat',
-                                backgroundPosition: 'center',
+                                borderRadius:'12px',
+                                border:'none',
+                                background:'#fff',
                                 color: item.MainColor,
-                                backgroundSize: 'cover'
                             }}>
                                 <div>
                                     <img src={parseUrl(item.verseBanner)}
-                                         style={{width: '100%', height: 100, objectFit: 'cover'}}/>
+                                         style={{width: '100%', height: 100, objectFit: 'cover',borderTopLeftRadius:12,borderTopRightRadius:12}}/>
 
 
                                     <IonCardHeader>
@@ -184,7 +184,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 <PointTypeUi item={item}/>
                                             </div>
                                             <div key={index} className='cursor'
-                                                        style={{marginBottom:0, color: '#333',background:'#fff'}}>
+                                                        style={{marginBottom:0, color: '#333'}}>
 
                                             {
                                                 item.timelineType == 2 ? <div style={{padding: '15px 15px'}}
@@ -271,7 +271,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                 </div>
                             </div>
 
-                        </IonCard>
+                        </div>
 
 
                     })}

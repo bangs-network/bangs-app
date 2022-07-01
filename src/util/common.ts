@@ -26,6 +26,31 @@ export function getPoint(type: number) {
 
 }
 
+export const hexToRgba = (bgColor: string) => {
+
+    if (!bgColor) {
+        return 'rgba(0,0,0,0.1)'
+    }
+
+    let color = bgColor.slice(1);
+
+    let rgba = [
+
+        parseInt('0x' + color.slice(0, 2)),
+
+        parseInt('0x' + color.slice(2, 4)),
+
+        parseInt('0x' + color.slice(4, 6)),
+
+        0.2
+
+    ];
+
+
+    return 'rgba(' + rgba.toString() + ')';
+
+};
+
 
 export const convert = (v: any, v2?: any) => {
     if (!v2) {

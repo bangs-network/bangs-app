@@ -14,14 +14,14 @@ const PointTypeUi = ({item}: Info) => {
 
     return <RowItemCenterWrapper>
         {
-            item.timelineType == 2?<img style={{width:26,height:26}} src={ExpressionTypeIcon} />:
-            item.timelineType == 3?<img style={{width:26,height:26}} src={TalkIcon} />:
-            item.timelineType == 4?<img style={{width:26,height:26}} src={DiceIcon} />: <></>
+            item.timelineType == 2?<img style={{width:20,height:20}} src={ExpressionTypeIcon} />:
+            item.timelineType == 3?<img style={{width:20,height:20}} src={TalkIcon} />:
+            item.timelineType == 4?<img style={{width:20,height:20}} src={DiceIcon} />: <></>
         }
         {
-            item.timelineType == 2?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Expression</div>:
-                item.timelineType == 3?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Talks</div>:
-                    item.timelineType == 4?<div style={{fontSize:16,fontWeight:'bold',marginLeft:15}}>Dice</div>: <></>
+            item.timelineType == 2?<div style={{fontSize:13,fontWeight:'bold',marginLeft:11}}>Expression</div>:
+                item.timelineType == 3?<div style={{fontSize:13,fontWeight:'bold',marginLeft:11}}>Talks</div>:
+                    item.timelineType == 4?<div style={{fontSize:13,fontWeight:'bold',marginLeft:11}}>Dice</div>: <></>
         }
     </RowItemCenterWrapper>
 
