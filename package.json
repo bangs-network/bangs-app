@@ -59,8 +59,7 @@
     "workbox-range-requests": "^5.1.4",
     "workbox-routing": "^5.1.4",
     "workbox-strategies": "^5.1.4",
-    "workbox-streams": "^5.1.4",
-    "react-copy-to-clipboard": "^5.0.4"
+    "workbox-streams": "^5.1.4"
   },
   "scripts": {
     "start": "export PORT=3000;react-app-rewired start .env",
@@ -95,8 +94,10 @@
     "@types/react-sticky": "^6.0.4",
     "@types/styled-components": "^5.1.9",
     "assert": "^2.0.0",
+    "bignumber.js": "^9.0.2",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
+    "color-thief-react": "^2.1.0",
     "crypto-browserify": "^3.12.0",
     "dotenv": "^16.0.0",
     "https-browserify": "^1.0.0",

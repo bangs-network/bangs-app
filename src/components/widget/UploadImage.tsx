@@ -24,10 +24,9 @@ const UploadImage = ({imgUrl, setImgUrl,width,type,setColor}: ImgInfo) => {
 
     const getBgColor = async (pic:string) => {
         const palette = await getMainColor(pic);
-        if(palette && palette.darkVibrant && palette.darkMuted){
-            let bgColor = palette.darkMuted;
-            console.info("palette===", palette)
-            setColor && setColor(bgColor,palette.darkVibrant);
+        if(palette && palette.primary && palette.palette){
+            let bgColor = palette.primary;
+            setColor && setColor(bgColor,palette.palette[0]);
         }
     };
 
