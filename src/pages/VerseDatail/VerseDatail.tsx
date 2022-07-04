@@ -526,10 +526,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             fontWeight: 700,
                             textAlign: 'center'
                         }}>{body ? body.VerseName : 'Bangs'}</IonTitle>
-                        {isKeeper == 1 &&
+                        {isKeeper == 1 ?
                         <IonButtons slot="end" onClick={presentPopover}>
                             <img className='cursor' style={{width: 32, height: 32, marginRight: 20}} src={PointIcon}/>
-                        </IonButtons>
+                        </IonButtons>:<div style={{width: 32, height: 32, marginRight: 20}}/>
                         }
                     </RowItemCenterWrapper>
 
@@ -690,13 +690,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                             {/*}}>By {localStorage.getItem("name")}</div>*/}
                                                                             {item4.replyContent && <div style={{
                                                                                 marginTop: 10,
+                                                                                fontSize: 13,
                                                                                 background: '#F1F3F5',
                                                                                 borderRadius: 12,
                                                                                 padding: '10px',
                                                                                 color: '#000'
                                                                             }}
                                                                                                         dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
-                                                                            <div style={{marginTop: 5}}
+                                                                            <div style={{marginTop: 5, fontSize: 13}}
                                                                                  dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
                                                                             {index1 == timeList.length - 1 && item1.fixed != 1 &&
                                                                             <RowRightWrapper
