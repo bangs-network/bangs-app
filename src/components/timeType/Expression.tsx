@@ -17,8 +17,8 @@ const Expression = ({item1}: Info) => {
         </div>
 
 
-        {item1.expressionTitle && <div style={{
-            fontSize: 16,
+        {item1.expressionTitle && <div className='font-bold' style={{
+            fontSize: 18,
             padding: '0 12px 12px 12px',
             fontWeight: 'bold'
         }}>{item1.expressionTitle}</div>}{item1.mainPic &&

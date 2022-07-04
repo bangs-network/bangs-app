@@ -195,9 +195,9 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 background: item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ? item.TimelineList[0].theme.BackgroundColor : '#fff'
                                             }}>
 
-                                                <div style={{
+                                                <div  className='font-bold' style={{
                                                     fontSize: 32,
-                                                    padding: '26px 0 0',
+                                                    padding: '24px 0 0',
                                                     fontWeight: 'bold'
                                                 }}>{item.verseName}</div>
 
@@ -215,9 +215,10 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                                  style={{marginBottom: 0}}>
 
                                                                 {
-                                                                    item.timelineType == 2 ?
-                                                                        <div className='text-ellipsis' style={{padding: '15px 0'}}
-                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/> : item.timelineType == 4 ?
+                                                                    item.timelineType == 2 ?<>
+                                                                        <div className='font-bold' style={{fontSize:17,padding:'6px 0',fontWeight:'bold'}}>{item.expressionTitle}</div>
+                                                                        <div className='text-ellipsis' style={{fontSize:13,padding: '4px 0 15px'}}
+                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/></> : item.timelineType == 4 ?
                                                                         <RowItemCenterWrapper
                                                                             style={{padding: '5px 15px'}}>
                                                                             {item.dices.map((item: any, index: number) => {

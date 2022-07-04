@@ -266,6 +266,7 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
                         textAlign: 'center',
                         width: 227,
                         height: 39,
+                        color:'#fff',
                         lineHeight: '39px'
                     }}>
                         Create

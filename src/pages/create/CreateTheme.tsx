@@ -213,6 +213,7 @@ const CreateTheme: React.FC<MenuProps> = ({history, match}) => {
                         textAlign: 'center',
                         width: 227,
                         height: 39,
+                        color:'#fff',
                         lineHeight: '39px'
                     }}>
                         Create

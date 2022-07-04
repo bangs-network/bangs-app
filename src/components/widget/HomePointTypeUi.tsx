@@ -9,7 +9,7 @@ interface Info {
 const HomePointTypeUi = ({item}: Info) => {
 
 
-    return <div style={{ marginTop:26,marginBottom: 7}}><span style={{
+    return <div style={{ marginTop:24,marginBottom: 7}}><span style={{
         color: item.theme.BackgroundColor,
         fontSize:9,
         background: 'rgba(255, 255, 255, 0.5)',
