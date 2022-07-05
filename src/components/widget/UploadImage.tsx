@@ -14,7 +14,7 @@ interface ImgInfo {
     setImgUrl: any,
     width?: any,
     type?: any,
-    setColor?:(bg:string,font:string)=>void,
+    setColor?:(bg:string,font:string,badge:any, text:any)=>void,
 
 }
 
@@ -24,9 +24,10 @@ const UploadImage = ({imgUrl, setImgUrl,width,type,setColor}: ImgInfo) => {
 
     const getBgColor = async (pic:string) => {
         const palette = await getMainColor(pic);
+        console.log(palette,"get main color:");
         if(palette && palette.primary && palette.palette){
             let bgColor = palette.primary;
-            setColor && setColor(bgColor,palette.palette[0]);
+            setColor && setColor(bgColor,palette.palette[0],palette.badge,palette.text);
         }
     };
 

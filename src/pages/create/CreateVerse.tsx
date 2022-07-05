@@ -193,9 +193,9 @@ const CreateVerse: React.FC<MenuProps> = ({history}) => {
 
                         <div className='create-title'>Main Image:</div>
 
-                        <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setColor={(bg,font)=>{
+                        <UploadImage width={'100%'} imgUrl={backImage} setImgUrl={setBackImage} setColor={(bg,font,badge,text)=>{
                             setBackColor(bg);
-                            setMainColor(font)
+                            setMainColor(font);
                         }} type={1}/>
 
 
