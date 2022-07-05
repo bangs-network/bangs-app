@@ -19,6 +19,8 @@ import parseUrl from "../../util/common";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {LoadState} from "../state/slice/loadStateSlice";
 import {FixUi, RowCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
+import {getBgColor} from "../../util/getMainColor";
+//import {getBgColor} from "../../util/getMainColor";
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -71,7 +73,10 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
 
 
     const toRoleDetail = (roleId: number) => {
-        history.push(`/roleDetail/${roleId}`);
+        let params: any = match.params
+        history.push({ pathname: `/roleDetail/${roleId}`, state:{
+            VerseID: Number(params.id)
+        }});
     };
 
     const skipEditRole = (e: any, roleId: number) => {
@@ -84,57 +89,84 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
         history.push(`/editRole/${params.id}`);
     };
 
-    const selectType = (index:number) => {
+    const selectType = (index: number) => {
         setType(index)
     };
 
     return (
         <IonPage>
-            <IonHeader  className="ion-no-border">
+            <IonHeader className="ion-no-border">
                 <IonToolbar>
                     <IonButtons slot="start">
                         <IonBackButton color='secondary' defaultHref="/tabs/home"/>
                     </IonButtons>
-                    <IonTitle>Roles</IonTitle>
+                    <IonTitle><div style={{color:'#000'}}>Roles</div></IonTitle>
                     {select != 1 && <IonButtons slot="end">
                         <IonButton onClick={skipCreteRole}>
                             <IonIcon slot="icon-only" icon={addCircleOutline}/>
                         </IonButton>
                     </IonButtons>}
                 </IonToolbar>
-                <RowCenterWrapper style={{color:'#000'}}>
+                <RowCenterWrapper style={{color: '#000'}}>
                     <FixUi/>
-                    <div className='cursor' onClick={()=>selectType(0)} style={{paddingBottom:4,width:60,textAlign:'center', fontWeight:type==0?'bold':'normal',borderBottom:type==0?'3px solid #0620F9':'none'}}>All</div>
+                    <div className='cursor' onClick={() => selectType(0)} style={{
+                        paddingBottom: 4,
+                        width: 60,
+                        textAlign: 'center',
+                        fontWeight: type == 0 ? 'bold' : 'normal',
+                        borderBottom: type == 0 ? '3px solid #0620F9' : 'none'
+                    }}>All
+                    </div>
                     <FixUi/>
-                    <div className='cursor' onClick={()=>selectType(1)} style={{paddingBottom:4,width:60,textAlign:'center', fontWeight:type==1?'bold':'normal',borderBottom:type==1?'3px solid #0620F9':'none'}}>Local</div>
+                    <div className='cursor' onClick={() => selectType(1)} style={{
+                        paddingBottom: 4,
+                        width: 60,
+                        textAlign: 'center',
+                        fontWeight: type == 1 ? 'bold' : 'normal',
+                        borderBottom: type == 1 ? '3px solid #0620F9' : 'none'
+                    }}>Local
+                    </div>
                     <FixUi/>
-                    <div className='cursor' onClick={()=>selectType(2)} style={{paddingBottom:4,width:60,textAlign:'center', fontWeight:type==2?'bold':'normal',borderBottom:type==2?'3px solid #0620F9':'none'}}>Global</div>
+                    <div className='cursor' onClick={() => selectType(2)} style={{
+                        paddingBottom: 4,
+                        width: 60,
+                        textAlign: 'center',
+                        fontWeight: type == 2 ? 'bold' : 'normal',
+                        borderBottom: type == 2 ? '3px solid #0620F9' : 'none'
+                    }}>Global
+                    </div>
                     <FixUi/>
                 </RowCenterWrapper>
             </IonHeader>
-            <IonContent style={{padding:0,margin:0}}>
+            <IonContent style={{padding: 0, margin: 0}}>
 
 
-
-                <div style={{background:'#f4f4f4',height:'100%',paddingTop:12}}>
+                <div style={{background: '#f4f4f4', height: '100%', paddingTop: 12}}>
 
 
                     {list.map((item: any, index: number) => {
 
-                        return <RowItemCenterWrapper className={'cursor'} style={{height:81,margin:'0 12px 12px 12px',borderRadius:12,background:'#fff',padding:'0 15px'}} key={index} onClick={() => toRoleDetail(item.roleId)}>
+                        return <RowItemCenterWrapper className={'cursor'} style={{
+                            height: 81,
+                            margin: '0 12px 12px 12px',
+                            borderRadius: 12,
+                            background: '#fff',
+                            padding: '0 15px'
+                        }} key={index} onClick={() => toRoleDetail(item.roleId)}>
 
 
-                            <img style={{width:54,height:54,borderRadius:54}} src={parseUrl(item.roleAvator)}/>
+                            <img style={{width: 54, height: 54, borderRadius: 54}} src={parseUrl(item.roleAvator)}/>
 
-                            <div style={{marginLeft:16}}>
+                            <div style={{marginLeft: 16}}>
 
-                                <div style={{fontSize:16,fontWeight:'bold'}}> {item.roleName}</div>
-                                {item.createUserName && <div style={{marginTop:8,fontSize:12,color: '#B6BDC9'}}>By @{item.createUserName}</div>}
+                                <div style={{fontSize: 16, fontWeight: 'bold'}}> {item.roleName}</div>
+                                {item.createUserName && <div style={{marginTop: 8, fontSize: 12, color: '#B6BDC9'}}>By
+                                    @{item.createUserName}</div>}
                             </div>
 
-                            <FixUi />
+                            <FixUi/>
 
-                            <div style={{borderRadius:32,width:72,height:30,lineHeight:'30px',color:'#fff',background:'#FF897D',textAlign:'center'}}>Local</div>
+                            <RoleType  item={item}/>
 
                             {/*<IonButton onClick={(e:any)=>skipEditRole(e,item.roleId)} fill="outline" slot="end">Edit</IonButton>*/}
 
@@ -150,5 +182,38 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
         </IonPage>
     );
 };
+
+interface ItemInfo {
+    item:any
+}
+
+function RoleType({item}:ItemInfo) {
+
+
+    const [bgColor, setBgColor] = useState<any>('#FF897D');
+
+    useEffect(() => {
+        if(item.roleAvator){
+            (async function handle() {
+                const bg = await getBgColor(parseUrl(item.roleAvator));
+                console.info("bg==",bg)
+                setBgColor(bg)
+            })();
+        }
+    }, [item.roleAvator]);
+
+
+    return  <div style={{
+        borderRadius: 32,
+        width: 72,
+        height: 30,
+        lineHeight: '30px',
+        color: '#fff',
+        background: bgColor,
+        textAlign: 'center'
+    }}>Local
+    </div>
+
+}
 
 export default Roles;

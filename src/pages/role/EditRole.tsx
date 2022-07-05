@@ -51,7 +51,7 @@ const EditRole: React.FC<MenuProps> = ({history, match}) => {
         const data = {
             VerseID: Number(params.id),
             RoleName: roleName,
-            Note: note,
+            RoleDescription: note,
             RoleAvator: imgUrl,
         };
         setShowLoading(true);

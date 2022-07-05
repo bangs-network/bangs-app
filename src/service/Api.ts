@@ -11,6 +11,8 @@ export const VersePointApi = <T>(params: any) => axiosUtils.post<T>('/timeline/c
 
 export const RoleCreateApi = <T>(params: any) => axiosUtils.post<T>('/role/create', params, {timeout: 15000});
 
+export const RoleDetailApi = <T>(params: any) => axiosUtils.post<T>('/role/detail', params, {timeout: 15000});
+
 export const TalkCreateApi = <T>(params: any) => axiosUtils.post<T>('/timeline/talk', params, {timeout: 15000});
 
 export const TalkBongApi = <T>(params: any) => axiosUtils.post<T>('/timeline/talk/fix', params, {timeout: 15000});
@@ -25,4 +27,10 @@ export const UpdateAccountApi = <T>(params: any) => axiosUtils.post<T>('/account
 
 export const RoleVerifyApi = <T>(params: any) => axiosUtils.post<T>('/role/verify', params, {timeout: 15000});
 
+export const RoleSpecifyApi = <T>(params: any) => axiosUtils.post<T>('/role/specify', params, {timeout: 15000});
+
+export const RoleActorsApi = <T>(params: any) => axiosUtils.post<T>('/role/actors', params, {timeout: 15000});
+
 export const GetAccountApi = <T>(params: any) => axiosUtils.get<T>('/account/detail', params, {timeout: 15000});
+
+export const GetUserListApi = <T>(params: any) => axiosUtils.get<T>('/account/search', params, {timeout: 15000});

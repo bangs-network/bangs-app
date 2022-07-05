@@ -165,7 +165,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
     useEffect(() => {
+
         console.info(loadState)
+
         if (loadState && loadState.tag == 'VerseDetail' && loadState.state == 1) {
             start = 1;
             getData();
@@ -350,7 +352,9 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     };
 
     const toRoleDetail = (roleId: number) => {
-        history.push(`/roleDetail/${roleId}`);
+        history.push({ pathname: `/roleDetail/${roleId}`, state:{
+                VerseID: Number(verseId)
+            }});
     };
 
     const showSendMsg = (e: any) => {
@@ -476,10 +480,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     };
 
     const verify = (roleId: number) => {
-
+        let location: any = history.location
 
         const data = {
             RoleID: roleId,
+            VerseID: location.VerseID,
         };
         setShowLoading(true);
         RoleVerifyApi(data).then(function (response: any) {
@@ -729,6 +734,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                             item4.newRole && <NewRole isKeeper={isKeeper}
                                                                                                       color={item1.theme.BackgroundColor}
                                                                                                       item={item4}
+                                                                                                      verseId={verseId}
                                                                                                       history={history}/>
                                                                         }</div>
                                                                 }

@@ -17,6 +17,12 @@ export const RowContentCenterWrapper = styled.div`
   justify-content: center;
 `
 
+export const ColumnContentCenterWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 export const RowCenterWrapper = styled.div`
   display: flex;
   flex-direction: row;

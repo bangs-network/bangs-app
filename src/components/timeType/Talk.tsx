@@ -177,7 +177,7 @@ const Talk = ({item1,index1,roleList,verseId,history,timeList}: Info) => {
                             </RowWrapper>
                                 {
                                     item4.newRole && <NewRole isKeeper={0} color={item1.theme.BackgroundColor} item={item4}
-                                                              history={history} />
+                                                              history={history} verseId={verseId}/>
                                 }</>
                         }
                     ):<ColumnCenterWrapper>

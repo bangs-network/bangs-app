@@ -1,9 +1,9 @@
-import Icon11 from "../img/5.jpg";
+import Icon7 from "../img/7.png";
 import BigNumber from "bignumber.js";
 
 export default function parseUrl(url: string) {
     if (!url){
-        return ''
+        return Icon7
     }
     if (url.indexOf("https://") != -1) {
         return url

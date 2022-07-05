@@ -30,15 +30,18 @@ interface Info {
     item: any,
     history: any,
     color: any,
-    isKeeper: any
+    isKeeper: any,
+    verseId: any,
 }
 
-const NewRole = ({color,item,history,isKeeper}: Info) => {
+const NewRole = ({color,item,history,isKeeper,verseId}: Info) => {
 
     const [showLoading, setShowLoading] = useState(false);
 
     const toRoleDetail = (roleId: number) => {
-        history.push(`/roleDetail/${roleId}`);
+        history.push({ pathname: `/roleDetail/${roleId}`, state:{
+                VerseID: Number(verseId)
+            }});
     };
 
 

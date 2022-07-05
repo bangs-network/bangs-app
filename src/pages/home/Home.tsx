@@ -44,6 +44,7 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 import PointTypeUi from "../../components/widget/PointTypeUi";
 import HomePointTypeUi from "../../components/widget/HomePointTypeUi";
+import {getSimilarColor} from "../../util/getMainColor";
 
 interface StateProps {
     darkMode: boolean;
@@ -191,8 +192,8 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                 borderBottomLeftRadius: 12,
                                                 borderBottomRightRadius: 12,
                                                 marginTop:-3,
-                                                color: '#fff',
-                                                background: item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ? item.TimelineList[0].theme.BackgroundColor : '#fff'
+                                                color: item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ?getSimilarColor(item.TimelineList[0].theme.BackgroundColor).text.color :'#fff',
+                                                background: item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ? item.TimelineList[0].theme.BackgroundColor : '#000'
                                             }}>
 
                                                 <div  className='font-bold' style={{

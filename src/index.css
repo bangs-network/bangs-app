@@ -21,6 +21,13 @@ body {
 
 }
 
+.search-body{
+    width: 100%;
+    background: #F5F7F9;
+    border-radius: 28px;
+    height: 32px;
+}
+
 .text-ellipsis{
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -163,6 +170,16 @@ input::placeholder {
     outline: none;
     width: 100%;
     padding: 10px 0;
+}
+
+.search-input {
+    resize:none;
+    background: none;
+    border: none;
+
+    outline: none;
+    flex:1;
+    padding-right: 10px;
 }
 
 .right-button{
