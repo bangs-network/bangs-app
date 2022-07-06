@@ -16,7 +16,7 @@ import {
 import './Home.css';
 import {addCircle, addCircleOutline, chevronDownCircleOutline} from "ionicons/icons";
 import * as React from "react";
-import headImage from "../../img/head.png";
+import headImageIcon from "../../img/head.png";
 import BangsIcon from "../../img/bangs.png";
 import Icon3 from "../../img/3.png";
 import Icon4 from "../../img/4.png";
@@ -45,6 +45,10 @@ import "react-circular-progressbar/dist/styles.css";
 import PointTypeUi from "../../components/widget/PointTypeUi";
 import HomePointTypeUi from "../../components/widget/HomePointTypeUi";
 import {getSimilarColor} from "../../util/getMainColor";
+import {saveDataState} from "../state/slice/dataSlice";
+import Dice from "../../components/timeType/Dice";
+import DiceUi from "../../components/widget/DiceUi";
+import HomeDiceUi from "../../components/widget/HomeDiceUi";
 
 interface StateProps {
     darkMode: boolean;
@@ -65,6 +69,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
     const [list, setList] = useState<any>([]);
     const [present, dismiss] = useIonToast();
     const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
+    const [headImg, setHeadImg] = useState('');
 
 
     const presentPopover = (e: React.MouseEvent) => {
@@ -77,6 +82,11 @@ const Home: React.FC<MenuProps> = ({history}) => {
     };
 
     useEffect(() => {
+        let headImg = localStorage.getItem("avatar");
+
+        if (headImg) {
+            setHeadImg(headImg)
+        }
         start = 1;
         loadData();
     }, []);
@@ -126,6 +136,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
     };
 
 
+
     return (
         <IonPage ref={pageRef} id='home-page'>
             <IonHeader className="ion-no-border">
@@ -133,7 +144,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                     <div style={{minWidth:40}}>
                     <IonButtons slot="start">
                         <IonMenuButton>
-                            <img style={{width: 28, height: 28, borderRadius: 30}} src={headImage}/>
+                            <img style={{width: 28, height: 28, borderRadius: 30}} src={headImg?parseUrl(headImg):headImageIcon}/>
                         </IonMenuButton>
                     </IonButtons>
                     </div>
@@ -219,59 +230,19 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                                     item.timelineType == 2 ?<>
                                                                         <div className='font-bold' style={{fontSize:17,padding:'6px 0',fontWeight:'bold'}}>{item.expressionTitle}</div>
                                                                         <div className='text-ellipsis' style={{fontSize:13,padding: '4px 0 15px'}}
-                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/></> : item.timelineType == 4 ?
+                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/></> : item.timelineType == 4 ?<div style={{marginTop:13,paddingBottom:17}}>
                                                                         <RowItemCenterWrapper
-                                                                            style={{padding: '5px 15px'}}>
-                                                                            {item.dices.map((item: any, index: number) => {
-                                                                                return <ColumnCenterWrapper key={index}
-                                                                                                            style={{margin: '0px 30px'}}>
-
-                                                                                    <div style={{
-                                                                                        fontSize: 13,
-                                                                                        fontWeight: 'bold',
-                                                                                        marginBottom: 14
-                                                                                    }}>
-                                                                                        {item.DiceValue}
-                                                                                    </div>
-
-
-                                                                                    <div
-                                                                                        style={{width: 80, height: 80}}>
-
-
-                                                                                        <CircularProgressbarWithChildren
-                                                                                            value={60}
-                                                                                            styles={buildStyles({
-                                                                                                pathColor: item.DiceValue < 50 ? "#E13542" : item.DiceValue == 50 ? '#2889E3' : '#5CC55E',
-                                                                                                trailColor: "#eee"
-                                                                                            })}>
-
-
-                                                                                            <img style={{
-                                                                                                width: 55,
-                                                                                                height: 55,
-                                                                                                borderRadius: 40
-                                                                                            }}
-                                                                                                 src={parseUrl(item.Role.avator)}/>
-                                                                                        </CircularProgressbarWithChildren>
-                                                                                    </div>
-
-                                                                                    <div style={{
-                                                                                        fontSize: 13,
-                                                                                        fontWeight: 'bold',
-                                                                                        marginTop: 5,
-                                                                                        overflow: 'hidden',
-                                                                                        textOverflow: 'ellipsis',
-                                                                                        whiteSpace: 'nowrap'
-                                                                                    }}>
-                                                                                        {item.Role.RoleName}
-                                                                                    </div>
-
-
-                                                                                </ColumnCenterWrapper>
-                                                                            })
-                                                                            }
-                                                                        </RowItemCenterWrapper> : item.timelineType == 3 ? <>
+                                                                            style={{padding: '10px',background:'#fff',borderRadius:12,}}>
+                                                                            <RowItemCenterWrapper style={{
+                                                                                overflowX: 'scroll',
+                                                                                overflowY: 'hidden'
+                                                                            }}>
+                                                                                {item.dices.map((item2: any, index2: number) => {
+                                                                                    return <HomeDiceUi key={index2} item2={item2}/>
+                                                                                })
+                                                                                }
+                                                                            </RowItemCenterWrapper>
+                                                                        </RowItemCenterWrapper></div> : item.timelineType == 3 ? <>
                                                                             <IonGrid style={{
                                                                                 padding: '5px 0',
                                                                                 margin: '10px 0 0'

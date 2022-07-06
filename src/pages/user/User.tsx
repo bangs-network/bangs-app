@@ -36,6 +36,8 @@ import {ChainType} from "@emit-technology/emit-types/es";
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Popup from 'reactjs-popup';
 import TextareaAutosize from 'react-textarea-autosize';
+import {useAppDispatch} from "../state/app/hooks";
+import {saveDataState} from '../state/slice/dataSlice';
 
 const User: React.FC = () => {
 
@@ -47,22 +49,47 @@ const User: React.FC = () => {
     const [userName, setUserName] = useState('');
     const [inputValue, setInputValue] = useState<string>('');
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const dispatch = useAppDispatch();
+    const [toolbarColor, setToolbarColor] = useState<string>('transparent');
 
     useEffect(() => {
+        let headImg = localStorage.getItem("avatar")
+        if (headImg) {
+            setHeadImg(headImg)
+        }
+        let name = localStorage.getItem("userName")
+        if (name) {
+            setUserName(name)
+        }
         getAccount()
         getWallet()
     }, []);
 
+    const scrollToTop = (e: any) => {
+        let opacity = e.detail.scrollTop / 44;
+        setToolbarColor(opacity < 1 ? 'transparent' : '#121FF9')
+    };
+
     const updateAccount = (avater?: any) => {
         setShowLoading(true);
+        if (!inputValue || inputValue.trim() == '') {
+            return
+        }
         const data = {
-            Avater: avater?avater:headImg,
-            UserName: inputValue,
+            Avater: avater ? avater : headImg,
+            UserName: inputValue.trim(),
         };
         UpdateAccountApi(data).then(function (response: any) {
             setShowLoading(false);
             setUserName(inputValue);
-            setOpenPop(false)
+            setHeadImg(avater ? avater : headImg);
+            setOpenPop(false);
+            localStorage.setItem("avatar", avater ? avater : headImg);
+            localStorage.setItem("userName", inputValue);
+            let data = {
+                refresh: true
+            };
+            dispatch(saveDataState({data: JSON.stringify(data), tag: 'UserInfoRefresh'}))
 
         }).catch(function (error: any) {
             console.info(error)
@@ -168,7 +195,7 @@ const User: React.FC = () => {
 
     const openModel = () => {
         setOpenPop(true)
-        inputRef?.current?.setSelectionRange(5,5);
+        inputRef?.current?.setSelectionRange(5, 5);
     };
 
     const closeModal = () => {
@@ -178,22 +205,6 @@ const User: React.FC = () => {
 
     return (
         <IonPage id='position-top'>
-            <IonToast
-                position="top"
-                isOpen={open}
-                animated={true}
-                color='success'
-                onDidDismiss={() => setOpen(false)}
-                message="Copy successful!"
-                duration={2000}
-            />
-            <IonLoading
-                cssClass='my-custom-class'
-                isOpen={showLoading}
-                onDidDismiss={() => setShowLoading(false)}
-                message={'Please wait...'}
-                duration={10000}
-            />
             <Popup open={openPop} closeOnDocumentClick onClose={closeModal}>
                 <div className="modal">
                     <RowItemCenterWrapper style={{padding: '15px 12px'}}>
@@ -213,26 +224,47 @@ const User: React.FC = () => {
                              className='font-bold cursor  text-center text-16'>Cancel
                         </div>
                         <div style={{height: '43px', width: 1, background: '#B6BDC9'}}/>
-                        <div onClick={()=>updateAccount('')} style={{flex: 1}}
-                             className='font-bold cursor primary-color text-center text-16'>Apply
+                        <div onClick={() => updateAccount('')} style={{flex: 1}}
+                             className='font-bold cursor primary-color text-center text-16'>{showLoading ? 'Loading' : 'Apply'}
                         </div>
                     </RowCenterWrapper>
 
                 </div>
             </Popup>
-            <IonContent>
-                <IonHeader className="about-header">
-                    <IonToolbar>
-                        <IonButtons slot="start">
-                            <IonBackButton defaultHref="/tabs/home"/>
-                        </IonButtons>
-                        <IonTitle>Wallet</IonTitle>
-                        <IonButtons slot="end">
-                            <IonButton onClick={showAccountWidget}>
-                                <img style={{width: 32, height: 32}} src={UrlIcon}/>
-                            </IonButton>
-                        </IonButtons>
-                    </IonToolbar>
+            <IonToast
+                position="top"
+                isOpen={open}
+                animated={true}
+                color='success'
+                onDidDismiss={() => setOpen(false)}
+                message="Copy successful!"
+                duration={2000}
+            />
+            <IonLoading
+                cssClass='my-custom-class'
+                isOpen={showLoading}
+                onDidDismiss={() => setShowLoading(false)}
+                message={'Please wait...'}
+                duration={10000}
+            />
+
+            <IonContent scrollEvents={true} onIonScroll={(e) => scrollToTop(e)}>
+                <IonHeader>
+
+                        <IonToolbar>
+                            <RowItemCenterWrapper style={{background: toolbarColor, height: '56px'}}>
+                            <IonButtons slot="start">
+                                <IonBackButton defaultHref="/tabs/home"/>
+                            </IonButtons>
+                            <IonTitle>Wallet</IonTitle>
+                            <IonButtons slot="end">
+                                <IonButton onClick={showAccountWidget}>
+                                    <img style={{width: 32, height: 32}} src={UrlIcon}/>
+                                </IonButton>
+                            </IonButtons>
+                            </RowItemCenterWrapper>
+                        </IonToolbar>
+
                 </IonHeader>
                 <div className="about-header">
                     {/* Instead of loading an image each time the select changes, use opacity to transition them */}

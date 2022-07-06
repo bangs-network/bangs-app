@@ -32,6 +32,8 @@ import {setMenuEnabled} from "../../data/sessions/sessions.actions";
 import {menu} from "ionicons/icons";
 import {GetAccountApi} from "../../service/Api";
 import parseUrl from "../../util/common";
+import {useAppDispatch, useAppSelector} from "../../pages/state/app/hooks";
+import {saveDataState} from "../../pages/state/slice/dataSlice";
 
 
 interface StateProps {
@@ -51,20 +53,16 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
 
     const [account, setAccount] = useState<string>('');
     const [alreadyLogin, setAlreadyLogin] = useState<boolean>(false);
-    const [name, setName] = useState<string>('');
+    const dispatch = useAppDispatch();
     const [showLoading, setShowLoading] = useState(false);
     const menuRef = useRef<HTMLIonMenuElement>(null);
     const [headImg, setHeadImg] = useState('');
     const [userName, setUserName] = useState('');
+    const dispatchData = useAppSelector(state => state.jsonData);
 
 
     useEffect(() => {
 
-        // console.log("getAccount:");
-        // emitBox.onActiveWalletChanged(walletAddress => {
-        //     console.log("walletAddress:", walletAddress);
-        //     //setAccount(walletAddress)
-        // });
         if (localStorage.getItem("SessionID")) {
             setAlreadyLogin(true)
         } else {
@@ -76,16 +74,16 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             setAccount(account)
         }
 
-        let name = localStorage.getItem("name")
+        let name = localStorage.getItem("userName")
         if (name) {
-            setName(name)
+            setUserName(name)
         }
 
-        emitBox.onActiveAccountChanged((accounts: any) => {
-            console.info("accounts==",accounts)
-            setName(accounts.name);
-            localStorage.setItem("name", accounts.name);
-        })
+        let headImg = localStorage.getItem("avatar")
+        if (headImg) {
+            setHeadImg(headImg)
+        }
+
     }, []);
 
     useEffect(() => {
@@ -108,6 +106,32 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
             setShowLoading(false)
         })
     };
+
+    useEffect(() => {
+        if (dispatchData) {
+            if (dispatchData.tag == 'UserInfoRefresh' && dispatchData.data) {
+                let dataObj = JSON.parse(dispatchData.data);
+                if (dataObj.refresh) {
+                    let name = localStorage.getItem("userName")
+                    if (name) {
+                        setUserName(name)
+                    }
+
+                    let headImg = localStorage.getItem("avatar")
+                    if (headImg) {
+                        setHeadImg(headImg)
+                    }
+                }
+
+                let value = {
+                    refresh: false
+                };
+                dispatch(saveDataState({data: JSON.stringify(value), tag: 'UserInfoRefresh'}))
+            }
+
+        }
+
+    }, [dispatchData.data]);
 
 
     const login = (account: any, nonce: number) => {
@@ -192,8 +216,10 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
         GetAccountApi(data).then(function (response: any) {
             setShowLoading(false);
             console.info("UpdateAccountApi==",response)
-            setHeadImg(response.avater)
+            setHeadImg(response.avater);
             setUserName(response.userName);
+            localStorage.setItem("avatar",response.avater);
+            localStorage.setItem("userName",response.userName);
         }).catch(function (error: any) {
             console.info(error)
             setShowLoading(false)
@@ -204,7 +230,8 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
     const logout = () => {
         localStorage.setItem("SessionID", '');
         localStorage.setItem("account", '');
-        localStorage.setItem("name", '');
+        localStorage.setItem("avatar", '');
+        localStorage.setItem("userName", '');
         setAlreadyLogin(false);
     };
 
@@ -218,7 +245,7 @@ const Menu: React.FC<MenuProps> = ({darkMode, history, isAuthenticated, setDarkM
                 message={'Please wait...'}
                 duration={30000}
             />
-            <IonContent forceOverscroll={false}>
+            <IonContent  forceOverscroll={false}>
 
 
                 <IonList lines="none">

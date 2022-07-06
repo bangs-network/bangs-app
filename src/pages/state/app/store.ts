@@ -1,10 +1,12 @@
 import {configureStore} from '@reduxjs/toolkit'
 import {loadStateReducer} from '../slice/loadStateSlice';
 import {roleReducer} from "../slice/roleSlice";
+import {dataReducer} from "../slice/dataSlice";
 const store = configureStore({
     reducer: {
         loadStateSlice:loadStateReducer,
         roleSlice:roleReducer,
+        jsonData: dataReducer
     }
 });
 

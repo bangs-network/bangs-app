@@ -20,6 +20,7 @@ import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {LoadState} from "../state/slice/loadStateSlice";
 import {FixUi, RowCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
 import {getBgColor} from "../../util/getMainColor";
+import {RoleSearchApi} from "../../service/Api";
 //import {getBgColor} from "../../util/getMainColor";
 
 interface MenuProps extends RouteComponentProps {
@@ -59,15 +60,10 @@ const Roles: React.FC<MenuProps> = ({history, match}) => {
         const data = {
             VerseID: Number(params.id)
         };
-        axios.get('https://api.bangs.network/role/search', {
-            params: data
-        }).then(function (response: any) {
-            if (response?.data?.body?.roleList) {
-                setList(response?.data?.body?.roleList)
+        RoleSearchApi(data).then(function (response: any) {
+            if (response?.roleList) {
+                setList(response.roleList)
             }
-            console.info(response)
-        }).catch(function (error: any) {
-            console.info(error)
         })
     };
 
