@@ -86,6 +86,7 @@ export const getSimilarColor = (color: string): SimilarColors => {
         badge = {background: "rgba(0,0,0,0.5)", color: "#000000"}
         text = {color: `#000000`, translucent: "rgba(0,0,0,0.5)"}
     }
+    console.info("isDarkColor==",isDarkColor)
     return {
         isDarkColor: isDarkColor,
         badge: badge,

@@ -34,7 +34,16 @@ body {
     overflow: hidden;
     -webkit-box-orient: vertical;
     line-height: 20px;
-    height: 140px;
+    height: 120px;
+}
+
+.text-ellipsis-two{
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    line-height: 15px;
+    max-height: 30px;
 }
 
 .p-50 {

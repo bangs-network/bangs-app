@@ -188,7 +188,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                         border: 'none',
                                     }}>
                                         <div>
-                                            <img src={parseUrl(item.verseBanner)}
+                                            <img src={parseUrl(item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ?   item.TimelineList[0].theme.MainPic :item.verseBanner)}
                                                  style={{
                                                      width: '100%',
                                                      background: item && item.TimelineList && item.TimelineList[0] && item.TimelineList[0].theme ? item.TimelineList[0].theme.BackgroundColor : '#000',
@@ -199,7 +199,6 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                  }}/>
 
                                             <div style={{
-                                                padding: '0 17px',
                                                 borderBottomLeftRadius: 12,
                                                 borderBottomRightRadius: 12,
                                                 marginTop:-3,
@@ -209,7 +208,7 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                                                 <div  className='font-bold' style={{
                                                     fontSize: 32,
-                                                    padding: '24px 0 0',
+                                                    padding: '24px 17px 0 17px',
                                                     fontWeight: 'bold'
                                                 }}>{item.verseName}</div>
 
@@ -227,12 +226,12 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                                  style={{marginBottom: 0}}>
 
                                                                 {
-                                                                    item.timelineType == 2 ?<>
+                                                                    item.timelineType == 2 ?<div style={{padding: '0 17px 17px'}}>
                                                                         <div className='font-bold' style={{fontSize:17,padding:'6px 0',fontWeight:'bold'}}>{item.expressionTitle}</div>
                                                                         <div className='text-ellipsis' style={{fontSize:13,padding: '4px 0 15px'}}
-                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/></> : item.timelineType == 4 ?<div style={{marginTop:13,paddingBottom:17}}>
+                                                                             dangerouslySetInnerHTML={{__html: item.expression}}/></div> : item.timelineType == 4 ?<div style={{marginTop:12,padding:'0 17px 17px'}}>
                                                                         <RowItemCenterWrapper
-                                                                            style={{padding: '10px',background:'#fff',borderRadius:12,}}>
+                                                                            style={{padding: '10px',background:'#fff',borderRadius:12}}>
                                                                             <RowItemCenterWrapper style={{
                                                                                 overflowX: 'scroll',
                                                                                 overflowY: 'hidden'
@@ -242,17 +241,17 @@ const Home: React.FC<MenuProps> = ({history}) => {
                                                                                 })
                                                                                 }
                                                                             </RowItemCenterWrapper>
-                                                                        </RowItemCenterWrapper></div> : item.timelineType == 3 ? <>
+                                                                        </RowItemCenterWrapper></div> : item.timelineType == 3 ? <div style={{background:'rgba(255,255,255,0.1)',  padding: '0 17px'}}>
                                                                             <IonGrid style={{
-                                                                                padding: '5px 0',
-                                                                                margin: '10px 0 0'
+                                                                                padding: '7px 0',
+                                                                                margin: '12px 0 0'
                                                                             }}>
                                                                                 <IonRow>
                                                                                     {item.talkList && item.talkList.map((item4: any, index4: number) => {
                                                                                         return index4 >=item.talkList.length-3? <RowWrapper key={index4}
                                                                                                            style={{
                                                                                                                width: '100%',
-                                                                                                               marginTop: 15,
+                                                                                                               marginTop: 11,
                                                                                                            }}>
                                                                                             <img
                                                                                                 className='icon-circle'
@@ -265,39 +264,39 @@ const Home: React.FC<MenuProps> = ({history}) => {
 
                                                                                             <div style={{flex: 1}}>
 
-                                                                                                <div style={{
+                                                                                                <div className='font-bold' style={{
                                                                                                     fontWeight: 'bold',
                                                                                                     fontSize: 13
                                                                                                 }}>{item4.role.roleName}</div>
-                                                                                                {item4.replyContent &&
-                                                                                                <div style={{
-                                                                                                    marginTop: 10,
-                                                                                                    background: '#F1F3F5',
-                                                                                                    borderRadius: 12,
+                                                                                                {/*{item4.replyContent &&*/}
+                                                                                                {/*<div style={{*/}
+                                                                                                    {/*marginTop: 10,*/}
+                                                                                                    {/*background: '#F1F3F5',*/}
+                                                                                                    {/*borderRadius: 12,*/}
+                                                                                                    {/*fontSize: 12,*/}
+                                                                                                    {/*lineHeight:'13px',*/}
+                                                                                                    {/*padding: '10px'*/}
+                                                                                                {/*}}*/}
+                                                                                                     {/*dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}*/}
+                                                                                                <div className='text-ellipsis-two' style={{
+                                                                                                    marginTop: 8,
                                                                                                     fontSize: 12,
-                                                                                                    lineHeight:'13px',
-                                                                                                    padding: '10px'
-                                                                                                }}
-                                                                                                     dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
-                                                                                                <div style={{
-                                                                                                    marginTop: 5,
-                                                                                                    fontSize: 12,
-                                                                                                    lineHeight:'15px',
                                                                                                     marginBottom: '12px'
                                                                                                 }}
                                                                                                      dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                                                {(index4 != item.talkList.length - 1) &&
                                                                                                 <div style={{
                                                                                                     borderTop: '0.5px solid #D6D6D6',
 
-                                                                                                }}/>}
+                                                                                                }}/>
+                                                                                                {(index4 == item.talkList.length - 1) && <div style={{fontSize:18,letterSpacing:5,textAlign:'center',paddingBottom:5}} className='ColumnCenterWrapper'>...
+                                                                                                </div>}
                                                                                             </div>
                                                                                         </RowWrapper>:<></>
                                                                                     })}
 
                                                                                 </IonRow>
                                                                             </IonGrid>
-                                                                        </> : <></>
+                                                                        </div> : <></>
                                                                 }
 
                                                             </div>

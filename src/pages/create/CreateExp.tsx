@@ -22,7 +22,7 @@ import axios from "axios";
 import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {RouteComponentProps} from "react-router";
-import {VersePointApi} from "../../service/Api";
+import {RoleSearchApi, VersePointApi} from "../../service/Api";
 import UploadImage from "../../components/widget/UploadImage";
 import {addCircleOutline, removeCircleOutline} from "ionicons/icons";
 import parseUrl from "../../util/common";
@@ -30,7 +30,7 @@ import {saveRoleState} from "../state/slice/roleSlice";
 import {useEffect} from "react";
 import {MentionsInput} from 'react-mentions'
 import TextareaAutosize from 'react-textarea-autosize';
-import {FixUi, RowItemCenterWrapper} from "../../theme/commonStyle";
+import {ColumnCenterWrapper, FixUi, RowItemCenterWrapper} from "../../theme/commonStyle";
 import CommonUploadImage from "../../components/widget/CommonUploadImage";
 import {useRef} from "react";
 import {findDOMNode} from "react-dom";
@@ -125,16 +125,12 @@ const CreateExp: React.FC<MenuProps> = ({history, match}) => {
         const data = {
             VerseID: Number(params.id)
         };
-        axios.get('https://api.bangs.network/role/search', {
-            params: data
-        }).then(function (response: any) {
-            if (response?.data?.body?.roleList) {
-                setList(response?.data?.body?.roleList)
+        RoleSearchApi(data).then(function (response: any) {
+            if (response?.roleList) {
+                setList(response.roleList)
             }
-            console.info(response)
-        }).catch(function (error: any) {
-            console.info(error)
-        })
+        });
+
     };
 
 
@@ -145,18 +141,6 @@ const CreateExp: React.FC<MenuProps> = ({history, match}) => {
 
     };
 
-    const selectAllRole = () => {
-
-        if (list && list.length > 0) {
-            for (let i = 0; i < list.length; i++) {
-                list[i].select = !allSelect;
-            }
-        }
-
-        setAllSelect(!allSelect);
-
-
-    };
 
     const deleteImg = () => {
         setImgUrl('')
@@ -172,41 +156,20 @@ const CreateExp: React.FC<MenuProps> = ({history, match}) => {
             <Popup open={open} closeOnDocumentClick onClose={closeModal}>
                 <div className="modal">
                     <RowItemCenterWrapper style={{padding: '10px 15px'}}>
-                        <div style={{fontSize: 16, fontWeight: 'bold'}}>Who can see?</div>
+                        <div className='font-bold' style={{fontSize: 16, fontWeight: 'bold'}}>Who can see?</div>
                         <FixUi/>
                         <img className='cursor' style={{width: 14}} onClick={closeModal} src={CloseIcon}/>
                     </RowItemCenterWrapper>
-                    <div style={{height: 1, background: '#c4c4c4', width: '100%'}}/>
+                    <div style={{height: 1, background: '#d9d9d9', width: '100%'}}/>
                     <div style={{padding: '10px 15px'}}>
-                        <div style={{fontSize: 16, fontWeight: 'bold', marginBottom: 5}}>
-                            Public
-                        </div>
-                        <RowItemCenterWrapper onClick={selectAllRole}
-                                              style={{
-                                                  cursor:'pointer',
-                                                  background: '#F1F3F5',
-                                                  padding: '5px 10px',
-                                                  marginBottom: 10,
-                                                  borderRadius: 8,
-                                                  border: allSelect?'2px solid #0620F9':'2px solid #F1F3F5'
-                                              }}>
-                            <img style={{marginRight: 10, width: 22}} src={AllIcon}/>
-                            <div>Everyone</div>
-                            <FixUi/>
-                            {allSelect && <img style={{width: 18, height: 18}}
-                                 src={SelectIcon}/>}
-                        </RowItemCenterWrapper>
-                        <div style={{fontSize: 16, fontWeight: 'bold', marginBottom: 5}}>
-                            Specified Roles
-                        </div>
                         <RowItemCenterWrapper
-                            style={{background: '#F1F3F5', paddingBottom: 16, borderRadius: 8, flexWrap: 'wrap'}}>
+                            style={{background: '#F1F3F5', paddingBottom: 16, borderRadius: 8, flexWrap: 'wrap',maxHeight: 200, overflowY: 'scroll'}}>
                             {list && list.map((item: any, index: number) => {
-                                return <div key={index} style={{
+                                return <ColumnCenterWrapper style={{marginRight: 15,maxWidth:54, marginLeft: 15}}><div key={index} style={{
                                     position: 'relative',
-                                    marginRight: 15,
+
                                     marginTop: 15,
-                                    marginLeft: 15
+
                                 }}><img onClick={() => selectRole(index)} className='cursor' key={index} style={{
                                     width: 54,
                                     height: 54,
@@ -220,12 +183,15 @@ const CreateExp: React.FC<MenuProps> = ({history, match}) => {
                                          src={SelectIcon}/>}
 
                                 </div>
+                                    <div className='font-bold' style={{fontSize:13}}>{item.roleName}</div>
+
+                                </ColumnCenterWrapper>
 
                             })}
                         </RowItemCenterWrapper>
                     </div>
-                    <div style={{height: 1, background: '#c4c4c4', width: '100%'}}/>
-                    <div onClick={closeModal} style={{padding: '10px 15px'}}  className='cursor primary-color text-center text-16'>Apply</div>
+                    <div style={{height: 1, background: '#d9d9d9', width: '100%'}}/>
+                    <div onClick={closeModal} style={{padding: '10px 15px'}}  className='font-bold cursor primary-color text-center text-16'>Apply</div>
                 </div>
             </Popup>
             <IonLoading

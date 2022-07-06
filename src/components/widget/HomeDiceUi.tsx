@@ -34,23 +34,14 @@ const HomeDiceUi = ({item2}: Info) => {
     }}>
 
 
+
         {/*<div style={{fontSize:10, marginBottom:8,textAlign:'center',lineHeight:'20px',borderRadius:20,width:80,height:20,color:'#fff',background: percent < 50?"#E13542":percent==50?'#2889E3':'#5CC55E'}}>*/}
         {/*{percent < 50?'big failure':percent == 50?'success':'big success'}*/}
 
         {/*</div>*/}
-        <RowItemCenterWrapper style={{fontWeight: 'bold',marginTop:5}}>
-            <div className='font-bold' style={{
-                    fontSize: 17,
-                    color: '#000'
-                }}>{item2.DiceValue}</div>
-            <div style={{fontSize: 13, fontWeight: 'normal', color: '#868990'}}>/{item2.DiceOriginValue}</div>
-            <div>
 
-                <img style={{width: 14, height: 15, marginLeft: 5}} src={DiceIcon}/>
-            </div>
-        </RowItemCenterWrapper>
 
-        <div style={{width: 80, height: 80, marginTop: 16}}>
+        <div style={{width: 80, height: 80,marginTop:12}}>
 
 
             <CircularProgressbarWithChildren value={percent} styles={buildStyles({
@@ -64,14 +55,22 @@ const HomeDiceUi = ({item2}: Info) => {
             </CircularProgressbarWithChildren>
         </div>
 
-        <div className='font-bold' style={{
-            fontSize: 13, marginTop: 8, overflow: 'hidden',
+        <div style={{
+            fontSize: 16, marginTop: 5, overflow: 'hidden',
             textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            color:'#000'
+            whiteSpace: 'nowrap'
         }}>
             {item2.Role.roleName}
         </div>
+
+        <RowItemCenterWrapper style={{fontWeight: 'bold', marginBottom: 2}}>
+            <div className='font-bold'
+                style={{fontSize: 32,color: percent < 50 ? "#E13542" : percent == 50 ? '#2889E3' : '#5CC55E'}}>{item2.DiceValue}</div>
+            <div>
+                <div style={{fontSize: 12, fontWeight: 'normal', color: '#868990'}}>/{item2.DiceOriginValue}</div>
+                <img style={{width: 14, height: 15, marginLeft:5}} src={DiceIcon}/>
+            </div>
+        </RowItemCenterWrapper>
 
 
     </ColumnCenterWrapper>

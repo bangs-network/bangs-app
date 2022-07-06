@@ -258,9 +258,9 @@ const User: React.FC = () => {
                             </IonButtons>
                             <IonTitle>Wallet</IonTitle>
                             <IonButtons slot="end">
-                                <IonButton onClick={showAccountWidget}>
+                                <a href={'https://assets.emit.technology/'} target="_blank">
                                     <img style={{width: 32, height: 32}} src={UrlIcon}/>
-                                </IonButton>
+                                </a>
                             </IonButtons>
                             </RowItemCenterWrapper>
                         </IonToolbar>

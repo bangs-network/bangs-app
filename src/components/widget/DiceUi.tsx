@@ -64,7 +64,7 @@ const DiceUi = ({item2}: Info) => {
         </div>
 
         <RowItemCenterWrapper style={{fontWeight: 'bold', marginBottom: 2}}>
-            <div
+            <div className='font-bold'
                 style={{fontSize: 34,color: percent < 50 ? "#E13542" : percent == 50 ? '#2889E3' : '#5CC55E'}}>{item2.DiceValue}</div>
             <div>
                 <div style={{fontSize: 12, fontWeight: 'normal', color: '#868990'}}>/{item2.DiceOriginValue}</div>

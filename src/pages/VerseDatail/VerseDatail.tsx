@@ -530,7 +530,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             fontSize: 20,
                             fontWeight: 700,
                             textAlign: 'center'
-                        }}>{body ? body.VerseName : 'Bangs'}</IonTitle>
+                        }}><div className='font-bold'>{body ? body.VerseName : 'Bangs'}</div></IonTitle>
                         {isKeeper == 1 ?
                         <IonButtons slot="end" onClick={presentPopover}>
                             <img className='cursor' style={{width: 32, height: 32, marginRight: 20}} src={PointIcon}/>
