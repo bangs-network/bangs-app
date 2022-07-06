@@ -12,6 +12,7 @@ import {
 import headerIcon from "../../img/head.png";
 import bnbIcon from "../../img/bnb.png";
 import editIcon from "../../img/edit.png";
+import editGrayIcon from "../../img/edit_gray.png";
 import * as React from "react";
 import {Camera, CameraResultType, CameraSource} from '@capacitor/camera';
 import axios from "axios";
@@ -26,35 +27,42 @@ import {
     RowCenterWrapper,
     RowItemCenterWrapper
 } from "../../theme/commonStyle";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {useEffect} from "react";
 import {saveLoadState} from "../state/slice/loadStateSlice";
 import {GetAccountApi, UpdateAccountApi, VersePointApi} from "../../service/Api";
 import parseUrl from "../../util/common";
 import {ChainType} from "@emit-technology/emit-types/es";
 import CopyToClipboard from 'react-copy-to-clipboard';
+import Popup from 'reactjs-popup';
+import TextareaAutosize from 'react-textarea-autosize';
 
 const User: React.FC = () => {
 
     const [account, setAccount] = useState<string>('');
     const [showLoading, setShowLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openPop, setOpenPop] = useState(false);
     const [headImg, setHeadImg] = useState('');
     const [userName, setUserName] = useState('');
+    const [inputValue, setInputValue] = useState<string>('');
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
         getAccount()
         getWallet()
     }, []);
 
-    const updateAccount =  (avater:any) => {
+    const updateAccount = (avater?: any) => {
         setShowLoading(true);
         const data = {
-            Avater: avater
+            Avater: avater?avater:headImg,
+            UserName: inputValue,
         };
         UpdateAccountApi(data).then(function (response: any) {
-            setShowLoading(false)
-            setHeadImg(avater);
+            setShowLoading(false);
+            setUserName(inputValue);
+            setOpenPop(false)
 
         }).catch(function (error: any) {
             console.info(error)
@@ -62,6 +70,7 @@ const User: React.FC = () => {
         });
 
     };
+
 
     const getWallet = () => {
         let accountEmit = localStorage.getItem("accountEmit");
@@ -71,7 +80,7 @@ const User: React.FC = () => {
             emitBox.requestAccount().then((data: any) => {
                 console.log("data:", data);
                 if (data && data.result && data.result.addresses[ChainType.EMIT]) {
-                    localStorage.setItem("accountEmit",data.result.addresses[ChainType.EMIT])
+                    localStorage.setItem("accountEmit", data.result.addresses[ChainType.EMIT])
                     setAccount(data.result.addresses[ChainType.EMIT])
                 }
 
@@ -83,16 +92,17 @@ const User: React.FC = () => {
     };
 
 
-    const getAccount =  () => {
+    const getAccount = () => {
         setShowLoading(true);
         const data = {
-            ID:0
+            ID: 0
         };
         GetAccountApi(data).then(function (response: any) {
             setShowLoading(false);
-            console.info("UpdateAccountApi==",response)
+            console.info("UpdateAccountApi==", response)
             setHeadImg(response.avater)
             setUserName(response.userName);
+            setInputValue(response.userName);
         }).catch(function (error: any) {
             console.info(error)
             setShowLoading(false)
@@ -150,16 +160,20 @@ const User: React.FC = () => {
 
     };
 
-    // const toEdit = () => {
-    //     history.push('/editUser');
-    // };
-
 
     const copyToast = () => {
-       setOpen(true)
+        setOpen(true)
 
     };
 
+    const openModel = () => {
+        setOpenPop(true)
+        inputRef?.current?.setSelectionRange(5,5);
+    };
+
+    const closeModal = () => {
+        setOpenPop(false)
+    };
 
 
     return (
@@ -180,6 +194,32 @@ const User: React.FC = () => {
                 message={'Please wait...'}
                 duration={10000}
             />
+            <Popup open={openPop} closeOnDocumentClick onClose={closeModal}>
+                <div className="modal">
+                    <RowItemCenterWrapper style={{padding: '15px 12px'}}>
+                        <TextareaAutosize
+                            className='gray-input'
+                            ref={inputRef}
+                            rows={1}
+                            onChange={e => setInputValue(e.target.value!)}
+                            placeholder={""}
+                            value={inputValue}
+                        />
+
+                    </RowItemCenterWrapper>
+                    <div style={{height: 1, background: '#B6BDC9', width: '100%'}}/>
+                    <RowCenterWrapper style={{height: 43}}>
+                        <div onClick={closeModal} style={{flex: 1, color: '#868990'}}
+                             className='font-bold cursor  text-center text-16'>Cancel
+                        </div>
+                        <div style={{height: '43px', width: 1, background: '#B6BDC9'}}/>
+                        <div onClick={()=>updateAccount('')} style={{flex: 1}}
+                             className='font-bold cursor primary-color text-center text-16'>Apply
+                        </div>
+                    </RowCenterWrapper>
+
+                </div>
+            </Popup>
             <IonContent>
                 <IonHeader className="about-header">
                     <IonToolbar>
@@ -206,77 +246,106 @@ const User: React.FC = () => {
                         }}>
                             <RowCenterWrapper>
                                 <div style={{position: 'relative'}} className='wh-86 cursor'>
-                                    <img className='icon-circle wh-86 cursor' src={headImg?parseUrl(headImg):headerIcon}/>
-                                    <img onClick={uploadImage} style={{width: 24, height: 24, position: 'absolute', right: 0, bottom: 0}}
+                                    <img className='icon-circle wh-86 cursor'
+                                         src={headImg ? parseUrl(headImg) : headerIcon}/>
+                                    <img onClick={uploadImage}
+                                         style={{width: 24, height: 24, position: 'absolute', right: 0, bottom: 0}}
                                          src={editIcon}/>
                                 </div>
                             </RowCenterWrapper>
-                            <div style={{fontSize: 18, fontWeight: 'bold', margin: 12}}>{userName}</div>
+                            <RowCenterWrapper className='cursor' onClick={openModel}>
+                                <div style={{fontSize: 18, fontWeight: 'bold', margin: 12}}>{userName}</div>
+                                <img style={{width: 16, height: 16, marginLeft: -6}}
+                                     src={editGrayIcon}/>
+                            </RowCenterWrapper>
 
                         </div>
 
                         <div style={{background: '#fff', padding: 12, margin: 24, borderRadius: 12}}>
                             <div style={{fontWeight: 'bold', fontSize: 16}}>Receive</div>
-                            <div style={{color: '#868990',marginTop:12,marginBottom:15}} >{account}</div>
+                            <div style={{color: '#868990', marginTop: 12, marginBottom: 15}}>{account}</div>
                         </div>
                         <CopyToClipboard text={account ? account : ''}
-                                         onCopy={copyToast}><div className='cursor' style={{
-                            background: '#0620F9',
-                            color:'#fff',
-                            zIndex:999,
-                            width:85,
-                            margin:'-40px auto 0',
-                            height:29,
-                            fontWeight:'bold',
-                            textAlign:'center',
-                            lineHeight:'29px',
-                            boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04)',
-                            borderRadius: 71
-                        }}>Copy</div></CopyToClipboard>
-
-                        <div style={{margin:12}}>
-                        <div style={{ marginTop:40,marginBottom:12,fontSize: 18, fontWeight: 'bold'}}>Coins</div>
-
-                        <IonGrid
-                            style={{
-                                background: '#fff',
-                                borderRadius: 12,
+                                         onCopy={copyToast}>
+                            <div className='cursor' style={{
+                                background: '#0620F9',
                                 color: '#fff',
-                                padding: 0
-                            }}>
-                            <RowItemCenterWrapper style={{padding: '17px 14px'}}>
-                                <RowItemCenterWrapper style={{width:42}} className="ion-align-self-center">
-                                    <img style={{width: 42, height: 42}} src={bnbIcon}/>
-                                </RowItemCenterWrapper>
-                                <div  style={{marginLeft:12}}>
-                                    <div style={{textAlign: 'left',fontSize: 16,  color: '#000', fontWeight: 'bold'}}>Bangs</div>
-                                    <div style={{textAlign: 'left',color: '#868990', fontSize: 12, marginTop: 8}}>Bangs</div>
+                                zIndex: 999,
+                                width: 85,
+                                margin: '-40px auto 0',
+                                height: 29,
+                                fontWeight: 'bold',
+                                textAlign: 'center',
+                                lineHeight: '29px',
+                                boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04)',
+                                borderRadius: 71
+                            }}>Copy
+                            </div>
+                        </CopyToClipboard>
 
-                                </div>
-                                <FixUi />
-                                <div  style={{color: '#000'}}>
-                                    <div style={{textAlign: 'right',fontSize: 16,  color: '#000', fontWeight: 'bold'}}>17000.89</div>
-                                    <div style={{
-                                        textAlign: 'right',
-                                        color: '#868990',
-                                        fontSize: 12,
-                                        marginTop: 8
-                                    }}>$299.928
+                        <div style={{margin: 12}}>
+                            <div style={{marginTop: 40, marginBottom: 12, fontSize: 18, fontWeight: 'bold'}}>Coins</div>
+
+                            <IonGrid
+                                style={{
+                                    background: '#fff',
+                                    borderRadius: 12,
+                                    color: '#fff',
+                                    padding: 0
+                                }}>
+                                <RowItemCenterWrapper style={{padding: '17px 14px'}}>
+                                    <RowItemCenterWrapper style={{width: 42}} className="ion-align-self-center">
+                                        <img style={{width: 42, height: 42}} src={bnbIcon}/>
+                                    </RowItemCenterWrapper>
+                                    <div style={{marginLeft: 12}}>
+                                        <div style={{
+                                            textAlign: 'left',
+                                            fontSize: 16,
+                                            color: '#000',
+                                            fontWeight: 'bold'
+                                        }}>Bangs
+                                        </div>
+                                        <div style={{
+                                            textAlign: 'left',
+                                            color: '#868990',
+                                            fontSize: 12,
+                                            marginTop: 8
+                                        }}>Bangs
+                                        </div>
+
                                     </div>
-                                </div>
-                            </RowItemCenterWrapper>
-                            <div style={{borderTop: '1px solid #f4f4f4', width: '100%'}}/>
-                            <IonRow style={{height: 35}}>
-                                <IonCol className="ion-align-self-center">
-                                    <div style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Log</div>
-                                </IonCol>
-                                <div style={{borderRight: '1px solid #f4f4f4', height: '100%'}}/>
-                                <IonCol className="ion-align-self-center">
-                                    <div style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Transfer
+                                    <FixUi/>
+                                    <div style={{color: '#000'}}>
+                                        <div style={{
+                                            textAlign: 'right',
+                                            fontSize: 16,
+                                            color: '#000',
+                                            fontWeight: 'bold'
+                                        }}>17000.89
+                                        </div>
+                                        <div style={{
+                                            textAlign: 'right',
+                                            color: '#868990',
+                                            fontSize: 12,
+                                            marginTop: 8
+                                        }}>$299.928
+                                        </div>
                                     </div>
-                                </IonCol>
-                            </IonRow>
-                        </IonGrid>
+                                </RowItemCenterWrapper>
+                                <div style={{borderTop: '1px solid #f4f4f4', width: '100%'}}/>
+                                <IonRow style={{height: 35}}>
+                                    <IonCol className="ion-align-self-center">
+                                        <div style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Log
+                                        </div>
+                                    </IonCol>
+                                    <div style={{borderRight: '1px solid #f4f4f4', height: '100%'}}/>
+                                    <IonCol className="ion-align-self-center">
+                                        <div
+                                            style={{textAlign: 'center', fontWeight: 'bold', color: '#0620F9'}}>Transfer
+                                        </div>
+                                    </IonCol>
+                                </IonRow>
+                            </IonGrid>
                         </div>
                     </div>
 

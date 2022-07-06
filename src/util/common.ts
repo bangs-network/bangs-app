@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 
 export default function parseUrl(url: string) {
     if (!url){
-        return Icon7
+        return ''
     }
     if (url.indexOf("https://") != -1) {
         return url
