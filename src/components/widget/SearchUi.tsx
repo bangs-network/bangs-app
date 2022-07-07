@@ -5,13 +5,14 @@ import SearchIcon from "../../img/search.png";
 
 interface Info {
     inputValue:string,
-    setInputValue:any
+    setInputValue:any,
+    bgColor?:any,
 }
 
-const SearchUi = ({inputValue, setInputValue}:Info) => {
+const SearchUi = ({inputValue, setInputValue, bgColor}:Info) => {
 
 
-    return <RowItemCenterWrapper className='search-body'>
+    return <RowItemCenterWrapper className='search-body' style={{background: bgColor?bgColor:'#F5F7F9'}}>
 
         <img style={{width:40,height:30,padding:'5px 10px'}} src={SearchIcon}/>
 

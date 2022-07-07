@@ -32,6 +32,7 @@ const ExpressionLock = ({item2,color}: Info) => {
     return <div style={{
         background: 'linear-gradient(93.55deg, #F2F4F6 -4.78%, #EAEAF6 53.02%, #D2E4FC 88.39%)',
         border: '2px solid #0620F9',
+        borderColor:color,
         borderRadius: 12
     }}>
         <div style={{

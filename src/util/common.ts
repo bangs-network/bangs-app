@@ -1,9 +1,12 @@
-import Icon7 from "../img/7.png";
+import LogoIcon from "../img/logo.png";
 import BigNumber from "bignumber.js";
 
 export default function parseUrl(url: string) {
     if (!url){
         return ''
+    }
+    if (url.indexOf('images/preview') == -1){
+        return LogoIcon
     }
     if (url.indexOf("https://") != -1) {
         return url
