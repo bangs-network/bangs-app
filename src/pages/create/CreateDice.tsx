@@ -19,8 +19,9 @@ import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import parseUrl from "../../util/common";
 import {VersePointApi} from "../../service/Api";
 import {saveRoleState} from '../state/slice/roleSlice';
-import {RowCenterWrapper} from "../../theme/commonStyle";
+import {ColumnCenterWrapper, RowCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
 import BgIcon from "../../img/dice_bg.png";
+import TextareaAutosize from 'react-textarea-autosize';
 
 interface MenuProps extends RouteComponentProps {
 }
@@ -64,9 +65,7 @@ const CreateDice: React.FC<MenuProps> = ({history, match}) => {
     }, [roleData.roleId]);
 
     const setAmount = (value: any, index: number) => {
-        if (!value) {
-            return
-        }
+
         let valueNum = value.replace(/[^\d^\.]+/g, '');
         if (valueNum.length != 0) {
             var re = /^(0|\+?[1-9][0-9]*)$/;
@@ -108,6 +107,12 @@ const CreateDice: React.FC<MenuProps> = ({history, match}) => {
         if (!list || list.length < 1) {
             present('Please select roles', 3000);
             return
+        }
+        for (let i = 0; i < dices.length; i++) {
+            if (!dices[i].MaxValue || dices[i].MaxValue < 1) {
+                present('Please input dice value', 3000);
+                return
+            }
         }
         let params: any = match.params
         console.info(params.id);
@@ -165,30 +170,32 @@ const CreateDice: React.FC<MenuProps> = ({history, match}) => {
 
                 <div className="about-info">
 
-                    <div style={{borderRadius: 14, padding: "0 22px"}}>
+                    <div style={{borderRadius: 14, padding: "20px 12px"}}>
                         {list.map((item: any, index: number) => {
 
-                            return <IonItem key={index} lines={'none'}>
-                                <IonThumbnail slot="start">
-                                    <img src={parseUrl(item.roleAvator)}/>
-                                </IonThumbnail>
-                                <IonLabel>
-                                    <h2 style={{width: 100}}> {item.roleName}</h2>
-                                </IonLabel>
-                                <IonInput style={{border: '1px solid #fff', marginLeft: 20}} type='text'
-                                          value={item.amount}
-                                          placeholder="Enter Maximum Number"
-                                          onIonChange={e => setAmount(e.detail.value, index)}/>
-                                <IonIcon size={'large'} style={{cursor: 'pointer'}} slot="end"
+                            return <RowItemCenterWrapper key={index} style={{marginBottom: 12}}>
+
+                                <ColumnCenterWrapper>
+                                    <img style={{width: 42, height: 42}} src={parseUrl(item.roleAvator)}/>
+                                </ColumnCenterWrapper>
+
+                                <div className='font-bold' style={{marginLeft: 8, width: 60}}> {item.roleName}</div>
+
+                                <TextareaAutosize style={{border: '1px solid #fff',outline: 'none',resize:'none', margin: '0 8px',background:'#F5F7F9',flex:1,padding:'10px 10px',borderRadius:8}}
+                                                  value={item.amount}
+                                                  rows={1}
+                                                  placeholder="Enter Maximum Number"
+                                                  onChange={e => setAmount(e.target.value, index)}/>
+                                <IonIcon color={'secondary'} size={'large'} style={{cursor: 'pointer'}} slot="end"
                                          icon={removeCircleOutline}
                                          onClick={() => deleteItem(index)}/>
-                            </IonItem>
+                            </RowItemCenterWrapper>
 
 
                         })}
 
 
-                        <IonItem lines='none' style={{cursor: 'pointer'}} onClick={() => {
+                        <RowItemCenterWrapper style={{cursor: 'pointer'}} onClick={() => {
                             let params: any = match.params
                             history.push({
                                 pathname: `/searchRole/${params.id}`, state: {
@@ -196,9 +203,9 @@ const CreateDice: React.FC<MenuProps> = ({history, match}) => {
                                 }
                             });
                         }}>
-                            <IonIcon size={'large'} slot="start" icon={addCircleOutline}/>
-                            <IonLabel style={{color: '#999'}}>Add Dice</IonLabel>
-                        </IonItem>
+                            <IonIcon color={'secondary'} size={'large'} slot="start" icon={addCircleOutline}/>
+                            <div className='font-bold' style={{marginLeft: 8, color: '#0620F9'}}>Add Dice</div>
+                        </RowItemCenterWrapper>
                     </div>
                 </div>
             </IonContent>
@@ -206,13 +213,13 @@ const CreateDice: React.FC<MenuProps> = ({history, match}) => {
             <IonFooter onClick={create}
                        className='ion-padding ion-no-border'>
                 <RowCenterWrapper>
-                    <div className='cursor' style={{
+                    <div className='font-bold cursor' style={{
                         background: '#0620F9',
                         borderRadius: 50,
                         textAlign: 'center',
                         width: 227,
                         height: 39,
-                        color:'#fff',
+                        color: '#fff',
                         lineHeight: '39px'
                     }}>
                         Create Dice

@@ -68,7 +68,6 @@ const Search: React.FC<MenuProps> = ({history}) => {
     const pageRef = useRef<HTMLElement>(null);
     const [list, setList] = useState<any>([]);
     const [present, dismiss] = useIonToast();
-    const [isInfiniteDisabled, setInfiniteDisabled] = useState(false);
     const [headImg, setHeadImg] = useState('');
     const [inputValue, setInputValue] = useState<string>('');
 
@@ -88,22 +87,12 @@ const Search: React.FC<MenuProps> = ({history}) => {
         if (headImg) {
             setHeadImg(headImg)
         }
-        start = 1;
         loadData();
     }, []);
 
-    const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
-        start = 1;
-        loadData();
-        setTimeout(() => {
-            console.log('Async operation has ended');
-            event.detail.complete();
-        }, 3000);
-    };
 
     useEffect(() => {
         if (inputValue) {
-            start = 1;
             loadData();
         }
     }, [inputValue]);
@@ -111,14 +100,8 @@ const Search: React.FC<MenuProps> = ({history}) => {
 
     const loadData = (ev?: any) => {
         const data = {
-            KeyWords:inputValue,
-            Start: start,
-            Offset: 10
+            KeyWords:inputValue
         };
-        let arrList: any = []
-        if (start != 1) {
-            arrList = list
-        }
 
         VerseSearchApi(data).then((res: any) => {
             console.info("res.MVserse")
@@ -128,16 +111,12 @@ const Search: React.FC<MenuProps> = ({history}) => {
                 ev.target.complete();
             }
             if (newData && newData.length > 0) {
-                let newList = [...arrList, ...newData];
+                let newList = [...newData];
                 console.info("newList")
                 console.info(newList)
                 setList(newList);
-                start = start + 1
             } else {
-                if (start == 1) {
-                    setList([]);
-                }
-                setInfiniteDisabled(true)
+                setList([]);
             }
 
         })
@@ -173,14 +152,6 @@ const Search: React.FC<MenuProps> = ({history}) => {
             <IonContent>
 
                 <div style={{background: '#f5f5f5', height: '100%'}}>
-                    <IonRefresher slot="fixed" style={{background: '#fff', color: '#000'}} onIonRefresh={doRefresh}>
-                        <IonRefresherContent
-                            pullingIcon={chevronDownCircleOutline}
-                            pullingText="Pull to refresh"
-                            refreshingSpinner="circles"
-                            refreshingText="Refreshing...">
-                        </IonRefresherContent>
-                    </IonRefresher>
 
                     <ColumnWrapper style={{background: '#f5f5f5'}}>
 
@@ -333,16 +304,6 @@ const Search: React.FC<MenuProps> = ({history}) => {
                         </IonList>
                     </ColumnWrapper>
 
-                    <IonInfiniteScroll
-                        onIonInfinite={loadData}
-                        threshold="100px"
-                        disabled={isInfiniteDisabled}
-                    >
-                        <IonInfiniteScrollContent
-                            loadingSpinner="bubbles"
-                            loadingText="Loading more data..."
-                        />
-                    </IonInfiniteScroll>
                 </div>
             </IonContent>
 
