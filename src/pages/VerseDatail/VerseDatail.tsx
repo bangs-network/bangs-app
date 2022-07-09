@@ -94,6 +94,7 @@ import ExpressionLock from "../../components/timeType/ExpressionLock";
 import NewRole from "../../components/timeType/NewRole";
 import Expression from "../../components/timeType/Expression";
 import Dice from "../../components/timeType/Dice";
+import ShowDate from "../../components/widget/ShowDate";
 
 
 interface MenuProps extends RouteComponentProps {
@@ -231,12 +232,12 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         let themeItem = {
                             backgroundColor: sTimeList[0].theme.BackgroundColor,
                             dices: [],
-                            isAdd:1,
+                            isAdd: 1,
                             expression: "",
                             likeCount: 0,
-                            theme:{
+                            theme: {
                                 BackgroundColor: sTimeList[0].theme.BackgroundColor,
-                               MainColor: sTimeList[0].theme.MainColor,
+                                MainColor: sTimeList[0].theme.MainColor,
                                 MainPic: sTimeList[0].theme.MainPic,
                                 ThemeID: sTimeList[0].theme.ThemeID
                             },
@@ -352,9 +353,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     };
 
     const toRoleDetail = (roleId: number) => {
-        history.push({ pathname: `/roleDetail/${roleId}`, state:{
+        history.push({
+            pathname: `/roleDetail/${roleId}`, state: {
                 VerseID: Number(verseId)
-            }});
+            }
+        });
     };
 
     const showSendMsg = (e: any) => {
@@ -530,11 +533,14 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                             fontSize: 20,
                             fontWeight: 700,
                             textAlign: 'center'
-                        }}><div className='font-bold'>{body ? body.VerseName : 'Bangs'}</div></IonTitle>
+                        }}>
+                            <div className='font-bold'>{body ? body.VerseName : 'Bangs'}</div>
+                        </IonTitle>
                         {isKeeper == 1 ?
-                        <IonButtons slot="end" onClick={presentPopover}>
-                            <img className='cursor' style={{width: 32, height: 32, marginRight: 20}} src={PointIcon}/>
-                        </IonButtons>:<div style={{width: 32, height: 32, marginRight: 20}}/>
+                            <IonButtons slot="end" onClick={presentPopover}>
+                                <img className='cursor' style={{width: 32, height: 32, marginRight: 20}}
+                                     src={PointIcon}/>
+                            </IonButtons> : <div style={{width: 32, height: 32, marginRight: 20}}/>
                         }
                     </RowItemCenterWrapper>
 
@@ -542,11 +548,12 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
             </IonHeader>
-            <IonContent ref={contentRef} scrollEvents={true} onIonScroll={(e) => scrollToTop(e)} style={{position: 'relative'}}
-                         onClick={(e) => {
-                e.stopPropagation();
-                setShowSend(false)
-            }}>
+            <IonContent ref={contentRef} scrollEvents={true} onIonScroll={(e) => scrollToTop(e)}
+                        style={{position: 'relative'}}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowSend(false)
+                        }}>
 
 
                 <IonRefresher slot="fixed" style={{color: '#000'}} onIonRefresh={doRefresh}>
@@ -646,11 +653,11 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                         <div style={{margin: 12}}>
                                                             {item1.talkList && item1.talkList.length > 0 ? item1.talkList.map((item4: any, index3: number) => {
                                                                     return <div key={index3}><RowWrapper key={index3}
-                                                                                         style={{
-                                                                                             width: '100%',
-                                                                                             marginTop: 15,
+                                                                                                         style={{
+                                                                                                             width: '100%',
+                                                                                                             marginTop: 15,
 
-                                                                                         }}>
+                                                                                                         }}>
                                                                         {
 
                                                                             item4.newRole ?
@@ -704,25 +711,26 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                                                                         dangerouslySetInnerHTML={{__html: item4.replyContent}}/>}
                                                                             <div style={{marginTop: 5, fontSize: 13}}
                                                                                  dangerouslySetInnerHTML={{__html: item4.talkContent}}/>
-                                                                            {index1 == timeList.length - 1 && item1.fixed != 1 &&
-                                                                            <RowRightWrapper
-                                                                                onClick={() => toRoleDetail(item4.role.roleID)}
-                                                                                style={{
-                                                                                    marginTop: 15
-                                                                                }}><img style={{height: 18}}
-                                                                                        onClick={(e) => reply(e, item4.talkID, item4.talkContent)}
-                                                                                        src={ReviewIcon}/>
-                                                                                {isKeeper ? <img
-                                                                                    style={{
-                                                                                        marginLeft: 20,
-                                                                                        height: 18
-                                                                                    }}
-                                                                                    src={!bongList.includes(item4.talkID) ? UnlockIcon : LockIcon}
-                                                                                    onClick={(e) => {
-                                                                                        bongItem(e, item4.talkID);
-                                                                                    }
-                                                                                    }/> : <></>}
-                                                                            </RowRightWrapper>}
+                                                                            <RowItemCenterWrapper style={{marginTop:8}}>
+                                                                                <ShowDate item={item4}/>
+                                                                                <FixUi />
+                                                                                {index1 == timeList.length - 1 && item1.fixed != 1 &&
+                                                                                <RowRightWrapper
+                                                                                    onClick={() => toRoleDetail(item4.role.roleID)}><img style={{height: 18}}
+                                                                                            onClick={(e) => reply(e, item4.talkID, item4.talkContent)}
+                                                                                            src={ReviewIcon}/>
+                                                                                    {isKeeper ? <img
+                                                                                        style={{
+                                                                                            marginLeft: 20,
+                                                                                            height: 18
+                                                                                        }}
+                                                                                        src={!bongList.includes(item4.talkID) ? UnlockIcon : LockIcon}
+                                                                                        onClick={(e) => {
+                                                                                            bongItem(e, item4.talkID);
+                                                                                        }
+                                                                                        }/> : <></>}
+                                                                                </RowRightWrapper>}
+                                                                            </RowItemCenterWrapper>
                                                                             {index3 != item1.talkList.length - 1 && !item4.newRole &&
                                                                             <div style={{
                                                                                 borderTop: '1px solid #B6BDC9',

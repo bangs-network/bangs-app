@@ -54,6 +54,37 @@ export const hexToRgba = (bgColor: string) => {
 
 };
 
+export const formatDate = (millionSeconds: number) => {
+
+    let date = new Date(millionSeconds);
+    //let monthArr = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Spt","Oct","Nov","Dec"];
+    let monthArr = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    let year = date.getFullYear();
+    let month = monthArr[date.getMonth()];
+    let dDate = date.getDate();
+    let hours: any = date.getHours();
+    let minute: any = date.getMinutes();
+    let second: any = date.getSeconds();
+
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+
+    if (minute < 10) {
+        minute = "0" + minute;
+    }
+
+    if (second < 10) {
+        second = "0" + second;
+    }
+
+    return month + " " + dDate + ", " + year + " " + hours + ":" + minute ;
+
+
+
+};
+
 
 export const convert = (v: any, v2?: any) => {
     if (!v2) {
