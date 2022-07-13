@@ -9,6 +9,7 @@ import * as React from "react";
 // import parseUrl from "../../util/common";
 import useVirtual from "react-cool-virtual";
 import {Parallax, ParallaxProvider} from "react-scroll-parallax";
+import {useEffect} from "react";
 
 interface Props {
     dataArr: Array<any>;
@@ -19,6 +20,8 @@ interface Props {
         height: number;
         render: (index: number) => any;
     }
+    scrollToBottom: boolean;
+    onScrolledToBottom: ()=>void;
 }
 
 interface Box{
@@ -31,7 +34,7 @@ interface Data {
     data: any
 }
 
-export const VerseItemsSticky: React.FC<Props> = ({dataArr, renderItem, sticky}) => {
+export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScrolledToBottom, renderItem, sticky}) => {
 
     const [time,setTime] = React.useState(Date.now())
     const [visible,setVisible] = React.useState(0);
@@ -50,7 +53,7 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr, renderItem, sticky})
         boxes.push({head: {index:index,data:item},body:body})
     }
 
-    const {outerRef, innerRef, items} = useVirtual({
+    const {outerRef, innerRef, items,scrollToItem} = useVirtual({
         itemCount: boxes.length,
         resetScroll:true,
         // useIsScrolling:true,
@@ -62,6 +65,11 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr, renderItem, sticky})
         // The values must be provided in ascending order
         // stickyIndices: sticky.indexes,
     });
+
+    if(boxes.length>0 && scrollToBottom ){
+        scrollToItem(boxes.length-1)
+        onScrolledToBottom()
+    }
 
     return <>
         <ParallaxProvider>

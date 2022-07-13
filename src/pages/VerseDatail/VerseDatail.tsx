@@ -87,7 +87,6 @@ import {
 } from "../../theme/commonStyle";
 
 import DiceUi from "../../components/widget/DiceUi";
-import {Sticky, StickyContainer} from "react-sticky";
 import PointTypeUi from "../../components/widget/PointTypeUi";
 import getMainColor from "../../util/getMainColor";
 import ExpressionLock from "../../components/timeType/ExpressionLock";
@@ -136,6 +135,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
     const [toolbarColor, setToolbarColor] = useState<string>('transparent');
     const [lastColor, setLastColor] = useState<string>('transparent');
     const [topColor, setTopColor] = useState<string>('transparent');
+    const [toBottom, setToBottom] = useState<boolean>(false);
 
     const presentPopover = (e: React.MouseEvent) => {
         console.info("presentPopover===")
@@ -179,11 +179,13 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
 
     const scrollToBottom = () => {
-        // const timer = setTimeout(() => contentRef.current?.scrollToBottom(), 300);
-        // return () => clearTimeout(timer);
+        const timer = setTimeout(() => setToBottom(true), 300);
+        return () => clearTimeout(timer);
     };
 
-    const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+
+    // CustomEvent<RefresherEventDetail>
+    const doRefresh = (event: any) => {
         if (start == 1) {
             start = 2
         }
@@ -510,10 +512,10 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
         history.push(`/roles/${verseId}`)
     };
 
-    // const scrollToTop = (e: any) => {
-    //     let opacity = e.detail.scrollTop / 44;
-    //     setToolbarColor(opacity < 1 ? 'transparent' : lastColor)
-    // };
+    const scrollToTop = (e: any) => {
+        let opacity = e.detail.scrollTop / 44;
+        setToolbarColor(opacity < 1 ? 'transparent' : lastColor)
+    };
 
     const renderRow = (item1,index1,ref?:any) => {
             return <div key={index1} style={{
@@ -527,7 +529,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                          marginLeft: item1.timelineType == 1 ? 0 : 12,
                          marginRight: item1.timelineType == 1 ? 0 : 12,
                          background: '#fff',
-                         marginBottom: 12,
+                         margin: item1.timelineType == 1? "12px 12px 0":12,
                          borderRadius: 12
                      }}
                 >
@@ -535,17 +537,15 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
 
                     {
                         item1.timelineType == 1 ? item1.mainPic ?
-                            <IonItemDivider sticky style={{
-                                padding: 0,
-                                border: 0,
-                                margin: 0
+                            <div className="theme-img" style={{
+                                background: item1.theme.BackgroundColor
                             }}>
                                 <img src={parseUrl(item1.mainPic)} style={{
                                     width: '100vw',
                                     height: 200,
                                     objectFit: 'cover'
                                 }}/>
-                            </IonItemDivider> : <></> :
+                            </div> : <></> :
                             item1.timelineType == 2 ? item1.visible ? <Expression item1={item1}/> :
                                 <ExpressionLock color={item1.theme.BackgroundColor}
                                                 item2={item1}/> : item1.timelineType == 4 ?
@@ -824,8 +824,21 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                     </IonRefresherContent>
                 </IonRefresher>
 
+
+                {/*<IonInfiniteScroll*/}
+                {/*    onIonInfinite={doRefresh}*/}
+                {/*    threshold="15%"*/}
+                {/*    position="top"*/}
+                {/*    disabled={isInfiniteDisabled}*/}
+                {/*>*/}
+                {/*    <IonInfiniteScrollContent*/}
+                {/*        loadingSpinner="bubbles"*/}
+                {/*        loadingText="Loading more data..."*/}
+                {/*    ></IonInfiniteScrollContent>*/}
+                {/*</IonInfiniteScroll>*/}
+
                 {
-                    timeList && <VerseItemsSticky dataArr={timeList} renderItem={renderRow} sticky={{
+                    timeList && <VerseItemsSticky dataArr={timeList} scrollToBottom={toBottom} onScrolledToBottom={()=>setToBottom(false)} renderItem={renderRow} sticky={{
                         height: 200,
                         render: (index)=>{
                             const item = timeList[index]
