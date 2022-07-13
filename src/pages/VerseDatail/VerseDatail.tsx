@@ -94,8 +94,6 @@ import ExpressionLock from "../../components/timeType/ExpressionLock";
 import NewRole from "../../components/timeType/NewRole";
 import Expression from "../../components/timeType/Expression";
 import Dice from "../../components/timeType/Dice";
-import {VerseItems} from "./VerseItems";
-import {ParallaxBanner} from 'react-scroll-parallax'
 import {VerseItemsSticky} from "./VerseItemsSticky";
 interface MenuProps extends RouteComponentProps {
 }
