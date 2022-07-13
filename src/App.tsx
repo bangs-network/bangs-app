@@ -90,6 +90,7 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
         <IonApp>
             <Provider store={store}>
                 <IonReactHashRouter>
+                    <Switch>
                     <IonSplitPane  when="(min-width: 900px)" contentId="main" style={{background:'#fff'}}>
                         <Menu/>
                         <IonRouterOutlet id="main" style={{minWidth:500,maxWidth:600}}>
@@ -111,7 +112,7 @@ const IonicApp: React.FC<IonicAppProps> = ({darkMode, setIsLoggedIn, setUsername
                         </IonRouterOutlet>
                         <Menu1/>
                     </IonSplitPane>
-
+                    </Switch>
 
                 </IonReactHashRouter>
             </Provider>
