@@ -529,7 +529,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                          marginLeft: item1.timelineType == 1 ? 0 : 12,
                          marginRight: item1.timelineType == 1 ? 0 : 12,
                          background: '#fff',
-                         margin: item1.timelineType == 1? "12px 12px 0":12,
+                         margin: item1.timelineType == 1? `${index1 >0 ? 12: 0}px 12px 0`:12,
                          borderRadius: 12
                      }}
                 >

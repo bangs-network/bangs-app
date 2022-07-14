@@ -55,10 +55,10 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
 
     const {outerRef, innerRef, items,scrollToItem} = useVirtual({
         itemCount: boxes.length,
-        resetScroll:true,
-        // useIsScrolling:true,
+        // resetScroll:true,
+        useIsScrolling:true,
         onScroll: event => {
-            setTime(Date.now())
+            setTime(Math.floor(Date.now()/100))
             setVisible(event.visibleStartIndex);
             setOffset(event.scrollOffset)
         }
@@ -67,8 +67,8 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
     });
 
     if(boxes.length>0 && scrollToBottom ){
-        scrollToItem(boxes.length-1)
-        onScrolledToBottom()
+        // scrollToItem(boxes.length-1)
+        // onScrolledToBottom()
     }
 
     return <>
@@ -101,12 +101,13 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
                                     >
                                         {renderItem(box.head.data,box.head.index)}
                                         {
-                                            offset>0 &&
+                                            // offset>0 && visible == index &&
                                             <Parallax className="fixed-top" style={{background: bgColor}} onProgressChange={v=>{
                                             }}
                                                 //1,.06,1,-0.04
-                                                      opacity={[0,3]}
-                                                      easing={[1,.06,1,-0.04]}
+                                                //1,.05,1,-0.24
+                                                      opacity={box.head.index ==0?[-0.5,2.5]:[0,3]}
+                                                      easing={box.head.index ==0?[.71,.07,.99,-0.15]:[1,.06,1,-0.04]}
                                             >
                                             </Parallax>
                                         }
