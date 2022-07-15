@@ -11,6 +11,8 @@ export const VerseSearchApi = <T>(params: any) => axiosUtils.get<T>('/verse/sear
 
 export const VersePointApi = <T>(params: any) => axiosUtils.post<T>('/timeline/create', params, {timeout: 15000});
 
+export const VerseKeeperApi = <T>(params: any) => axiosUtils.get<T>('/verse/isKeeper', params, {timeout: 15000});
+
 export const RoleCreateApi = <T>(params: any) => axiosUtils.post<T>('/role/create', params, {timeout: 15000});
 
 export const RoleDetailApi = <T>(params: any) => axiosUtils.get<T>('/role/detail', params, {timeout: 15000});

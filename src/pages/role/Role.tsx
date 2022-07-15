@@ -20,7 +20,7 @@ import {useAppDispatch, useAppSelector} from "../state/app/hooks";
 import {LoadState} from "../state/slice/loadStateSlice";
 import {FixUi, RowCenterWrapper, RowItemCenterWrapper} from "../../theme/commonStyle";
 import {getBgColor} from "../../util/getMainColor";
-import {RoleSearchApi} from "../../service/Api";
+import {RoleSearchApi, VerseKeeperApi} from "../../service/Api";
 //import {getBgColor} from "../../util/getMainColor";
 
 interface MenuProps extends RouteComponentProps {

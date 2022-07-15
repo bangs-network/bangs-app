@@ -27,7 +27,14 @@ import {
 } from "../../theme/commonStyle";
 import Popup from "reactjs-popup";
 import SearchUi from "../../components/widget/SearchUi";
-import {GetUserListApi, RoleActorsApi, RoleDetailApi, RoleSpecifyApi, UpdateAccountApi} from "../../service/Api";
+import {
+    GetUserListApi,
+    RoleActorsApi,
+    RoleDetailApi,
+    RoleSpecifyApi,
+    UpdateAccountApi,
+    VerseKeeperApi
+} from "../../service/Api";
 import {getBgColor} from "../../util/getMainColor";
 
 interface MenuProps extends RouteComponentProps {
@@ -49,12 +56,14 @@ const RoleDetail: React.FC<MenuProps> = ({history, match}) => {
     const [showLoading, setShowLoading] = useState(false);
     const [inputValue, setInputValue] = useState<string>('');
     const [bgColor, setBgColor] = useState<string>('#D1CB52');
+    const [isKeeper, setIsKeeper] = useState<any>(0);
 
     useEffect(() => {
         let location: any = history.location
         console.info("location==",history);
         getData()
         geActorList()
+        getKeeperStatus()
     }, []);
 
     const getData = () => {
@@ -91,6 +100,19 @@ const RoleDetail: React.FC<MenuProps> = ({history, match}) => {
             setList([]);
         }
     }, [inputValue]);
+
+    const getKeeperStatus = () => {
+        let params: any = match.params
+        console.info(params.id);
+        const data = {
+            VerseId: Number(params.id)
+        };
+        VerseKeeperApi(data).then(function (response: any) {
+            if (response) {
+                setIsKeeper(response.isKeeper)
+            }
+        })
+    };
 
 
     const geUserList = () => {
@@ -309,7 +331,7 @@ const RoleDetail: React.FC<MenuProps> = ({history, match}) => {
                     <div style={{margin: '12px 0 15px 12px'}}>
                         <div className='font-bold' style={{color: '#000'}}>Actor</div>
                         <RowItemCenterWrapper style={{padding: '20px 0'}}>
-                            <ColumnContentCenterWrapper onClick={() => {
+                           <ColumnContentCenterWrapper onClick={() => {
                                 setSelectUserlist([]);
                                 setUserIDs([]);
                                 setOpen(true);

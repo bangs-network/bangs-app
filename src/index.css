@@ -34,7 +34,7 @@ body {
     overflow: hidden;
     -webkit-box-orient: vertical;
     line-height: 20px;
-    height: 120px;
+    max-height: 120px;
 }
 
 .text-ellipsis-two{
@@ -189,6 +189,14 @@ input::placeholder {
     outline: none;
     flex:1;
     padding-right: 10px;
+}
+
+.two-line{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .gray-input {

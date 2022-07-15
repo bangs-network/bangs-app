@@ -94,8 +94,37 @@ const Search: React.FC<MenuProps> = ({history}) => {
     useEffect(() => {
         if (inputValue) {
             loadData();
+        } else {
+            MyselfData()
         }
     }, [inputValue]);
+
+    const MyselfData = (ev?: any) => {
+        const data = {
+            Start: 1,
+            Offset: 30
+        };
+        let arrList: any = [];
+        if (start != 1) {
+            arrList = list
+        }
+
+        HomeVerseApi(data).then((res: any) => {
+            console.info("res.MVserse")
+            let newData = res.MVerse;
+            console.info(newData)
+            if (newData && newData.length > 0) {
+                let newList = [...arrList, ...newData];
+                console.info("newList")
+                console.info(newList)
+                setList(newList);
+            } else {
+                setList([]);
+            }
+
+        })
+
+    };
 
 
     const loadData = (ev?: any) => {
@@ -107,9 +136,6 @@ const Search: React.FC<MenuProps> = ({history}) => {
             console.info("res.MVserse")
             let newData = res.MVerse;
             console.info(newData)
-            if (ev && ev.target) {
-                ev.target.complete();
-            }
             if (newData && newData.length > 0) {
                 let newList = [...newData];
                 console.info("newList")
@@ -148,6 +174,9 @@ const Search: React.FC<MenuProps> = ({history}) => {
                         </IonButton>
                     </IonButtons>
                 </RowWrapper>
+                <RowItemCenterWrapper style={{background: '#f5f5f5', padding: '12px'}}>
+                    <SearchUi inputValue={inputValue} setInputValue={setInputValue} bgColor={'#fff'}/>
+                </RowItemCenterWrapper>
             </IonHeader>
             <IonContent>
 
@@ -155,16 +184,14 @@ const Search: React.FC<MenuProps> = ({history}) => {
 
                     <ColumnWrapper style={{background: '#f5f5f5'}}>
 
-                        <RowItemCenterWrapper style={{padding: '12px 12px 0 12px'}}>
-                            <SearchUi inputValue={inputValue} setInputValue={setInputValue} bgColor={'#fff'}/>
-                        </RowItemCenterWrapper>
+
 
                         <IonList lines="none" style={{background: '#f5f5f5', padding: '0 10px', width: '100%'}}>
 
 
                             {list.map((item: any, index: number) => {
 
-                                return <div style={{borderRadius: '12px', marginTop: 12}} key={index} className='cursor'
+                                return <div style={{borderRadius: '12px', marginBottom: 12}} key={index} className='cursor'
                                             onClick={() => {
                                                 history.push(`/verseDetail/${item.verseId}`);
                                             }}>
@@ -212,8 +239,8 @@ const Search: React.FC<MenuProps> = ({history}) => {
 
                                                                 {
                                                                     item.timelineType == 2 ?<div style={{padding: '0 17px 17px'}}>
-                                                                        <div className='font-bold' style={{fontSize:17,padding:'6px 0',fontWeight:'bold'}}>{item.expressionTitle}</div>
-                                                                        <div className='text-ellipsis' style={{fontSize:13,padding: '4px 0 15px'}}
+                                                                        <div className='font-bold two-line' style={{fontSize:17,margin:'6px 0',fontWeight:'bold'}}>{item.expressionTitle}</div>
+                                                                        <div className='text-ellipsis' style={{fontSize:13,margin: '4px 0 15px'}}
                                                                              dangerouslySetInnerHTML={{__html: item.expression}}/></div> : item.timelineType == 4 ?<div style={{marginTop:12,padding:'0 17px 17px'}}>
                                                                         <RowItemCenterWrapper
                                                                             style={{padding: '10px',background:'#fff',borderRadius:12}}>

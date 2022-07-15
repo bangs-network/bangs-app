@@ -10,11 +10,11 @@ interface Info {
 const HomePointTypeUi = ({item}: Info) => {
 
 
-    return <div style={{ marginTop:24,marginBottom: 7,  padding: '0 17px',}}><span style={{
-        color: item && item.theme ?(getSimilarColor(item.theme.BackgroundColor).isDarkColor?'#fff':'#F1F3F5') : '#F1F3F5',
+    return <div style={{ marginTop:5,marginBottom: 9,  padding: '0 15px'}}><span style={{
+        color: '#8A6C5D',
         fontSize:9,
-        background: item && item.theme ?getSimilarColor(item.theme.BackgroundColor).badge.background :'rgba(255, 255, 255, 0.5)',
-        padding: '4px 15px',
+        background: '#F1F3F5',
+        padding: '4px 12px',
         borderRadius: 76
     }}>{getPoint(item.timelineType)}</span></div>
 
