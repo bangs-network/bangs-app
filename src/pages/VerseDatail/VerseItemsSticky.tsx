@@ -94,9 +94,7 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
                         if(box && bgColor){
                             return <div ref={measureRef}  key={index} style={{position: "relative",background: bgColor}}>
                                 <div className="sticky" style={{position: "sticky", top: "-140px"}}>
-                                    <Parallax onProgressChange={v=>{
-                                    }}
-                                              //1,.06,1,-0.04
+                                    <Parallax //1,.06,1,-0.04
                                         scaleX={[1,3]} easing={[1,-0.02,1,-0.08]} startScroll={offset}
                                     >
                                         {renderItem(box.head.data,box.head.index)}
@@ -106,8 +104,10 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
                                             }}
                                                 //1,.06,1,-0.04
                                                 //1,.05,1,-0.24
-                                                      opacity={box.head.index ==0?[-0.5,2.5]:[0,3]}
-                                                      easing={box.head.index ==0?[.71,.07,.99,-0.15]:[1,.06,1,-0.04]}
+                                              opacity={box.head.index ==0?[-0.5,2.5]:[0,3]}
+                                              easing={box.head.index ==0?[.71,.07,.99,-0.15]:[1,.06,1,-0.04]}
+                                                      // opacity={[0,3]}
+                                                      // easing={[1,.06,1,-0.04]}
                                             >
                                             </Parallax>
                                         }

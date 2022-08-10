@@ -554,7 +554,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                         <div style={{margin: '0 12px 15px 12px'}}>
                                             <PointTypeUi item={item1}/>
                                         </div>
-                                        <IonGrid style={{margin: '12px 0 0 0', padding: 0}}>
+                                        <div style={{margin: '12px 0 0 0', padding: 0}}>
                                             <RowItemCenterWrapper onClick={toRole} style={{
                                                 padding: '4px 8px',
                                                 background: '#F5F7F9',
@@ -736,7 +736,7 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                                                     </div>
                                                 </div>}
                                             </div>
-                                        </IonGrid>
+                                        </div>
                                     </div> : <></>
                     }
 
