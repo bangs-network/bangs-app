@@ -9,7 +9,6 @@ import * as React from "react";
 // import parseUrl from "../../util/common";
 import useVirtual from "react-cool-virtual";
 import {Parallax, ParallaxProvider} from "react-scroll-parallax";
-import {useEffect} from "react";
 
 interface Props {
     dataArr: Array<any>;
@@ -58,7 +57,8 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
         // resetScroll:true,
         useIsScrolling:true,
         onScroll: event => {
-            setTime(Math.floor(Date.now()/100))
+            // console.log(1);
+            setTime(Math.floor(Date.now()/10))
             setVisible(event.visibleStartIndex);
             setOffset(event.scrollOffset)
         }
@@ -90,12 +90,13 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
                         }catch (e){
                             // console.log(e);
                         }
-
+                        let style = {  };
+                        const _style:any = {...style,position: "sticky", top: "-140px"};
                         if(box && bgColor){
-                            return <div ref={measureRef}  key={index} style={{position: "relative",background: bgColor}}>
-                                <div className="sticky" style={{position: "sticky", top: "-140px"}}>
+                            return <div  key={index} style={{position: "relative",background: bgColor}}>
+                                <div className="sticky" style={_style}>
                                     <Parallax //1,.06,1,-0.04
-                                        scaleX={[1,3]} easing={[1,-0.02,1,-0.08]} startScroll={offset}
+                                        scaleX={[1,3]} easing={[1,-0.02,1,-0.08]}
                                     >
                                         {renderItem(box.head.data,box.head.index)}
                                         {

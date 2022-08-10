@@ -12,11 +12,10 @@ const ShowDate = ({item}: Info) => {
     const [time,setTime] = useState<string>('');
 
     useEffect(() => {
-        console.info("createTime==",item.createTime)
         let second = new Date(item.createTime.substring(0,19)).getTime()
         setTime(formatDate(second))
 
-    }, []);
+    }, [item]);
 
 
     return <div style={{color:'#868990',fontSize:11}}>{time}</div>;
