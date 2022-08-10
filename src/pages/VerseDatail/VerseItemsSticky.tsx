@@ -58,7 +58,7 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
         // useIsScrolling:true,
         onScroll: event => {
             // console.log(1);
-            // setTime(Math.floor(Date.now()/10))
+            setTime(Math.floor(Date.now()/10))
             // setVisible(event.visibleStartIndex);
             // setOffset(event.scrollOffset)
         }
