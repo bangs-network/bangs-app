@@ -55,12 +55,12 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
     const {outerRef, innerRef, items,scrollToItem} = useVirtual({
         itemCount: boxes.length,
         // resetScroll:true,
-        useIsScrolling:true,
+        // useIsScrolling:true,
         onScroll: event => {
             // console.log(1);
-            setTime(Math.floor(Date.now()/10))
-            setVisible(event.visibleStartIndex);
-            setOffset(event.scrollOffset)
+            // setTime(Math.floor(Date.now()/10))
+            // setVisible(event.visibleStartIndex);
+            // setOffset(event.scrollOffset)
         }
         // The values must be provided in ascending order
         // stickyIndices: sticky.indexes,
@@ -82,7 +82,7 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
             {
                 //@ts-ignore
                 <div ref={innerRef}>
-                    {items.map(({index, size,start, isSticky, measureRef}) => {
+                    {items.map(({index, size,start,isScrolling, isSticky, measureRef}) => {
                         const box = boxes && boxes[index];
                         let bgColor;
                         try{
@@ -90,10 +90,9 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
                         }catch (e){
                             // console.log(e);
                         }
-                        let style = {  };
-                        const _style:any = {...style,position: "sticky", top: "-140px"};
+                        const _style:any = {position: "sticky", top: "-140px"};
                         if(box && bgColor){
-                            return <div  key={index} style={{position: "relative",background: bgColor}}>
+                            return <div ref={ measureRef}  key={index} style={{position: "relative",background: bgColor}}>
                                 <div className="sticky" style={_style}>
                                     <Parallax //1,.06,1,-0.04
                                         scaleX={[1,3]} easing={[1,-0.02,1,-0.08]}

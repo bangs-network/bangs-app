@@ -224,9 +224,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                 setIsKeeper(body.IsKeeper);
 
                 let sTimeList = body.Timelines;
-
-                console.info("sTimeList===", sTimeList)
-
                 if (sTimeList && sTimeList.length > 0) {
 
                     // Add main pic to first item
@@ -267,9 +264,6 @@ const VerseDetail: React.FC<MenuProps> = ({history, match}) => {
                         timelineList = [...sTimeList, ...timeList];
                         setTimeList(timelineList);
                     }
-
-
-                    console.info("timelineList11===", timelineList)
                     start = start + 1;
                 } else {
                     setInfiniteDisabled(true)
