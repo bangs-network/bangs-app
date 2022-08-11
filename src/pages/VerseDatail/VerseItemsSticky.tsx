@@ -67,8 +67,8 @@ export const VerseItemsSticky: React.FC<Props> = ({dataArr,scrollToBottom,onScro
     });
 
     if(boxes.length>0 && scrollToBottom ){
-        // scrollToItem(boxes.length-1)
-        // onScrolledToBottom()
+        scrollToItem(boxes.length-1)
+        onScrolledToBottom()
     }
 
     return <>
